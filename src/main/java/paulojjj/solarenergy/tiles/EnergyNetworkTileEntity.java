@@ -1,5 +1,9 @@
 package paulojjj.solarenergy.tiles;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -15,8 +19,10 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 	protected double energy = 0;
 	private CapabilityDelegate delegate = new CapabilityDelegate(getNetwork());
 	private INetwork<EnergyNetworkTileEntity> network = null;
+	
+	private Set<EntityPlayer> playersUsing = new HashSet<>();
 
-
+	
 	public abstract Class<?> getNetworkClass();
 
 	@Override
@@ -86,6 +92,13 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 		}
 		network.update();
 	}
+	
+	public void onContainerOpened(EntityPlayer player) {
+		playersUsing.add(player);
+	}
 
+	public void onContainerClosed(EntityPlayer player) {
+		playersUsing.remove(player);
+	}
 
 }

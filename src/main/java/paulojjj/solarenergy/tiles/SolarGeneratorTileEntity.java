@@ -53,7 +53,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	@Override
 	public double getMaxUltraEnergyStored() {
-		return production * 1;
+		return production;
 	}
 
 	@Override

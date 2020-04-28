@@ -3,7 +3,6 @@ package paulojjj.solarenergy.tiles;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,12 +19,13 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IEnergyContainer;
-import paulojjj.solarenergy.INetworkSerializable;
 import paulojjj.solarenergy.IUltraEnergyStorage;
-import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.Tier;
+import paulojjj.solarenergy.net.BatteryMessage;
+import paulojjj.solarenergy.net.IMessageListener;
+import paulojjj.solarenergy.net.PacketManager;
 
-public class BatteryTileEntity extends TileEntity implements IUltraEnergyStorage, ITickable, INetworkSerializable, IEnergyContainer {
+public class BatteryTileEntity extends TileEntity implements IUltraEnergyStorage, ITickable, IEnergyContainer, IMessageListener<BatteryMessage> {
 
 	private Tier tier;
 	private double capacity = 0;
@@ -234,8 +234,7 @@ public class BatteryTileEntity extends TileEntity implements IUltraEnergyStorage
 		markDirty();
 
 		for(EntityPlayer player: playersUsing) {
-			//sendUpdates();
-			Main.sendTileUpdate(this, (EntityPlayerMP)player);
+			PacketManager.sendTileEntityMessage(this, (EntityPlayerMP)player, new BatteryMessage(energy, capacity, in, out));
 		}
 		out = 0;
 		in = 0;
@@ -266,42 +265,17 @@ public class BatteryTileEntity extends TileEntity implements IUltraEnergyStorage
 		playersUsing.remove(player);
 	}
 	
-	private void sendUpdates() {
-		world.markBlockRangeForRenderUpdate(pos, pos);
-		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
-		world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
-		markDirty();
-	}	
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		//System.out.println("###################   PACOTE RECEBIDO #####################");
-		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-	}
-
-	@Override
-	public NBTTagCompound getUpdateTag() {
-		return this.writeToNBT(new NBTTagCompound());
-	}
-
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		super.onDataPacket(net, pkt);
 		handleUpdateTag(pkt.getNbtCompound());
 	}
-	
-	public void writeTo(ByteBuf buffer) {
-		buffer.writeDouble(energy);
-		buffer.writeDouble(capacity);
-		buffer.writeDouble(in);
-		buffer.writeDouble(out);
-	}
-	
-	public void readFrom(ByteBuf buffer) {
-		energy = buffer.readDouble();
-		capacity = buffer.readDouble();
-		in = buffer.readDouble();
-		out = buffer.readDouble();
-	}
 
+	@Override
+	public void onMessage(BatteryMessage message) {
+		energy = message.getEnergy();
+		capacity = message.getCapacity();
+		in = message.getIn();
+		out = message.getOut();
+	}
 }

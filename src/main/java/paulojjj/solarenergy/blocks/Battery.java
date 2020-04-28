@@ -18,15 +18,16 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.Tier;
+import paulojjj.solarenergy.gui.GuiHandler;
+import paulojjj.solarenergy.gui.GuiHandler.GUI;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
 
 public class Battery extends BlockDirectional {
 
 	private Tier tier;
-	
+
 	public Battery(Tier tier) {
 		super(Material.ROCK);
 		setResistance(50.0f);
@@ -71,7 +72,7 @@ public class Battery extends BlockDirectional {
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(FACING).getIndex();
 	}
-	
+
 	@Override
 	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
 			int fortune) {
@@ -118,16 +119,13 @@ public class Battery extends BlockDirectional {
 		if(worldIn.isRemote) {
 			return true;
 		}
-			if(playerIn.isSneaking()) {
-				worldIn.setBlockState(pos, state.withProperty(FACING, facing));
-				return true;
-			}
-			else {
-				playerIn.openGui(Main.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-				return true;
-			}
+		if(playerIn.isSneaking()) {
+			worldIn.setBlockState(pos, state.withProperty(FACING, facing));
+			return true;
+		}
+		return GuiHandler.openGui(playerIn, worldIn, GUI.BATTERY, pos);
 	}
-	
+
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
 			boolean willHarvest) {
@@ -135,7 +133,7 @@ public class Battery extends BlockDirectional {
 		if(willHarvest) return true;
 		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
-	
+
 	@Override
 	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
 			ItemStack stack) {

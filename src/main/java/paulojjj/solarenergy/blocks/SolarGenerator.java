@@ -8,12 +8,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.Tier;
+import paulojjj.solarenergy.gui.GuiHandler;
+import paulojjj.solarenergy.gui.GuiHandler.GUI;
 import paulojjj.solarenergy.networks.INetwork;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
@@ -75,6 +79,12 @@ public class SolarGenerator extends Block {
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		super.onBlockHarvested(worldIn, pos, state, player);
+	}
+	
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		return GuiHandler.openGui(playerIn, worldIn, GUI.SOLAR_GENERATOR, pos);
 	}
 	
 	@Override
