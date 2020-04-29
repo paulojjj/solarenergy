@@ -37,6 +37,9 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	private boolean canReceive = false;
 	private boolean canExtract = false;
 
+	private double energyInput = 0;
+	private double energyOutput = 0;
+	
 	protected long lastUpdatedTick = 0;
 
 	ReentrantLock lock = new ReentrantLock();
@@ -301,6 +304,9 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		synchronized(this) {
 			lastUpdatedTick = CommonProxy.getTick();
 
+			energyInput = 0;
+			energyOutput = 0;
+			
 			energyStored = tiles.stream().map(x -> x.getUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			maxEnergyStored = tiles.stream().map(x -> x.getMaxUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			canExtract = tiles.stream().anyMatch(x -> x.canExtract());
@@ -408,6 +414,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 				totalExtracted += extracted;
 				if(!simulate) {
 					energyStored -= extracted;
+					energyOutput += extracted;
 				}
 				if(extracted == maxExtract) {
 					break;
@@ -429,6 +436,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 				totalReceived += received;
 				if(!simulate) {
 					energyStored += received;
+					energyInput += received;
 				}
 				if(totalReceived == maxReceive) {
 					break;
@@ -447,5 +455,14 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	public boolean canReceive() {
 		return canReceive;
 	}
+	
+	@Override
+	public double getEnergyInput() {
+		return energyInput;
+	}
 
+	@Override
+	public double getEnergyOutput() {
+		return energyOutput;
+	}
 }
