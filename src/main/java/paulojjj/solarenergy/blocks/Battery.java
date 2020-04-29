@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.blocks;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -81,8 +82,8 @@ public class Battery extends BlockDirectional {
 		ItemStack stack = drops.iterator().next();
 		NBTTagCompound nbt = new NBTTagCompound();
 		stack.setTagCompound(nbt);
-		nbt.setDouble("energy", te.getEnergy());
-		nbt.setDouble("capacity", te.getCapacity());
+		nbt.setDouble("energy", te.getEnergyStored());
+		nbt.setDouble("maxEnergy", te.getMaxUltraEnergyStored());
 	}
 
 	@Override
@@ -92,18 +93,13 @@ public class Battery extends BlockDirectional {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null) {
 			double energy = stack.getTagCompound().getDouble("energy");
-			double capacity = stack.getTagCompound().getDouble("capacity");
+			double maxEnergy = stack.getTagCompound().getDouble("maxEnergy");
 			BatteryTileEntity te = (BatteryTileEntity)worldIn.getTileEntity(pos);
-			te.setEnergy(energy);
-			te.setCapacity(capacity);
+			te.setUltraEnergyStored(energy);
+			te.setMaxUltraEnergyStored(maxEnergy);
 		}
 		worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()));
 	}	
-
-	@Override
-	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
-		super.onNeighborChange(world, pos, neighbor);
-	}
 
 	/*	@Override
 	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
@@ -124,6 +120,14 @@ public class Battery extends BlockDirectional {
 			return true;
 		}
 		return GuiHandler.openGui(playerIn, worldIn, GUI.BATTERY, pos);
+	}
+	
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		if(!worldIn.isRemote) {
+			BatteryTileEntity tileEntity = (BatteryTileEntity)worldIn.getTileEntity(pos);
+			tileEntity.onNeighborChanged(fromPos);
+		}
 	}
 
 	@Override

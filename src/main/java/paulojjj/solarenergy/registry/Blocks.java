@@ -5,7 +5,6 @@ import net.minecraft.item.ItemBlock;
 import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.blocks.BatteryItemBlock;
-import paulojjj.solarenergy.blocks.SolarGenerator;
 import paulojjj.solarenergy.blocks.SolarGeneratorItemBlock;
 
 public enum Blocks {

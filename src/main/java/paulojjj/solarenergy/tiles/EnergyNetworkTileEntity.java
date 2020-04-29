@@ -20,7 +20,8 @@ import paulojjj.solarenergy.networks.INetworkMember;
 public abstract class EnergyNetworkTileEntity extends TileEntity implements INetworkMember, ITickable {
 
 	protected double energy = 0;
-	private CapabilityDelegate delegate = new CapabilityDelegate(getNetwork());
+	protected double maxEnergy = 0;
+	protected CapabilityDelegate delegate = new CapabilityDelegate(getNetwork());
 	private INetwork<EnergyNetworkTileEntity> network = null;
 
 	private Set<EntityPlayer> playersUsing = new HashSet<>();
@@ -154,5 +155,47 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 		if(!world.isRemote) {
 			playersUsing.remove(player);
 		}
+	}
+	
+	@Override
+	public double extractUltraEnergy(double maxExtract, boolean simulate) {
+		if(energy == 0 || !canExtract()) {
+			return 0;
+		}
+		double sent = Math.min(maxExtract, energy);
+		if(!simulate) {
+			energy -= sent;
+		}
+		return sent;
+	}
+
+	@Override
+	public double receiveUltraEnergy(double maxReceive, boolean simulate) {
+		if(maxEnergy == 0 || energy == maxEnergy || !canReceive()) {
+			return 0;
+		}
+		double received = Math.min(maxReceive, maxEnergy - energy);
+		if(!simulate) {
+			energy += received;
+		}
+		return received;
+	}
+
+	@Override
+	public double getUltraEnergyStored() {
+		return energy;
+	}
+
+	public void setUltraEnergyStored(double value) {
+		energy = value;
+	}
+
+	@Override
+	public double getMaxUltraEnergyStored() {
+		return maxEnergy;
+	}
+
+	public void setMaxUltraEnergyStored(double value) {
+		maxEnergy = value;
 	}
 }

@@ -31,8 +31,8 @@ public class BatteryItemBlock extends ItemBlock {
 		}
 		else {
 			BatteryTileEntity te = (BatteryTileEntity)this.getBlock().createTileEntity(worldIn, this.getBlock().getDefaultState());
-			energy = te.getEnergy();
-			capacity = te.getCapacity();
+			energy = te.getUltraEnergyStored();
+			capacity = te.getMaxUltraEnergyStored();
 		}
 		tooltip.add(String.format("%s: %s", I18n.format(Main.MODID + ".stored_energy"), EnergyFormatter.format(energy)));
 		tooltip.add(String.format("%s: %s", I18n.format(Main.MODID + ".capacity"), EnergyFormatter.format(capacity)));

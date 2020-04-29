@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	private Set<T> tiles = new HashSet<>();
 	private Map<T, Set<IEnergyStorage>> consumers = new HashMap<>();
+	private Map<T, Set<IEnergyStorage>> producers = new HashMap<>();
 
 	protected World world;
 
@@ -39,9 +41,12 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	private boolean canReceive = false;
 	private boolean canExtract = false;
 
+	private double receivedSinceLastTick = 0;
+	private double sentSinceLastTick = 0;
+
 	private double energyInput = 0;
 	private double energyOutput = 0;
-
+	
 	protected long lastUpdatedTick = 0;
 
 	ReentrantLock lock = new ReentrantLock();
@@ -80,10 +85,11 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return this;
 	}
 
-	protected INetwork<T> init(Set<T> tiles, Map<T, Set<IEnergyStorage>> consumers) {
+	protected INetwork<T> init(Set<T> tiles, Map<T, Set<IEnergyStorage>> consumers, Map<T, Set<IEnergyStorage>> producers) {
 		world = tiles.iterator().next().getWorld();
 		this.tiles.addAll(tiles);
 		this.consumers.putAll(consumers);
+		this.producers.putAll(producers);
 		for(T tile : tiles) {
 			tile.setNetwork(this);
 		}
@@ -138,6 +144,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 
 		updateConsumers();
+		updateProducers();
 
 		if(tiles.isEmpty()) {
 			destroy();
@@ -150,20 +157,30 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected TileEntity getTileEntity(BlockPos pos) {
 		return world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
 	}
-
-	protected Set<IEnergyStorage> getConsumers(TileEntity tileEntity) {
+	
+	protected Set<IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, EnumFacing,  Boolean> canAdd) {
 		BlockPos pos = tileEntity.getPos();
-		Set<IEnergyStorage> consumers = new HashSet<>();
+		Set<IEnergyStorage> storages = new HashSet<>();
 		for(EnumFacing facing : EnumFacing.values()) {
 			TileEntity tile = getTileEntity(pos.offset(facing));
 			if(tile != null && !tile.getClass().equals(tileEntity.getClass()) && tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
 				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
-				consumers.add(energyStorage);
+				if(canAdd.apply(energyStorage, facing)) {
+					storages.add(energyStorage);
+				}
 			}
 		}
-		return consumers;
+		return storages;
 	}
 
+	protected Set<IEnergyStorage> getConsumers(TileEntity tileEntity) {
+		return getNeighborStorages(tileEntity, (s, f) -> s.canReceive());
+	}
+
+	protected Set<IEnergyStorage> getProducers(TileEntity tileEntity) {
+		return getNeighborStorages(tileEntity, (s, f) -> s.canExtract());
+	}
+	
 	protected Set<IEnergyStorage> getOrCreateConsumerSet(T tile) {
 		Set<IEnergyStorage> tc = consumers.get(tile);
 		if(tc == null) {
@@ -173,6 +190,15 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return tc;
 	}
 
+	protected Set<IEnergyStorage> getOrCreateProducerSet(T tile) {
+		Set<IEnergyStorage> tc = producers.get(tile);
+		if(tc == null) {
+			tc = new HashSet<>();
+			producers.put(tile, tc);
+		}
+		return tc;
+	}
+	
 	protected void updateConsumers() {
 		consumers.clear();
 		for(T tile : tiles) {
@@ -181,6 +207,14 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 	}
 
+	protected void updateProducers() {
+		producers.clear();
+		for(T tile : tiles) {
+			Set<IEnergyStorage> tileProducers = getProducers(tile);
+			producers.put(tile, tileProducers);
+		}
+	}
+	
 	protected void addTile(T tile) {
 		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
@@ -188,6 +222,16 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		Main.logger.info("Adding tile at " + tile.getPos() + " to network " + this);
 		tiles.add(tile);
 		tile.setNetwork(this);
+		
+		Set<IEnergyStorage> storages = getConsumers(tile);
+		if(!storages.isEmpty()) {
+			consumers.put(tile, storages);
+		}
+		storages = getProducers(tile);
+		if(!storages.isEmpty()) {
+			producers.put(tile, storages);
+		}
+		
 		Set<T> neighbors = getNeighbors(tile);
 		for(T neighbor : neighbors) {
 			INetwork<?> neighborNetwork = neighbor.getNetwork();
@@ -257,8 +301,12 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	@Override
 	public void onNeighborChanged(T source, BlockPos neighborPos) {
 		consumers.remove(source);
+		producers.remove(source);
 		for(IEnergyStorage consumer : getConsumers(source)) {
 			getOrCreateConsumerSet(source).add(consumer);
+		}
+		for(IEnergyStorage producer : getProducers(source)) {
+			getOrCreateProducerSet(source).add(producer);
 		}
 	}
 
@@ -266,13 +314,17 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		Main.logger.info("Splitting network " + this);
 		try {
 			Map<T, Set<IEnergyStorage>> newNetworkConsumers = new HashMap<>();
+			Map<T, Set<IEnergyStorage>> newNetworkProducers = new HashMap<>();
 			for(T tile : newNetworkTiles) {
 				if(consumers.containsKey(tile)) {
 					newNetworkConsumers.put(tile, consumers.get(tile));
 				}
+				if(producers.containsKey(tile)) {
+					newNetworkProducers.put(tile, producers.get(tile));
+				}
 			}
 			@SuppressWarnings("unchecked")
-			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkConsumers);
+			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkConsumers, newNetworkProducers);
 			tiles.removeAll(newNetwork.getTiles());
 			Main.logger.info("Network tiles: " + this);
 			Main.logger.info("Network created: " + newNetwork);
@@ -320,10 +372,15 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 			}
 		}
 	}
+	
+	public EnumFacing[] getPossibleNeighborsPositions(T tile) {
+		return EnumFacing.VALUES;
+		
+	}
 
 	Set<T> getNeighbors(T tile) {
 		Set<T> neighbors = new HashSet<>();
-		for(EnumFacing facing : EnumFacing.HORIZONTALS) {
+		for(EnumFacing facing : getPossibleNeighborsPositions(tile)) {
 			BlockPos neighborPos = tile.getPos().offset(facing);
 			T neighbor = as(getTileClass(), getTileEntity(neighborPos));
 			if(neighbor != null && canAdd(tile)) {
@@ -360,15 +417,18 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		synchronized(this) {
 			lastUpdatedTick = CommonProxy.getTick();
 
-			energyInput = 0;
-			energyOutput = 0;
-
 			energyStored = tiles.stream().map(x -> x.getUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			maxEnergyStored = tiles.stream().map(x -> x.getMaxUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			canExtract = tiles.stream().anyMatch(x -> x.canExtract());
 			canReceive = tiles.stream().anyMatch(x -> x.canReceive());
 
 			sendEnergyToConsumers();
+			extractEnergyFromProducers();
+			
+			energyOutput = sentSinceLastTick;
+			energyInput = receivedSinceLastTick;
+			receivedSinceLastTick = 0;
+			sentSinceLastTick = 0;
 		}
 	}
 
@@ -438,6 +498,39 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 	}
 
+	double extractEnergy(IEnergyStorage producer, double maxExtract) {
+		if(producer instanceof IUltraEnergyStorage) {
+			return (int)extractEnergy((IUltraEnergyStorage)producer, maxExtract);
+		}
+		int maxExtractInt = (int)Math.min(Integer.MAX_VALUE, maxExtract);
+		double received = producer.extractEnergy(maxExtractInt, false);
+		if(received == 0) {
+			return 0;
+		}
+		return receiveEnergy((int)received, false);
+	}
+
+	double extractEnergy(IUltraEnergyStorage producer, double maxExtract) {
+		double received = producer.receiveUltraEnergy(maxExtract, false);
+		System.out.println("Received " + received + " energy");
+		if(received == 0) {
+			return 0;
+		}
+		return extractUltraEnergy(received, false);
+	}
+
+	protected void extractEnergyFromProducers() {
+		Collection<Set<IEnergyStorage>> producersSets = this.producers.values();
+		Collection<IEnergyStorage> producers = new ArrayList<>();
+		for(Set<IEnergyStorage> producersSet : producersSets) {
+			producers.addAll(producersSet);
+		}
+		
+		for(IEnergyStorage producer : producers) {
+			double maxExtract = getMaxUltraEnergyStored() - getEnergyStored();
+			extractEnergy(producer, maxExtract);
+		}
+	}
 
 	@Override
 	public String toString() {
@@ -472,7 +565,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 				totalExtracted += extracted;
 				if(!simulate) {
 					energyStored -= extracted;
-					energyOutput += extracted;
+					sentSinceLastTick += extracted;
 				}
 				if(extracted == maxExtract) {
 					break;
@@ -494,7 +587,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 				totalReceived += received;
 				if(!simulate) {
 					energyStored += received;
-					energyInput += received;
+					receivedSinceLastTick += received;
 				}
 				if(totalReceived == maxReceive) {
 					break;

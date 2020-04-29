@@ -15,11 +15,8 @@ import paulojjj.solarenergy.tiles.BatteryTileEntity;
 @SideOnly(Side.CLIENT)
 public class BatteryGui extends GuiContainer {
 	
-	private BatteryTileEntity tileEntity;
-	
 	public BatteryGui(EntityPlayer player, BatteryTileEntity tileEntity) {
 		super(new BatteryContainer(tileEntity, player));
-		this.tileEntity = tileEntity;
 	}
 
 	private static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/battery_gui.png");
@@ -28,6 +25,8 @@ public class BatteryGui extends GuiContainer {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
+		
+		BatteryContainer container = (BatteryContainer)inventorySlots;
 		
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         mc.getTextureManager().bindTexture(ASSET_RESOURCE);
@@ -41,7 +40,7 @@ public class BatteryGui extends GuiContainer {
         int gaugeMarginX = marginHorizontal + 7;
         int gaugeMarginY = marginVertical + 14;
         
-        double gaugeLevel = tileEntity.getEnergy() / tileEntity.getCapacity();
+        double gaugeLevel = container.getEnergy() / container.getMaxEnergy();
         int gaugeRectTop = (int)(gaugeMarginY + (1 - gaugeLevel) * GAUGE_HEIGHT);
         if(gaugeLevel > 0) {
         	drawRect(gaugeMarginX, gaugeRectTop, gaugeMarginX + GAUGE_WIDTH, gaugeMarginY + GAUGE_HEIGHT, 0x7000d0ff);
@@ -51,12 +50,14 @@ public class BatteryGui extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+		
+		BatteryContainer container = (BatteryContainer)inventorySlots;
 
 		String text = "";
-		text += EnergyFormatter.format(tileEntity.getEnergy());
-		text += "/" + EnergyFormatter.format(tileEntity.getCapacity());
+		text += EnergyFormatter.format(container.getEnergy());
+		text += "/" + EnergyFormatter.format(container.getMaxEnergy());
         fontRenderer.drawString(text, 50, 60, 0x202020);
-        fontRenderer.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(tileEntity.getInputRate()) + "/t", 50, 80, 0x202020);
-        fontRenderer.drawString(I18n.format("solarenergy.out") + ": " + EnergyFormatter.format(tileEntity.getOutputRate()) + "/t", 50, 90, 0x202020);
+        fontRenderer.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(container.getInput()) + "/t", 50, 80, 0x202020);
+        fontRenderer.drawString(I18n.format("solarenergy.out") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 50, 90, 0x202020);
 	}
 }
