@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.networks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +19,6 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 import paulojjj.solarenergy.Main;
-import paulojjj.solarenergy.blocks.SolarGenerator;
 import paulojjj.solarenergy.proxy.CommonProxy;
 
 public abstract class BaseNetwork<T extends TileEntity & INetworkMember> implements INetwork<T> {
@@ -26,7 +26,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected boolean valid = true;
 
 	private Set<T> tiles = new HashSet<>();
-	private Map<T, IEnergyStorage> consumers = new HashMap<>();
+	private Map<T, Set<IEnergyStorage>> consumers = new HashMap<>();
 
 	protected World world;
 
@@ -39,7 +39,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	private double energyInput = 0;
 	private double energyOutput = 0;
-	
+
 	protected long lastUpdatedTick = 0;
 
 	ReentrantLock lock = new ReentrantLock();
@@ -78,7 +78,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return this;
 	}
 
-	protected INetwork<T> init(Set<T> tiles, Map<T, IEnergyStorage> consumers) {
+	protected INetwork<T> init(Set<T> tiles, Map<T, Set<IEnergyStorage>> consumers) {
 		world = tiles.iterator().next().getWorld();
 		this.tiles.addAll(tiles);
 		this.consumers.putAll(consumers);
@@ -155,12 +155,21 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return consumers;
 	}
 
+	protected Set<IEnergyStorage> getOrCreateConsumerSet(T tile) {
+		Set<IEnergyStorage> tc = consumers.get(tile);
+		if(tc == null) {
+			tc = new HashSet<>();
+			consumers.put(tile, tc);
+		}
+		return tc;
+	}
+
 	protected void updateConsumers() {
 		consumers.clear();
 		for(T tile : tiles) {
 			Set<IEnergyStorage> tileConsumers = getConsumers(tile);
 			for(IEnergyStorage tileConsumer : tileConsumers) {
-				consumers.put(tile, tileConsumer);
+				getOrCreateConsumerSet(tile).add(tileConsumer);
 			}
 		}
 	}
@@ -207,16 +216,18 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	public void onNeighborChanged(T source, BlockPos neighborPos) {
 		consumers.remove(source);
 		for(IEnergyStorage consumer : getConsumers(source)) {
-			consumers.put(source, consumer);
+			getOrCreateConsumerSet(source).add(consumer);
 		}
 	}
 
 	protected INetwork<T> split(Set<T> newNetworkTiles) {
 		Main.logger.info("Splitting network " + this);
 		try {
-			Map<T, IEnergyStorage> newNetworkConsumers = new HashMap<>();
+			Map<T, Set<IEnergyStorage>> newNetworkConsumers = new HashMap<>();
 			for(T tile : newNetworkTiles) {
-				newNetworkConsumers.put(tile, consumers.get(tile));
+				if(consumers.containsKey(tile)) {
+					newNetworkConsumers.put(tile, consumers.get(tile));
+				}
 			}
 			@SuppressWarnings("unchecked")
 			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkConsumers);
@@ -306,7 +317,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 			energyInput = 0;
 			energyOutput = 0;
-			
+
 			energyStored = tiles.stream().map(x -> x.getUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			maxEnergyStored = tiles.stream().map(x -> x.getMaxUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			canExtract = tiles.stream().anyMatch(x -> x.canExtract());
@@ -338,10 +349,12 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected void sendEnergyToConsumers() {
-		Collection<IEnergyStorage> consumers = this.consumers.values();
-		if(consumers.size() == 0) {
-			return;
+		Collection<Set<IEnergyStorage>> consumersSets = this.consumers.values();
+		Collection<IEnergyStorage> consumers = new ArrayList<>();
+		for(Set<IEnergyStorage> consumersSet : consumersSets) {
+			consumers.addAll(consumersSet);
 		}
+		
 		Map<IEnergyStorage, Double> mapWeights = new HashMap<>();
 
 		//Calculate weights, used to simulate energy consumer priority
@@ -455,7 +468,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	public boolean canReceive() {
 		return canReceive;
 	}
-	
+
 	@Override
 	public double getEnergyInput() {
 		return energyInput;

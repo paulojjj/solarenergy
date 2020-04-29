@@ -1,5 +1,7 @@
 package paulojjj.solarenergy.tiles;
 
+import java.util.stream.Collectors;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import paulojjj.solarenergy.IEnergyProducer;
@@ -25,6 +27,21 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		this.tier = tier;
 		production = (int) Math.pow(10, tier.ordinal());
 		markDirty();
+	}
+
+	public static class SolarGeneratorContainerUpdateMessage {
+		public double production;
+		public double output;
+
+		public SolarGeneratorContainerUpdateMessage() {
+		}
+
+		public SolarGeneratorContainerUpdateMessage(double production,
+				double output) {
+			super();
+			this.production = production;
+			this.output = output;
+		}
 	}
 
 	@Override
@@ -79,29 +96,6 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		if(energy < getMaxUltraEnergyStored()) {
 			energy += Math.min(production, getMaxUltraEnergyStored() - energy);
 		}
-
-/*		for(EnumFacing facing : EnumFacing.values()) {
-			if(facing != EnumFacing.UP) {
-				TileEntity tile = world.getTileEntity(getPos().offset(facing));
-				if(tile != null && !tile.getClass().equals(SolarGenerator.class) && tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
-					IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
-					if(energyStorage.canReceive()) {
-						double maxExtract = getNetwork().getUltraEnergyStored();
-						if(maxExtract == 0) {
-							break;
-						}
-						if(energyStorage instanceof IUltraEnergyStorage) {
-							getNetwork().extractUltraEnergy(((IUltraEnergyStorage)energyStorage).receiveUltraEnergy(maxExtract, false), false);
-						}
-						else {
-							int maxExtractInt = (int)Math.min(maxExtract, Integer.MAX_VALUE);
-							getNetwork().extractEnergy(energyStorage.receiveEnergy(maxExtractInt, false), false);
-						}
-					}
-				}
-			}
-		}
- */
 	}
 
 	@Override
@@ -127,6 +121,13 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public Class<?> getNetworkClass() {
 		return SolarGeneratorNetwork.class;
+	}
+
+	@Override
+	protected Object getContainerUpdateMessage() {
+		double output = getNetwork().getEnergyOutput();
+		double production = getNetwork().getTiles().stream().map(x -> ((SolarGeneratorTileEntity)x).getProduction()).collect(Collectors.summingDouble(x -> x));
+		return new SolarGeneratorContainerUpdateMessage(production, output);
 	}
 
 }

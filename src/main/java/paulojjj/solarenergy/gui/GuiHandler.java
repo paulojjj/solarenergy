@@ -7,7 +7,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.containers.BatteryContainer;
+import paulojjj.solarenergy.containers.SolarGeneratorContainer;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
+import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class GuiHandler implements IGuiHandler {
 	
@@ -32,10 +34,12 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tileEntity = (BatteryTileEntity)world.getTileEntity(new BlockPos(x, y, z));
+		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		switch(GUI.of(ID)) {
 		case BATTERY:
-			return new BatteryContainer((BatteryTileEntity)tileEntity, player.inventory);
+			return new BatteryContainer((BatteryTileEntity)tileEntity, player);
+		case SOLAR_GENERATOR:
+			return new SolarGeneratorContainer((SolarGeneratorTileEntity)tileEntity, player);
 		default:
 			return null;
 		}
@@ -43,10 +47,12 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tileEntity = (BatteryTileEntity)world.getTileEntity(new BlockPos(x, y, z));
+		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		switch(GUI.of(ID)) {
 		case BATTERY:
-			return new BatteryGui(player.inventory, (BatteryTileEntity)tileEntity);
+			return new BatteryGui(player, (BatteryTileEntity)tileEntity);
+		case SOLAR_GENERATOR:
+			return new SolarGeneratorGui(player, (SolarGeneratorTileEntity)tileEntity);
 		default:
 			return null;
 		}

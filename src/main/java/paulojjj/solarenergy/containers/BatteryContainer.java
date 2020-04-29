@@ -1,7 +1,6 @@
 package paulojjj.solarenergy.containers;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
@@ -10,10 +9,10 @@ public class BatteryContainer extends Container {
 	private BatteryTileEntity tileEntity;
 	
 	
-	public BatteryContainer(BatteryTileEntity tileEntity, InventoryPlayer playerInventory) {
+	public BatteryContainer(BatteryTileEntity tileEntity, EntityPlayer player) {
 		super();
 		this.tileEntity = tileEntity;
-		tileEntity.onContainerOpened(playerInventory.player);
+		tileEntity.onContainerOpened(player);
 	}
 
 	@Override
