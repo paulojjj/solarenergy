@@ -1,6 +1,7 @@
 package paulojjj.solarenergy.networks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -115,15 +117,17 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 					break;
 				}
 				else {
-					orphans.remove(nextOrphan);
+					it.remove();
 				}
 			}
 			if(nextOrphan == null) {
 				break;
 			}
 			Set<T> newNetworkTiles = scanConnected(nextOrphan);
-			INetwork<T> newNetwork = split(newNetworkTiles);
-			orphans.removeAll(newNetwork.getTiles());
+			if(newNetworkTiles.size() > 0) {
+				INetwork<T> newNetwork = split(newNetworkTiles);
+				orphans.removeAll(newNetwork.getTiles());
+			}
 		}
 
 		//Check new added
@@ -141,12 +145,17 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 		return;
 	}
+	
+	//World.getTileEntity in unloaded chunks triggers TileEntity.onLoad
+	protected TileEntity getTileEntity(BlockPos pos) {
+		return world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
+	}
 
 	protected Set<IEnergyStorage> getConsumers(TileEntity tileEntity) {
 		BlockPos pos = tileEntity.getPos();
 		Set<IEnergyStorage> consumers = new HashSet<>();
 		for(EnumFacing facing : EnumFacing.values()) {
-			TileEntity tile = world.getTileEntity(pos.offset(facing));
+			TileEntity tile = getTileEntity(pos.offset(facing));
 			if(tile != null && !tile.getClass().equals(tileEntity.getClass()) && tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
 				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
 				consumers.add(energyStorage);
@@ -168,14 +177,12 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		consumers.clear();
 		for(T tile : tiles) {
 			Set<IEnergyStorage> tileConsumers = getConsumers(tile);
-			for(IEnergyStorage tileConsumer : tileConsumers) {
-				getOrCreateConsumerSet(tile).add(tileConsumer);
-			}
+			consumers.put(tile, tileConsumers);
 		}
 	}
 
 	protected void addTile(T tile) {
-		if(tile == null || !canAdd(tile)) {
+		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
 		}
 		Main.logger.info("Adding tile at " + tile.getPos() + " to network " + this);
@@ -200,16 +207,51 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		Main.logger.info("Final network " + this);
 		network.destroy();
 	}
-
-	@Override
-	public void onBlockRemoved(T tile) {
-		tiles.remove(tile);
-		tile.setNetwork(null);
+	
+	protected void removeTiles(Collection<T> tilesRemoved) {
+		tiles.removeAll(tilesRemoved);
+		for(T tile : tilesRemoved) {
+			tile.setNetwork(null);
+		}
 		if(tiles.isEmpty()) {
 			destroy();
 			return;
 		}
 		updateNetwork(tiles.iterator().next());
+	}
+
+	@Override
+	public void onBlockRemoved(T tile) {
+		removeTiles(Arrays.asList(tile));
+	}
+	
+	public Set<T> getTilesInChunk(ChunkPos chunkPos) {
+		int chunkX = chunkPos.x;
+		int chunkZ = chunkPos.z;
+		
+		Set<T> tilesInChunk = new HashSet<>();
+		for(T tile : getTiles()) {
+			BlockPos pos = tile.getPos();
+			int tileChunkX = pos.getX() >> 4; 
+			int tileChunkZ = pos.getZ() >> 4; 
+			if(tileChunkX == chunkX && tileChunkZ == chunkZ) {
+				tilesInChunk.add(tile);
+			}
+		}
+		return tilesInChunk;
+	}
+	
+	@Override
+	public void onChunkUnload(BlockPos pos) {
+		//world.getChunkFromBlockCoords triggers chunk load
+		ChunkPos chunkPos = new ChunkPos(pos);
+		Set<T> tilesInChunk = new HashSet<>();
+		Main.logger.info("Chunk  " + chunkPos + "unloaded");
+		tilesInChunk = getTilesInChunk(chunkPos);
+		if(tilesInChunk.size() == 0) {
+			return;
+		}
+		removeTiles(tilesInChunk);
 	}
 
 	@Override
@@ -249,6 +291,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	protected Set<T> scanConnected(T initialTile) {
 		Main.logger.info("Scanning connected tiles for " + initialTile.getPos());
+		long start = System.nanoTime();
 		Set<T> scanned = new HashSet<>();
 		Set<T> connected = new HashSet<>();
 		if(canAdd(initialTile)) {
@@ -257,12 +300,14 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		scanned.add(initialTile);
 		scanNeighbors(initialTile, connected, scanned);
 
-		Main.logger.info("Scanning returned " + connected);
+		double nanos = System.nanoTime() - start;
+		double ms = nanos / 1000000.0;
+		Main.logger.info(String.format("Scanning returned %d tiles in %.3fms", connected.size(), ms));
 		return connected;
 	}
 
 	protected void scanNeighbors(T tile, Set<T> connected, Set<T> scanned) {
-		if(canAdd(tile) && ! scanned.contains(tile)) {
+		if(canAdd(tile) && !scanned.contains(tile)) {
 			connected.add(tile);
 			scanned.add(tile);
 		}
@@ -280,7 +325,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		Set<T> neighbors = new HashSet<>();
 		for(EnumFacing facing : EnumFacing.HORIZONTALS) {
 			BlockPos neighborPos = tile.getPos().offset(facing);
-			T neighbor = as(getTileClass(), world.getTileEntity(neighborPos));
+			T neighbor = as(getTileClass(), getTileEntity(neighborPos));
 			if(neighbor != null && canAdd(tile)) {
 				neighbors.add(neighbor);
 			}
@@ -396,7 +441,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	@Override
 	public String toString() {
-		return super.toString() + "[size=" + tiles.size() + ", tiles=" + tiles + "]";
+		return super.toString() + "[size=" + tiles.size() + "]";
 	}
 
 	void forEachTile(Consumer<T> consumer) {

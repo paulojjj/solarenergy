@@ -86,7 +86,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public void update() {
 		super.update();
-		if(world.isRemote) {
+		if(world.isRemote || !world.isBlockLoaded(pos)) {
 			return;
 		}
 		if(!world.isDaytime() || !world.canSeeSky(getPos().offset(EnumFacing.UP))) {
@@ -115,7 +115,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	@Override
 	public String toString() {
-		return "SolarGeneratorTileEntity [position=" + pos + "]";
+		return super.toString() + " [position=" + pos + "]";
 	}
 
 	@Override

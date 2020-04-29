@@ -11,6 +11,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
+import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.net.PacketManager;
 import paulojjj.solarenergy.networks.CapabilityDelegate;
 import paulojjj.solarenergy.networks.INetwork;
@@ -26,15 +27,17 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 
 	public abstract Class<?> getNetworkClass();
 
+	private boolean unloaded = false;
+
 	public static class EnergyNetworkContainerUpdateMessage {
 		public double energyStored;
 		public double maxEnergyStored;
 		public double input;
 		public double output;
-		
+
 		public EnergyNetworkContainerUpdateMessage() {
 		}
-		
+
 		public EnergyNetworkContainerUpdateMessage(double energyStored, double maxEnergyStored, double input,
 				double output) {
 			super();
@@ -53,6 +56,9 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setNetwork(INetwork<?> network) {
+		if(world.isRemote) {
+			return;
+		}
 		this.network = (INetwork<EnergyNetworkTileEntity>)network;
 		this.delegate.setTarget(network);
 	}
@@ -69,16 +75,18 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if(capability == CapabilityEnergy.ENERGY) {
-			return (T) delegate;
+			return world.isRemote ? (T) this : (T) delegate;
 		}
 		return super.getCapability(capability, facing);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	//World.getTileEntity in unloaded chunks triggers TileEntity.onLoad
 	public void onLoad() {
 		super.onLoad();
 		if(!world.isRemote) {
+			Main.logger.info("TileEntity Loaded: " + this);
 			INetwork.newInstance((Class<INetwork<EnergyNetworkTileEntity>>)getNetworkClass(), this);
 		}
 	}
@@ -87,7 +95,12 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 	public void invalidate() {
 		super.invalidate();
 		if(!world.isRemote) {
-			network.onBlockRemoved(this);
+			if(unloaded) {
+				Main.logger.warn("Invalidating unloaded TileEntity: " + this);
+			}
+			if(!unloaded && network != null) {
+				network.onBlockRemoved(this);
+			}
 		}
 	}
 
@@ -95,7 +108,12 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 	public void onChunkUnload() {
 		super.onChunkUnload();
 		if(!world.isRemote) {
-			network.destroy();
+			if(!unloaded) {
+				unloaded = true;
+				if(network != null) {
+					network.onChunkUnload(pos);
+				}
+			}
 		}
 	}
 
@@ -104,7 +122,7 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 			network.onNeighborChanged(this, neighborPos);
 		}
 	}
-	
+
 	protected Object getContainerUpdateMessage() {
 		double energy = getNetwork().getUltraEnergyStored();
 		double maxEnergy = getNetwork().getMaxUltraEnergyStored();
@@ -115,21 +133,26 @@ public abstract class EnergyNetworkTileEntity extends TileEntity implements INet
 
 	@Override
 	public void update() {
-		if(world.isRemote) {
+		if(world.isRemote || !world.isBlockLoaded(pos)) {
 			return;
 		}
 		for(EntityPlayer player : playersUsing) {
 			PacketManager.sendContainerUpdateMessage((EntityPlayerMP)player, getContainerUpdateMessage());
 		}
-		network.update();
+		if(network != null) {
+			network.update();
+		}
 	}
 
 	public void onContainerOpened(EntityPlayer player) {
-		playersUsing.add(player);
+		if(!world.isRemote) {
+			playersUsing.add(player);
+		}
 	}
 
 	public void onContainerClosed(EntityPlayer player) {
-		playersUsing.remove(player);
+		if(!world.isRemote) {
+			playersUsing.remove(player);
+		}
 	}
-
 }

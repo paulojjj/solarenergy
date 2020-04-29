@@ -30,6 +30,8 @@ public interface INetwork<T extends TileEntity & INetworkMember> extends IUltraE
 	
 	void onNeighborChanged(T source, BlockPos neighborPos);
 	
+	void onChunkUnload(BlockPos pos);
+	
 	void update();
 	
 	double getEnergyInput();

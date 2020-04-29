@@ -85,6 +85,7 @@ public class SolarGenerator extends Block {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		return GuiHandler.openGui(playerIn, worldIn, GUI.SOLAR_GENERATOR, pos);
+		//return false;
 	}
 	
 	@Override
