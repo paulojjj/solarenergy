@@ -5,6 +5,7 @@ import net.minecraft.item.ItemBlock;
 import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.blocks.BatteryItemBlock;
+import paulojjj.solarenergy.blocks.EnergyAssembler;
 import paulojjj.solarenergy.blocks.SolarGeneratorItemBlock;
 
 public enum Blocks {
@@ -20,7 +21,8 @@ public enum Blocks {
 	INTERMEDIATE_BATTERY("intermediate_battery", new BatteryItemBlock(Tier.INTERMEDIATE)),
 	ADVANCED_BATTERY("advanced_battery", new BatteryItemBlock(Tier.ADVANCED)),
 	ELITE_BATTERY("elite_battery", new BatteryItemBlock(Tier.ELITE)),
-	ULTIMATE_BATTERY("ultimate_battery", new BatteryItemBlock(Tier.ULTIMATE));
+	ULTIMATE_BATTERY("ultimate_battery", new BatteryItemBlock(Tier.ULTIMATE)),
+	ENERGY_ASSEMBLER("energy_assembler", new EnergyAssembler());
 	
 	private ItemBlock itemBlock;
 	

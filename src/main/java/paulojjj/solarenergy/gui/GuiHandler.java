@@ -7,14 +7,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.containers.BatteryContainer;
+import paulojjj.solarenergy.containers.EnergyAssemblerContainer;
 import paulojjj.solarenergy.containers.SolarGeneratorContainer;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
+import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class GuiHandler implements IGuiHandler {
 	
 	public enum GUI {
-		BATTERY, SOLAR_GENERATOR;
+		BATTERY, SOLAR_GENERATOR, ENERGY_ASSEMBLER;
 
 		public static GUI of(int id) {
 			if(id > GUI.values().length) {
@@ -40,6 +42,8 @@ public class GuiHandler implements IGuiHandler {
 			return new BatteryContainer((BatteryTileEntity)tileEntity, player);
 		case SOLAR_GENERATOR:
 			return new SolarGeneratorContainer((SolarGeneratorTileEntity)tileEntity, player);
+		case ENERGY_ASSEMBLER:
+			return new EnergyAssemblerContainer((EnergyAssemblerTileEntity)tileEntity, player.inventory);
 		default:
 			return null;
 		}
@@ -53,6 +57,8 @@ public class GuiHandler implements IGuiHandler {
 			return new BatteryGui(player, (BatteryTileEntity)tileEntity);
 		case SOLAR_GENERATOR:
 			return new SolarGeneratorGui(player, (SolarGeneratorTileEntity)tileEntity);
+		case ENERGY_ASSEMBLER:
+			return new EnergyAssemblerGui((EnergyAssemblerTileEntity)tileEntity, player);
 		default:
 			return null;
 		}

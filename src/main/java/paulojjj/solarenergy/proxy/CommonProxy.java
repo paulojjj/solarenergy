@@ -13,6 +13,7 @@ import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.gui.GuiHandler;
 import paulojjj.solarenergy.registry.Blocks;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
+import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class CommonProxy implements Proxy {
@@ -35,8 +36,9 @@ public class CommonProxy implements Proxy {
 		ForgeRegistries.BLOCKS.register(block);
 		ForgeRegistries.ITEMS.register(ib);
 		
-		GameRegistry.registerTileEntity(SolarGeneratorTileEntity.class, new ResourceLocation("solar_generator_tile_entity"));
-		GameRegistry.registerTileEntity(BatteryTileEntity.class, new ResourceLocation("battery_tile_entity"));
+		GameRegistry.registerTileEntity(SolarGeneratorTileEntity.class, new ResourceLocation(Main.MODID, "solar_generator_tile_entity"));
+		GameRegistry.registerTileEntity(BatteryTileEntity.class, new ResourceLocation(Main.MODID,"battery_tile_entity"));
+		GameRegistry.registerTileEntity(EnergyAssemblerTileEntity.class, new ResourceLocation(Main.MODID,"energy_assembler_tile_entity"));
 	}
 
 	@Override

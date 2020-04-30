@@ -22,3 +22,5 @@ tile.intermediate_solar_generator.name=Intermediate Solar Generator
 tile.advanced_solar_generator.name=Advanced Solar Generator
 tile.elite_solar_generator.name=Elite Solar Generator
 tile.ultimate_solar_generator.name=Ultimate Solar Generator
+
+tile.energy_assembler.name=Energy Assembler

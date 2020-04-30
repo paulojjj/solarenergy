@@ -4,9 +4,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import paulojjj.solarenergy.net.IMessageListener;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
-import paulojjj.solarenergy.tiles.EnergyNetworkTileEntity.EnergyNetworkContainerUpdateMessage;
+import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
 
-public class BatteryContainer extends Container implements IMessageListener<EnergyNetworkContainerUpdateMessage> {
+public class BatteryContainer extends Container implements IMessageListener<EnergyStorageContainerUpdateMessage> {
 	
 	private BatteryTileEntity tileEntity;
 	
@@ -34,7 +34,7 @@ public class BatteryContainer extends Container implements IMessageListener<Ener
 	}
 
 	@Override
-	public void onMessage(EnergyNetworkContainerUpdateMessage message) {
+	public void onMessage(EnergyStorageContainerUpdateMessage message) {
 		energy = message.energyStored;
 		maxEnergy = message.maxEnergyStored;
 		input = message.input;

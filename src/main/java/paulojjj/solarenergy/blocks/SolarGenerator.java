@@ -27,9 +27,8 @@ public class SolarGenerator extends Block {
 
 	public SolarGenerator(Tier tier) {
 		super(Material.ROCK);
-		//setResistance(50.0f);
 		setResistance(1.0f);
-		setHardness(4.0f);
+		setHardness(3.5f);
 		this.tier = tier;
 	}
 

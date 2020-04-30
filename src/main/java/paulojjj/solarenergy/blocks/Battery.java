@@ -32,7 +32,7 @@ public class Battery extends BlockDirectional {
 	public Battery(Tier tier) {
 		super(Material.ROCK);
 		setResistance(50.0f);
-		setHardness(4.0f);
+		setHardness(3.5f);
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		this.tier = tier;
 	}

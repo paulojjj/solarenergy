@@ -1,12 +1,12 @@
 package paulojjj.solarenergy.networks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
@@ -29,8 +29,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected boolean valid = true;
 
 	private Set<T> tiles = new HashSet<>();
-	private Map<T, Set<IEnergyStorage>> consumers = new HashMap<>();
-	private Map<T, Set<IEnergyStorage>> producers = new HashMap<>();
+	private Map<T, Map<EnumFacing, IEnergyStorage>> storages = new HashMap<>();
 
 	protected World world;
 
@@ -85,11 +84,10 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return this;
 	}
 
-	protected INetwork<T> init(Set<T> tiles, Map<T, Set<IEnergyStorage>> consumers, Map<T, Set<IEnergyStorage>> producers) {
+	protected INetwork<T> init(Set<T> tiles, Map<T, Map<EnumFacing, IEnergyStorage>> storages) {
 		world = tiles.iterator().next().getWorld();
 		this.tiles.addAll(tiles);
-		this.consumers.putAll(consumers);
-		this.producers.putAll(producers);
+		this.storages.putAll(storages);
 		for(T tile : tiles) {
 			tile.setNetwork(this);
 		}
@@ -143,8 +141,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 			}
 		}
 
-		updateConsumers();
-		updateProducers();
+		updateStorages();
 
 		if(tiles.isEmpty()) {
 			destroy();
@@ -158,63 +155,42 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
 	}
 	
-	protected Set<IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, EnumFacing,  Boolean> canAdd) {
+	protected Map<EnumFacing, IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, EnumFacing,  Boolean> canAdd) {
 		BlockPos pos = tileEntity.getPos();
-		Set<IEnergyStorage> storages = new HashSet<>();
+		Map<EnumFacing, IEnergyStorage> storages = new HashMap<>();
 		for(EnumFacing facing : EnumFacing.values()) {
 			TileEntity tile = getTileEntity(pos.offset(facing));
 			if(tile != null && !tile.getClass().equals(tileEntity.getClass()) && tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
 				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
 				if(canAdd.apply(energyStorage, facing)) {
-					storages.add(energyStorage);
+					storages.put(facing, energyStorage);
 				}
 			}
 		}
 		return storages;
 	}
-
-	protected Set<IEnergyStorage> getConsumers(TileEntity tileEntity) {
-		return getNeighborStorages(tileEntity, (s, f) -> s.canReceive());
+	
+	protected Map<EnumFacing, IEnergyStorage> getStorages(TileEntity tileEntity) {
+		return getNeighborStorages(tileEntity, (s, f) -> true);
 	}
 
-	protected Set<IEnergyStorage> getProducers(TileEntity tileEntity) {
-		return getNeighborStorages(tileEntity, (s, f) -> s.canExtract());
+	protected Map<EnumFacing, IEnergyStorage> getOrCreateStorageMap(T tile) {
+		Map<EnumFacing, IEnergyStorage> storagesMap = storages.get(tile);
+		if(storagesMap == null) {
+			storagesMap = new HashMap<>();
+			storages.put(tile, storagesMap);
+		}
+		return storagesMap;
 	}
 	
-	protected Set<IEnergyStorage> getOrCreateConsumerSet(T tile) {
-		Set<IEnergyStorage> tc = consumers.get(tile);
-		if(tc == null) {
-			tc = new HashSet<>();
-			consumers.put(tile, tc);
-		}
-		return tc;
-	}
-
-	protected Set<IEnergyStorage> getOrCreateProducerSet(T tile) {
-		Set<IEnergyStorage> tc = producers.get(tile);
-		if(tc == null) {
-			tc = new HashSet<>();
-			producers.put(tile, tc);
-		}
-		return tc;
-	}
-	
-	protected void updateConsumers() {
-		consumers.clear();
+	protected void updateStorages() {
+		storages.clear();
 		for(T tile : tiles) {
-			Set<IEnergyStorage> tileConsumers = getConsumers(tile);
-			consumers.put(tile, tileConsumers);
+			Map<EnumFacing, IEnergyStorage> tileStorages = getStorages(tile);
+			storages.put(tile, tileStorages);
 		}
 	}
 
-	protected void updateProducers() {
-		producers.clear();
-		for(T tile : tiles) {
-			Set<IEnergyStorage> tileProducers = getProducers(tile);
-			producers.put(tile, tileProducers);
-		}
-	}
-	
 	protected void addTile(T tile) {
 		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
@@ -223,13 +199,9 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		tiles.add(tile);
 		tile.setNetwork(this);
 		
-		Set<IEnergyStorage> storages = getConsumers(tile);
+		Map<EnumFacing, IEnergyStorage> storages = getStorages(tile);
 		if(!storages.isEmpty()) {
-			consumers.put(tile, storages);
-		}
-		storages = getProducers(tile);
-		if(!storages.isEmpty()) {
-			producers.put(tile, storages);
+			this.storages.put(tile, storages);
 		}
 		
 		Set<T> neighbors = getNeighbors(tile);
@@ -300,31 +272,23 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	@Override
 	public void onNeighborChanged(T source, BlockPos neighborPos) {
-		consumers.remove(source);
-		producers.remove(source);
-		for(IEnergyStorage consumer : getConsumers(source)) {
-			getOrCreateConsumerSet(source).add(consumer);
-		}
-		for(IEnergyStorage producer : getProducers(source)) {
-			getOrCreateProducerSet(source).add(producer);
+		storages.remove(source);
+		for(Entry<EnumFacing, IEnergyStorage> entry : getStorages(source).entrySet()) {
+			getOrCreateStorageMap(source).put(entry.getKey(), entry.getValue());
 		}
 	}
 
 	protected INetwork<T> split(Set<T> newNetworkTiles) {
 		Main.logger.info("Splitting network " + this);
 		try {
-			Map<T, Set<IEnergyStorage>> newNetworkConsumers = new HashMap<>();
-			Map<T, Set<IEnergyStorage>> newNetworkProducers = new HashMap<>();
+			Map<T, Map<EnumFacing, IEnergyStorage>> newNetworkStorages = new HashMap<>();
 			for(T tile : newNetworkTiles) {
-				if(consumers.containsKey(tile)) {
-					newNetworkConsumers.put(tile, consumers.get(tile));
-				}
-				if(producers.containsKey(tile)) {
-					newNetworkProducers.put(tile, producers.get(tile));
+				if(storages.containsKey(tile)) {
+					newNetworkStorages.put(tile, storages.get(tile));
 				}
 			}
 			@SuppressWarnings("unchecked")
-			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkConsumers, newNetworkProducers);
+			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkStorages);
 			tiles.removeAll(newNetwork.getTiles());
 			Main.logger.info("Network tiles: " + this);
 			Main.logger.info("Network created: " + newNetwork);
@@ -452,13 +416,35 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 		return extractUltraEnergy(sent, false);
 	}
-
-	protected void sendEnergyToConsumers() {
-		Collection<Set<IEnergyStorage>> consumersSets = this.consumers.values();
-		Collection<IEnergyStorage> consumers = new ArrayList<>();
-		for(Set<IEnergyStorage> consumersSet : consumersSets) {
-			consumers.addAll(consumersSet);
+	
+	
+	protected static interface TriFunction<T, U, V, R> {
+	    R apply(T t, U u, V v);		
+	}
+	
+	
+	protected Map<EnumFacing, IEnergyStorage> getStorages(TriFunction<T, EnumFacing, IEnergyStorage, Boolean> filter) {
+		Map<EnumFacing, IEnergyStorage> storages = new HashMap<>();
+		for(Entry<T, Map<EnumFacing, IEnergyStorage>> storageEntry : this.storages.entrySet()) {
+			for(Entry<EnumFacing, IEnergyStorage> entry : storageEntry.getValue().entrySet()) {
+				if(filter.apply(storageEntry.getKey(), entry.getKey(), entry.getValue())) {
+					storages.put(entry.getKey(), entry.getValue());
+				}
+			}
 		}
+		return storages;
+	}
+	
+	protected Map<EnumFacing, IEnergyStorage> getConsumers() {
+		return getStorages((t, f, s) -> s.canReceive());
+	}
+
+	protected Map<EnumFacing, IEnergyStorage> getProducers() {
+		return getStorages((t, f, s) -> s.canExtract());
+	}
+	
+	protected void sendEnergyToConsumers() {
+		Collection<IEnergyStorage> consumers = getConsumers().values();
 		
 		Map<IEnergyStorage, Double> mapWeights = new HashMap<>();
 
@@ -520,11 +506,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected void extractEnergyFromProducers() {
-		Collection<Set<IEnergyStorage>> producersSets = this.producers.values();
-		Collection<IEnergyStorage> producers = new ArrayList<>();
-		for(Set<IEnergyStorage> producersSet : producersSets) {
-			producers.addAll(producersSet);
-		}
+		Collection<IEnergyStorage> producers = getProducers().values();
 		
 		for(IEnergyStorage producer : producers) {
 			double maxExtract = getMaxUltraEnergyStored() - getEnergyStored();
