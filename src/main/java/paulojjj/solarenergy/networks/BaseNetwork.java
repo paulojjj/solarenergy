@@ -78,7 +78,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		updateNetwork(initialTile);
 
 		if(tiles.isEmpty()) {
-			destroy();
+			destroy(false);
 		}
 
 		return this;
@@ -196,8 +196,8 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 			return;
 		}
 		Main.logger.info("Adding tile at " + tile.getPos() + " to network " + this);
-		tiles.add(tile);
 		tile.setNetwork(this);
+		tiles.add(tile);
 		
 		Map<EnumFacing, IEnergyStorage> storages = getStorages(tile);
 		if(!storages.isEmpty()) {
@@ -329,7 +329,6 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 		for(T neighbor : getNeighbors(tile)) {
 			if(!scanned.contains(neighbor)) {
-				tiles.add(neighbor);
 				connected.add(neighbor);
 				scanned.add(neighbor);
 				scanNeighbors(neighbor, connected, scanned);
@@ -366,9 +365,15 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	@Override
 	public void destroy() {
+		destroy(true);
+	}
+	
+	public void destroy(boolean log) {
 		tiles.clear();
 		valid = false;
-		Main.logger.info("Network " + this + " destroyed");
+		if(log) {
+			Main.logger.info("Network " + this + " destroyed");
+		}
 	}
 
 	public void update() {

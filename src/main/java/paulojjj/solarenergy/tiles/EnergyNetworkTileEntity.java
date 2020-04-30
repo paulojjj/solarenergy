@@ -96,6 +96,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 
 	@Override
 	public void update() {
+		super.update();
 		if(world.isRemote || !world.isBlockLoaded(pos)) {
 			return;
 		}
