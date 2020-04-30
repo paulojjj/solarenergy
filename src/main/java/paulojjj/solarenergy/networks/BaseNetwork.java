@@ -415,7 +415,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy) {
 		double sent = consumer.receiveUltraEnergy(maxEnergy, false);
-		System.out.println("Sent " + sent + " energy");
+		Main.logger.debug("Sent " + sent + " energy");
 		if(sent == 0) {
 			return 0;
 		}

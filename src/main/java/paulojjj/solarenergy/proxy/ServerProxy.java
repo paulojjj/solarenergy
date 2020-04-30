@@ -15,8 +15,8 @@ public class ServerProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void registerBlocks() {
-		super.registerBlocks();
+	public void registerAssets() {
+		super.registerAssets();
 	}
 
 	@Override

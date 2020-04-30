@@ -12,6 +12,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import paulojjj.solarenergy.blocks.EnergyAssembler;
+import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Blocks;
 
 public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements net.minecraft.util.ITickable {
@@ -104,11 +105,15 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	}
 	
 	protected boolean canAssemble(Item item) {
-		return true;
+		return RecipeHandler.getEnergyAssemblerRecipe(item).isPresent();
 	}
 	
 	protected double getEnergyToAssemble(Item item) {
-		return energyNeeded;
+		return RecipeHandler.getEnergyAssemblerRecipe(item).get().getEnergyNeeded();
+	}
+	
+	protected ItemStack getOutput(Item input) {
+		return RecipeHandler.getEnergyAssemblerRecipe(input).get().getOutput().copy();	
 	}
 	
 	@Override
@@ -140,16 +145,16 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		if(world.isRemote) {
 			return;
 		}
-		if(assemblingItem != null) {
+		if(assemblingItem != null && assemblingItem != ItemStack.EMPTY.getItem()) {
 			//Item ready
 			if(energy >= maxEnergy) {
-				ItemStack stack = new ItemStack(assemblingItem, 1);
+				ItemStack stack = getOutput(assemblingItem);
 				if(itemHandler.insertItem(Slot.OUTPUT.ordinal(), stack, false) == ItemStack.EMPTY) {
 					endAssemble();
 				}
 			}
 		}
-		if(assemblingItem != null) {
+		if(assemblingItem != null && assemblingItem != ItemStack.EMPTY.getItem()) {
 			return;
 		}
 		

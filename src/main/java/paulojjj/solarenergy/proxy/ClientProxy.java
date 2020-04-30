@@ -1,6 +1,7 @@
 package paulojjj.solarenergy.proxy;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,9 +15,19 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerBlock(ItemBlock ib) {
 		super.registerBlock(ib);
-		String id = ib.getBlock().getRegistryName().toString();
+		registerModelResourceLocation(ib);
+	}
+	
+	@Override
+	public void registerItem(Item item) {
+		super.registerItem(item);
+		registerModelResourceLocation(item);
+	}
+	
+	protected void registerModelResourceLocation(Item item) {
+		String id = item.getRegistryName().toString();
 		ModelResourceLocation mrl = new ModelResourceLocation(id, "inventory");
-		ModelLoader.setCustomModelResourceLocation(ib, 0, mrl);
+		ModelLoader.setCustomModelResourceLocation(item, 0, mrl);		
 	}
 	
 	@Override

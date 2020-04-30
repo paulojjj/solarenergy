@@ -24,3 +24,10 @@ tile.elite_solar_generator.name=Elite Solar Generator
 tile.ultimate_solar_generator.name=Ultimate Solar Generator
 
 tile.energy_assembler.name=Energy Assembler
+
+item.basic_energy_core.name=Basic Energy Core
+item.regular_energy_core.name=Regular Energy Core
+item.intermediate_energy_core.name=Intermediate Energy Core
+item.advanced_energy_core.name=Advanced Energy Core
+item.elite_energy_core.name=Elite Energy Core
+item.ultimate_energy_core.name=Ultimate Energy Core

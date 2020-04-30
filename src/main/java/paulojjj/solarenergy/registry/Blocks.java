@@ -26,6 +26,7 @@ public enum Blocks {
 	
 	private ItemBlock itemBlock;
 	
+	
 	Blocks(String name, Block block) {
 		this(name, new ItemBlock(block));
 	}
@@ -37,7 +38,7 @@ public enum Blocks {
 		Block block = itemBlock.getBlock();
 		block.setRegistryName(name);
 		block.setUnlocalizedName(name);
-		block.setCreativeTab(ModCreativeTab.getInstance());		
+		block.setCreativeTab(ModCreativeTab.getInstance());
 	}
 	
 	public ItemBlock getItemBlock() {

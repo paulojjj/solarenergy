@@ -57,8 +57,8 @@ public class EnergyAssemblerGui extends GuiContainer {
 			String text = "";
 			text += EnergyFormatter.format(message.energyStored);
 			text += "/" + EnergyFormatter.format(message.maxEnergyStored);
-			fontRenderer.drawString(text, 60, 25, 0x202020);
-			fontRenderer.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 60, 45, 0x202020);
+			fontRenderer.drawString(text, 52, 27, 0x202020);
+			fontRenderer.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
 		}
 	}
 

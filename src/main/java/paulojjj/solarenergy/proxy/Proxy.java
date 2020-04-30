@@ -6,7 +6,7 @@ public interface Proxy {
 	
 	public void registerHandlers();
 	
-	public void registerBlocks();
+	public void registerAssets();
 	
 	public void registerCommands();
 	

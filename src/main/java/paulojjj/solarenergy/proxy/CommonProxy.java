@@ -1,6 +1,7 @@
 package paulojjj.solarenergy.proxy;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.gui.GuiHandler;
 import paulojjj.solarenergy.registry.Blocks;
+import paulojjj.solarenergy.registry.Items;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
@@ -21,24 +23,28 @@ public class CommonProxy implements Proxy {
 	protected static long tick = 0;	
 	
 	@Override
-	public void registerBlocks() {
+	public void registerAssets() {
 		for(Blocks blocks : Blocks.values()) {
 			registerBlock(blocks.getItemBlock());
 		}
+		for(Items item : Items.values()) {
+			registerItem(item.getItem());
+		}
+
+		GameRegistry.registerTileEntity(SolarGeneratorTileEntity.class, new ResourceLocation(Main.MODID, "solar_generator_tile_entity"));
+		GameRegistry.registerTileEntity(BatteryTileEntity.class, new ResourceLocation(Main.MODID,"battery_tile_entity"));
+		GameRegistry.registerTileEntity(EnergyAssemblerTileEntity.class, new ResourceLocation(Main.MODID,"energy_assembler_tile_entity"));
 	}
 	
 	public void registerBlock(ItemBlock ib) {
-		//SimpleNetworkWrapper wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(null);
-		//wrapper.
-		
 		Block block = ib.getBlock();
 
 		ForgeRegistries.BLOCKS.register(block);
 		ForgeRegistries.ITEMS.register(ib);
-		
-		GameRegistry.registerTileEntity(SolarGeneratorTileEntity.class, new ResourceLocation(Main.MODID, "solar_generator_tile_entity"));
-		GameRegistry.registerTileEntity(BatteryTileEntity.class, new ResourceLocation(Main.MODID,"battery_tile_entity"));
-		GameRegistry.registerTileEntity(EnergyAssemblerTileEntity.class, new ResourceLocation(Main.MODID,"energy_assembler_tile_entity"));
+	}
+	
+	public void registerItem(Item item) {
+		ForgeRegistries.ITEMS.register(item);		
 	}
 
 	@Override
