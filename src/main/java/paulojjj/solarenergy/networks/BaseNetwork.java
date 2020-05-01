@@ -408,10 +408,11 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	double sendEnergy(IEnergyStorage consumer, double maxEnergy) {
-		if(consumer instanceof IUltraEnergyStorage) {
-			return (int)sendEnergy((IUltraEnergyStorage)consumer, maxEnergy);
-		}
+		maxEnergy = Math.min(maxEnergy,  energyStored);
 		int maxEnergyInt = (int)Math.min(Integer.MAX_VALUE, maxEnergy);
+		if(consumer instanceof IUltraEnergyStorage) {
+			return (int)sendEnergy((IUltraEnergyStorage)consumer, maxEnergyInt);
+		}
 		double sent = consumer.receiveEnergy(maxEnergyInt, false);
 		if(sent == 0) {
 			return 0;
@@ -420,6 +421,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy) {
+		maxEnergy = Math.min(maxEnergy,  energyStored);
 		double sent = consumer.receiveUltraEnergy(maxEnergy, false);
 		Log.debug("Sent " + sent + " energy");
 		if(sent == 0) {
@@ -482,6 +484,9 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		for(IEnergyStorage consumer : consumers) {
 			double weight = mapWeights.get(consumer);
 			double energyToSend = Math.floor(energyPerWeight * weight);
+			if(weight > 0 && energyToSend == 0) {
+				energyToSend = 1;
+			}
 			sendEnergy(consumer, energyToSend);
 		}
 		//Send remaining energy to consumers (remaining from rounding)
