@@ -5,7 +5,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
-import paulojjj.solarenergy.Main;
+import paulojjj.solarenergy.Log;
 import paulojjj.solarenergy.networks.CapabilityDelegate;
 import paulojjj.solarenergy.networks.INetwork;
 import paulojjj.solarenergy.networks.INetworkMember;
@@ -49,7 +49,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	public void onLoad() {
 		super.onLoad();
 		if(!world.isRemote) {
-			Main.logger.info("TileEntity Loaded: " + this);
+			Log.info("TileEntity Loaded: " + this);
 			INetwork.newInstance((Class<INetwork<EnergyNetworkTileEntity>>)getNetworkClass(), this);
 		}
 	}
@@ -59,7 +59,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		super.invalidate();
 		if(!world.isRemote) {
 			if(unloaded) {
-				Main.logger.warn("Invalidating unloaded TileEntity: " + this);
+				Log.warn("Invalidating unloaded TileEntity: " + this);
 			}
 			if(!unloaded && network != null) {
 				network.onBlockRemoved(this);

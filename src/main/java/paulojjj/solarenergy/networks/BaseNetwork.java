@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IUltraEnergyStorage;
-import paulojjj.solarenergy.Main;
+import paulojjj.solarenergy.Log;
 import paulojjj.solarenergy.proxy.CommonProxy;
 
 public abstract class BaseNetwork<T extends TileEntity & INetworkMember> implements INetwork<T> {
@@ -195,7 +195,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
 		}
-		Main.logger.info("Adding tile at " + tile.getPos() + " to network " + this);
+		Log.info("Adding tile at " + tile.getPos() + " to network " + this);
 		tile.setNetwork(this);
 		tiles.add(tile);
 		
@@ -215,12 +215,12 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	@SuppressWarnings("unchecked")
 	protected void merge(INetwork<?> network) {
-		Main.logger.info("Merging network " + this + " with " + network);
+		Log.info("Merging network " + this + " with " + network);
 		for(T tile : (Set<T>)network.getTiles()) {
 			tiles.add(tile);
 			tile.setNetwork(this);
 		}
-		Main.logger.info("Final network " + this);
+		Log.info("Final network " + this);
 		network.destroy();
 	}
 	
@@ -262,7 +262,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		//world.getChunkFromBlockCoords triggers chunk load
 		ChunkPos chunkPos = new ChunkPos(pos);
 		Set<T> tilesInChunk = new HashSet<>();
-		Main.logger.info("Chunk  " + chunkPos + "unloaded");
+		Log.info("Chunk  " + chunkPos + "unloaded");
 		tilesInChunk = getTilesInChunk(chunkPos);
 		if(tilesInChunk.size() == 0) {
 			return;
@@ -279,7 +279,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected INetwork<T> split(Set<T> newNetworkTiles) {
-		Main.logger.info("Splitting network " + this);
+		Log.info("Splitting network " + this);
 		try {
 			Map<T, Map<EnumFacing, IEnergyStorage>> newNetworkStorages = new HashMap<>();
 			for(T tile : newNetworkTiles) {
@@ -290,8 +290,8 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 			@SuppressWarnings("unchecked")
 			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkStorages);
 			tiles.removeAll(newNetwork.getTiles());
-			Main.logger.info("Network tiles: " + this);
-			Main.logger.info("Network created: " + newNetwork);
+			Log.info("Network tiles: " + this);
+			Log.info("Network created: " + newNetwork);
 			return newNetwork;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException("Network split error", e);
@@ -306,7 +306,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected Set<T> scanConnected(T initialTile) {
-		Main.logger.info("Scanning connected tiles for " + initialTile.getPos());
+		Log.info("Scanning connected tiles for " + initialTile.getPos());
 		long start = System.nanoTime();
 		Set<T> scanned = new HashSet<>();
 		Set<T> connected = new HashSet<>();
@@ -318,7 +318,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 		double nanos = System.nanoTime() - start;
 		double ms = nanos / 1000000.0;
-		Main.logger.info(String.format("Scanning returned %d tiles in %.3fms", connected.size(), ms));
+		Log.info(String.format("Scanning returned %d tiles in %.3fms", connected.size(), ms));
 		return connected;
 	}
 
@@ -372,7 +372,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		tiles.clear();
 		valid = false;
 		if(log) {
-			Main.logger.info("Network " + this + " destroyed");
+			Log.info("Network " + this + " destroyed");
 		}
 	}
 
@@ -415,7 +415,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy) {
 		double sent = consumer.receiveUltraEnergy(maxEnergy, false);
-		Main.logger.debug("Sent " + sent + " energy");
+		Log.debug("Sent " + sent + " energy");
 		if(sent == 0) {
 			return 0;
 		}

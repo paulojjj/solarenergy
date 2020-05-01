@@ -2,8 +2,6 @@ package paulojjj.solarenergy;
 
 import java.io.File;
 
-import org.apache.logging.log4j.Logger;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.config.Configuration;
@@ -26,8 +24,6 @@ public class Main {
 	public static final String NAME = "Solar Energy";
 	public static final String VERSION = "1.0";
 
-	public static Logger logger;
-
 	public static SoundEvent sound = null;
 	
 	@Instance(value = MODID)
@@ -35,12 +31,10 @@ public class Main {
 	
 	@SidedProxy(clientSide = "paulojjj.solarenergy.proxy.ClientProxy", serverSide = "paulojjj.solarenergy.proxy.CommonProxy")
 	private static CommonProxy proxy;
-
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
-		logger = event.getModLog();
-
 		File configFile = event.getSuggestedConfigurationFile();
 		Configuration cfg = new Configuration(configFile);
 		Config.init(cfg);
