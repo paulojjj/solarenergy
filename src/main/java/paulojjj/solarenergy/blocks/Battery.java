@@ -19,6 +19,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.gui.GuiHandler;
 import paulojjj.solarenergy.gui.GuiHandler.GUI;
@@ -82,8 +83,8 @@ public class Battery extends BlockDirectional {
 		ItemStack stack = drops.iterator().next();
 		NBTTagCompound nbt = new NBTTagCompound();
 		stack.setTagCompound(nbt);
-		nbt.setDouble("energy", te.getEnergyStored());
-		nbt.setDouble("maxEnergy", te.getMaxUltraEnergyStored());
+		nbt.setDouble(NBT.ENERGY, te.getEnergyStored());
+		nbt.setDouble(NBT.MAX_ENERGY, te.getMaxUltraEnergyStored());
 	}
 
 	@Override
@@ -92,8 +93,8 @@ public class Battery extends BlockDirectional {
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null) {
-			double energy = stack.getTagCompound().getDouble("energy");
-			double maxEnergy = stack.getTagCompound().getDouble("maxEnergy");
+			double energy = stack.getTagCompound().getDouble(NBT.ENERGY);
+			double maxEnergy = stack.getTagCompound().getDouble(NBT.MAX_ENERGY);
 			BatteryTileEntity te = (BatteryTileEntity)worldIn.getTileEntity(pos);
 			te.setUltraEnergyStored(energy);
 			te.setMaxUltraEnergyStored(maxEnergy);

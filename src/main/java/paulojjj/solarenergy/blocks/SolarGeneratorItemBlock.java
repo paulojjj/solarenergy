@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
+import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
@@ -36,8 +37,8 @@ public class SolarGeneratorItemBlock extends ItemBlock {
 	public double getDurabilityForDisplay(ItemStack stack) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null) {
-			double energy = nbt.getDouble("energy");
-			double capacity = nbt.getDouble("capacity");
+			double energy = nbt.getDouble(NBT.ENERGY);
+			double capacity = nbt.getDouble(NBT.MAX_ENERGY);
 			return 1 - (energy/capacity);
 		}
 		return super.getDurabilityForDisplay(stack);

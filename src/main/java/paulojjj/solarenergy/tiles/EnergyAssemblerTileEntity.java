@@ -13,6 +13,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import paulojjj.solarenergy.ItemStackHandlerWrapper;
+import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.ItemStackHandlerWrapper.HandlerType;
 import paulojjj.solarenergy.ItemStackHandlerWrapper.SlotType;
 import paulojjj.solarenergy.blocks.EnergyAssembler;
@@ -100,9 +101,9 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		ItemStack stack = new ItemStack(compound.getCompoundTag("AssemblingItem"));
+		ItemStack stack = new ItemStack(compound.getCompoundTag(NBT.ASSEMBLING_ITEM));
 		assemblingItem = stack == ItemStack.EMPTY ? null : stack.getItem();
-		itemHandler.deserializeNBT(compound.getCompoundTag("Inventory"));
+		itemHandler.deserializeNBT(compound.getCompoundTag(NBT.INVENTORY));
 	}
 	
 	@Override
@@ -111,8 +112,8 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		NBTTagCompound itemCompound = new NBTTagCompound();
 		ItemStack stack = assemblingItem == null ? ItemStack.EMPTY : new ItemStack(assemblingItem, 1);
 		stack.writeToNBT(itemCompound);
-		compound.setTag("AssemblingItem", itemCompound);
-		compound.setTag("Inventory", itemHandler.serializeNBT());
+		compound.setTag(NBT.ASSEMBLING_ITEM, itemCompound);
+		compound.setTag(NBT.INVENTORY, itemHandler.serializeNBT());
 		return compound;
 	}
 	

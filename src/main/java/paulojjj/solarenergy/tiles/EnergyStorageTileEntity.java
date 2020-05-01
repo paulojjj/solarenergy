@@ -12,6 +12,7 @@ import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import paulojjj.solarenergy.IUltraEnergyStorage;
+import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.net.PacketManager;
 
 public abstract class EnergyStorageTileEntity extends TileEntity implements IUltraEnergyStorage, ITickable {
@@ -127,15 +128,15 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		energy = compound.getDouble("energy");
-		maxEnergy = compound.getDouble("maxEnergy");
+		energy = compound.getDouble(NBT.ENERGY);
+		maxEnergy = compound.getDouble(NBT.MAX_ENERGY);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound = super.writeToNBT(compound);
-		compound.setDouble("energy", energy);
-		compound.setDouble("maxEnergy", maxEnergy);
+		compound.setDouble(NBT.ENERGY, energy);
+		compound.setDouble(NBT.MAX_ENERGY, maxEnergy);
 		return compound;
 	}
 	

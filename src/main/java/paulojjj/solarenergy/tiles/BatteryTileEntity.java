@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import paulojjj.solarenergy.IUltraEnergyStorage;
+import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.networks.BatteryNetwork;
 
@@ -107,8 +108,8 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		int tierValue = compound.getInteger("tier");
-		energy = compound.getDouble("energy");
+		int tierValue = compound.getInteger(NBT.TIER);
+		energy = compound.getDouble(NBT.ENERGY);
 		Tier tier =  Tier.values()[tierValue];
 		setTier(tier);
 	}
@@ -116,8 +117,8 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound = super.writeToNBT(compound);
-		compound.setInteger("tier", tier.ordinal());
-		compound.setDouble("energy", energy);
+		compound.setInteger(NBT.TIER, tier.ordinal());
+		compound.setDouble(NBT.ENERGY, energy);
 		return compound;
 	}
 

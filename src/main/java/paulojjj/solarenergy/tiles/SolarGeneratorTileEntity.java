@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import paulojjj.solarenergy.IEnergyProducer;
+import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.networks.SolarGeneratorNetwork;
 
@@ -101,7 +102,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		int tierValue = compound.getInteger("tier");
+		int tierValue = compound.getInteger(NBT.TIER);
 		Tier tier =  Tier.values()[tierValue];
 		setTier(tier);
 	}
@@ -109,7 +110,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound = super.writeToNBT(compound);
-		compound.setInteger("tier", tier.ordinal());
+		compound.setInteger(NBT.TIER, tier.ordinal());
 		return compound;
 	}
 
