@@ -11,7 +11,7 @@ public class BatteryNetwork extends BaseNetwork<BatteryTileEntity> {
 	}
 
 	@Override
-	protected Class<BatteryTileEntity> getTileClass() {
+	public Class<BatteryTileEntity> getTileClass() {
 		return BatteryTileEntity.class;
 	}
 

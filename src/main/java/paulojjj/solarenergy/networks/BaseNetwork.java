@@ -33,8 +33,6 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	protected World world;
 
-	protected abstract Class<T> getTileClass();
-
 	private double energyStored = 0;
 	private double maxEnergyStored = 0;
 	private boolean canReceive = false;
@@ -191,6 +189,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void addTile(T tile) {
 		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
@@ -208,20 +207,22 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		for(T neighbor : neighbors) {
 			INetwork<?> neighborNetwork = neighbor.getNetwork();
 			if(neighborNetwork != null && neighborNetwork != this) {
-				merge(neighborNetwork);
+				if(this.getTileClass().equals(neighborNetwork.getTileClass())) {
+					merge((INetwork<T>)neighborNetwork);
+				}
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void merge(INetwork<?> network) {
-		Log.info("Merging network " + this + " with " + network);
-		for(T tile : (Set<T>)network.getTiles()) {
+	protected void merge(INetwork<T> other) {
+		Log.info("Merging network " + this + " with " + other);
+		for(T tile : (Set<T>)other.getTiles()) {
 			tiles.add(tile);
 			tile.setNetwork(this);
+			storages.putAll(other.getStorages());
 		}
 		Log.info("Final network " + this);
-		network.destroy();
+		other.destroy();
 	}
 	
 	protected void removeTiles(Collection<T> tilesRemoved) {
@@ -356,6 +357,11 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	@Override
 	public Set<T> getTiles() {
 		return this.tiles;
+	}
+	
+	@Override
+	public Map<T, Map<EnumFacing, IEnergyStorage>> getStorages() {
+		return storages;
 	}
 
 	@Override

@@ -9,7 +9,7 @@ public class SolarGeneratorNetwork extends BaseNetwork<SolarGeneratorTileEntity>
 	}
 
 	@Override
-	protected Class<SolarGeneratorTileEntity> getTileClass() {
+	public Class<SolarGeneratorTileEntity> getTileClass() {
 		return SolarGeneratorTileEntity.class;
 	}
 	

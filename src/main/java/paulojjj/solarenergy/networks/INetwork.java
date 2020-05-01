@@ -1,9 +1,12 @@
 package paulojjj.solarenergy.networks;
 
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 
 public interface INetwork<T extends TileEntity & INetworkMember> extends IUltraEnergyStorage {
@@ -21,6 +24,8 @@ public interface INetwork<T extends TileEntity & INetworkMember> extends IUltraE
 	INetwork<T> init(T initialTile);
 	
 	Set<T> getTiles();
+	Map<T, Map<EnumFacing, IEnergyStorage>> getStorages();
+	Class<T> getTileClass();
 	
 	boolean isValid();
 	
