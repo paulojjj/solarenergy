@@ -80,7 +80,7 @@ public class EnergyAssembler extends Block {
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 	    EnergyAssemblerTileEntity te = (EnergyAssemblerTileEntity) worldIn.getTileEntity(pos);
-	    IItemHandler itemHandler = te.getItemHandler();
+	    IItemHandler itemHandler = te.getPlayerHandler();
 	    for(int i=0; i<itemHandler.getSlots(); i++) {
 	    	ItemStack is = itemHandler.getStackInSlot(i);
 	    	InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), is);

@@ -17,7 +17,6 @@ public class EnergyAssemblerContainer extends Container implements IMessageListe
 	private EnergyAssemblerTileEntity tileEntity;
 	private int firstPlayerIndex;
 	private int lastPlayerIndex;
-	private int firstOutputIndex;
 	
 	private EnergyStorageContainerUpdateMessage statusMessage;
 
@@ -25,9 +24,8 @@ public class EnergyAssemblerContainer extends Container implements IMessageListe
 		this.tileEntity = tileEntity;
 		this.playerInventory = playerInventory;
 
-		this.addSlotToContainer(new SlotItemHandler(tileEntity.getItemHandler(), 0, 26, 10));
-		firstOutputIndex = inventorySlots.size();;
-		this.addSlotToContainer(new SlotItemHandler(tileEntity.getItemHandler(), 1, 26, 59));
+		this.addSlotToContainer(new SlotItemHandler(tileEntity.getPlayerHandler(), 0, 26, 10));
+		this.addSlotToContainer(new SlotItemHandler(tileEntity.getPlayerHandler(), 1, 26, 59));
 		
 		firstPlayerIndex = inventorySlots.size();
 		addPlayerSlots(playerInventory);
@@ -79,7 +77,7 @@ public class EnergyAssemblerContainer extends Container implements IMessageListe
 					return ItemStack.EMPTY;
 			} else {
 				// From Player Inventory to TE Inventory
-				if (!this.mergeItemStack(current, 0, firstOutputIndex, false))
+				if (!this.mergeItemStack(current, 0, firstPlayerIndex, false))
 					return ItemStack.EMPTY;
 			}			
 

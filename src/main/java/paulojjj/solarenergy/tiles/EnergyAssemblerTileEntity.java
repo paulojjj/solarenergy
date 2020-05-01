@@ -10,29 +10,42 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import paulojjj.solarenergy.ItemStackHandlerWrapper;
+import paulojjj.solarenergy.ItemStackHandlerWrapper.HandlerType;
+import paulojjj.solarenergy.ItemStackHandlerWrapper.SlotType;
 import paulojjj.solarenergy.blocks.EnergyAssembler;
 import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Blocks;
 
 public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements net.minecraft.util.ITickable {
 	
-	private int energyNeeded = 10000;
-	
 	private Item assemblingItem;
+	private ItemStackHandler itemHandler;
+	
+	private IItemHandler playerHandler;
+	private IItemHandler internalHandler;
+	private IItemHandler capabilityHandler;
 
 	public enum Slot {
 		INPUT, OUTPUT
 	}
 	
-	private EnergyAssemblerItemHandler itemHandler = new EnergyAssemblerItemHandler(this, 2);
-
-	public EnergyAssemblerItemHandler getItemHandler() {
-		return itemHandler;
+	public IItemHandler getPlayerHandler() {
+		return playerHandler;
+	}
+	
+	protected void initItemHandlers(SlotType... slotTypes) {
+		itemHandler = new ItemStackHandler(slotTypes.length);
+		playerHandler = new ItemStackHandlerWrapper(itemHandler, HandlerType.PLAYER, slotTypes);
+		internalHandler = new ItemStackHandlerWrapper(itemHandler, HandlerType.INTERNAL, slotTypes);
+		capabilityHandler = new ItemStackHandlerWrapper(itemHandler, HandlerType.CAPABILITY, slotTypes);
 	}
 
 	public EnergyAssemblerTileEntity() {
 		super();
+		initItemHandlers(SlotType.INPUT, SlotType.OUTPUT);
 	}
 
 	@Override
@@ -57,7 +70,7 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			return (T) itemHandler;
+			return (T) capabilityHandler;
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -76,7 +89,6 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 			return super.insertItem(slot, stack, simulate);
 		}
 		
-
 		@Override
 		protected void onContentsChanged(int slot) {
 			tileEntity.markDirty();
@@ -149,7 +161,7 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 			//Item ready
 			if(energy >= maxEnergy) {
 				ItemStack stack = getOutput(assemblingItem);
-				if(itemHandler.insertItem(Slot.OUTPUT.ordinal(), stack, false) == ItemStack.EMPTY) {
+				if(internalHandler.insertItem(Slot.OUTPUT.ordinal(), stack, false) == ItemStack.EMPTY) {
 					endAssemble();
 				}
 			}
@@ -158,12 +170,12 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 			return;
 		}
 		
-		ItemStack input = itemHandler.getStackInSlot(Slot.INPUT.ordinal());
+		ItemStack input = internalHandler.getStackInSlot(Slot.INPUT.ordinal());
 		if(!input.isEmpty()) {
 			Item item = input.getItem();
 			if(canAssemble(item)) {
 				ItemStack extracted = new ItemStack(item,1);
-				extracted = itemHandler.extractItem(Slot.INPUT.ordinal(), 1, false);
+				extracted = internalHandler.extractItem(Slot.INPUT.ordinal(), 1, false);
 				if(extracted != ItemStack.EMPTY) {
 					beginAssemble(extracted.getItem());
 				}
