@@ -428,28 +428,28 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 	
 	
-	protected Map<EnumFacing, IEnergyStorage> getStorages(TriFunction<T, EnumFacing, IEnergyStorage, Boolean> filter) {
-		Map<EnumFacing, IEnergyStorage> storages = new HashMap<>();
+	protected Set<IEnergyStorage> getStorages(TriFunction<T, EnumFacing, IEnergyStorage, Boolean> filter) {
+		Set<IEnergyStorage> storages = new HashSet<>();
 		for(Entry<T, Map<EnumFacing, IEnergyStorage>> storageEntry : this.storages.entrySet()) {
 			for(Entry<EnumFacing, IEnergyStorage> entry : storageEntry.getValue().entrySet()) {
 				if(filter.apply(storageEntry.getKey(), entry.getKey(), entry.getValue())) {
-					storages.put(entry.getKey(), entry.getValue());
+					storages.add(entry.getValue());
 				}
 			}
 		}
 		return storages;
 	}
 	
-	protected Map<EnumFacing, IEnergyStorage> getConsumers() {
+	protected Set<IEnergyStorage> getConsumers() {
 		return getStorages((t, f, s) -> s.canReceive());
 	}
 
-	protected Map<EnumFacing, IEnergyStorage> getProducers() {
+	protected Set<IEnergyStorage> getProducers() {
 		return getStorages((t, f, s) -> s.canExtract());
 	}
 	
 	protected void sendEnergyToConsumers() {
-		Collection<IEnergyStorage> consumers = getConsumers().values();
+		Collection<IEnergyStorage> consumers = getConsumers();
 		
 		Map<IEnergyStorage, Double> mapWeights = new HashMap<>();
 
@@ -511,7 +511,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected void extractEnergyFromProducers() {
-		Collection<IEnergyStorage> producers = getProducers().values();
+		Collection<IEnergyStorage> producers = getProducers();
 		
 		for(IEnergyStorage producer : producers) {
 			double maxExtract = getMaxUltraEnergyStored() - getEnergyStored();
