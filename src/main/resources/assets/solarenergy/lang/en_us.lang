@@ -8,6 +8,7 @@ solarenergy.in=In
 solarenergy.out=Out
 solarenergy.output=Output
 solarenergy.maxproduction=Max Production
+solarenergy.energy_needed=Energy Needed
 
 tile.basic_battery.name=Basic Battery
 tile.regular_battery.name=Regular Battery
@@ -31,3 +32,5 @@ item.intermediate_energy_core.name=Intermediate Energy Core
 item.advanced_energy_core.name=Advanced Energy Core
 item.elite_energy_core.name=Elite Energy Core
 item.ultimate_energy_core.name=Ultimate Energy Core
+
+

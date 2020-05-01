@@ -7,7 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
-import paulojjj.solarenergy.containers.BatteryContainer;
 import paulojjj.solarenergy.containers.EnergyAssemblerContainer;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
@@ -18,7 +17,7 @@ public class EnergyAssemblerGui extends GuiContainer {
 		super(new EnergyAssemblerContainer(tileEntity, player.inventory));
 	}
 
-	private static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/energy_assembler_gui.png");
+	public static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/energy_assembler_gui.png");
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
