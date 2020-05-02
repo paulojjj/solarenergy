@@ -32,5 +32,18 @@ item.intermediate_energy_core.name=Intermediate Energy Core
 item.advanced_energy_core.name=Advanced Energy Core
 item.elite_energy_core.name=Elite Energy Core
 item.ultimate_energy_core.name=Ultimate Energy Core
+item.basic_solar_cell.name=Basic Solar Cell
+item.regular_solar_cell.name=Regular Solar Cell
+item.intermediate_solar_cell.name=Intermediate Solar Cell
+item.advanced_solar_cell.name=Advanced Solar Cell
+item.elite_solar_cell.name=Elite Solar Cell
+item.ultimate_solar_cell.name=Ultimate Solar Cell
+item.basic_battery_cell.name=Basic Battery Cell
+item.regular_battery_cell.name=Regular Battery Cell
+item.intermediate_battery_cell.name=Intermediate Battery Cell
+item.advanced_battery_cell.name=Advanced Battery Cell
+item.elite_battery_cell.name=Elite Battery Cell
+item.ultimate_battery_cell.name=Ultimate Battery Cell
+item.ingotLead.name=Lead Ingot
 
 

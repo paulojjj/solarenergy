@@ -7,6 +7,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import paulojjj.solarenergy.registry.Items;
 
 public class ClientProxy extends CommonProxy {
 	
@@ -19,9 +20,9 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void registerItem(Item item) {
+	public void registerItem(Items item) {
 		super.registerItem(item);
-		registerModelResourceLocation(item);
+		registerModelResourceLocation(item.getItem());
 	}
 	
 	protected void registerModelResourceLocation(Item item) {
