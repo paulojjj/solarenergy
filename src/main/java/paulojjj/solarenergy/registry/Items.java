@@ -11,6 +11,12 @@ public enum Items {
 	ADVANCED_ENERGY_CORE("advanced_energy_core"),
 	ELITE_ENERGY_CORE("elite_energy_core"),
 	ULTIMATE_ENERGY_CORE("ultimate_energy_core"),
+	BASIC_DENSE_ENERGY_CORE("basic_dense_energy_core"),
+	REGULAR_DENSE_ENERGY_CORE("regular_dense_energy_core"),
+	INTERMEDIATE_DENSE_ENERGY_CORE("intermediate_dense_energy_core"),
+	ADVANCED_DENSE_ENERGY_CORE("advanced_dense_energy_core"),
+	ELITE_DENSE_ENERGY_CORE("elite_dense_energy_core"),
+	ULTIMATE_DENSE_ENERGY_CORE("ultimate_dense_energy_core"),
 	BASIC_SOLAR_CELL("basic_solar_cell"),
 	REGULAR_SOLAR_CELL("regular_solar_cell"),
 	INTERMEDIATE_SOLAR_CELL("intermediate_solar_cell"),
@@ -23,6 +29,12 @@ public enum Items {
 	ADVANCED_BATTERY_CELL("advanced_battery_cell"),
 	ELITE_BATTERY_CELL("elite_battery_cell"),
 	ULTIMATE_BATTERY_CELL("ultimate_battery_cell"),
+	BASIC_DENSE_BATTERY_CELL("basic_dense_battery_cell"),
+	REGULAR_DENSE_BATTERY_CELL("regular_dense_battery_cell"),
+	INTERMEDIATE_DENSE_BATTERY_CELL("intermediate_dense_battery_cell"),
+	ADVANCED_DENSE_BATTERY_CELL("advanced_dense_battery_cell"),
+	ELITE_DENSE_BATTERY_CELL("elite_dense_battery_cell"),
+	ULTIMATE_DENSE_BATTERY_CELL("ultimate_dense_battery_cell"),
 	LEAD_INGOT("ingotLead", ItemType.FORGE_ORE_DICT);
 
 	public enum ItemType {

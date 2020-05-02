@@ -22,6 +22,12 @@ public enum Blocks {
 	ADVANCED_BATTERY("advanced_battery", new BatteryItemBlock(Tier.ADVANCED)),
 	ELITE_BATTERY("elite_battery", new BatteryItemBlock(Tier.ELITE)),
 	ULTIMATE_BATTERY("ultimate_battery", new BatteryItemBlock(Tier.ULTIMATE)),
+	BASIC_DENSE_BATTERY("basic_dense_battery", new BatteryItemBlock(Tier.BASIC_DENSE)),
+	REGULAR_DENSE_BATTERY("regular_dense_battery", new BatteryItemBlock(Tier.REGULAR_DENSE)),
+	INTERMEDIATE_DENSE_BATTERY("intermediate_dense_battery", new BatteryItemBlock(Tier.INTERMEDIATE_DENSE)),
+	ADVANCED_DENSE_BATTERY("advanced_dense_battery", new BatteryItemBlock(Tier.ADVANCED_DENSE)),
+	ELITE_DENSE_BATTERY("elite_dense_battery", new BatteryItemBlock(Tier.ELITE_DENSE)),
+	ULTIMATE_DENSE_BATTERY("ultimate_dense_battery", new BatteryItemBlock(Tier.ULTIMATE_DENSE)),
 	ENERGY_ASSEMBLER("energy_assembler", new EnergyAssembler());
 	
 	private ItemBlock itemBlock;
