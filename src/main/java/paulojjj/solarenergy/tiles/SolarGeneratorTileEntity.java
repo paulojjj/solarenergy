@@ -5,6 +5,7 @@ import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.Capability;
 import paulojjj.solarenergy.IEnergyProducer;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.TickHandler;
@@ -100,6 +101,14 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public boolean canReceive() {
 		return false;
+	}
+	
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		if(facing == EnumFacing.UP) {
+			return false;
+		}
+		return super.hasCapability(capability, facing);
 	}
 	
 	protected boolean isSunActive() {
