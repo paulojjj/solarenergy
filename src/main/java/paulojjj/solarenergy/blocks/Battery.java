@@ -99,7 +99,15 @@ public class Battery extends BlockDirectional {
 			te.setUltraEnergyStored(energy);
 			te.setMaxUltraEnergyStored(maxEnergy);
 		}
-		worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()));
+        
+        EnumFacing facing = placer.getHorizontalFacing().getOpposite();
+        int height = Math.round(placer.rotationPitch);
+        if (height >= 65) {
+        	facing = EnumFacing.UP;
+        } else if (height <= -30) {
+        	facing = EnumFacing.DOWN;
+        }
+		worldIn.setBlockState(pos, state.withProperty(FACING, facing));
 	}	
 
 	/*	@Override
