@@ -4,14 +4,9 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import paulojjj.solarenergy.registry.Items;
 
 public class ClientProxy extends CommonProxy {
-	
-	protected static long tick = 0;
 	
 	@Override
 	public void registerBlock(ItemBlock ib) {
@@ -31,17 +26,4 @@ public class ClientProxy extends CommonProxy {
 		ModelLoader.setCustomModelResourceLocation(item, 0, mrl);		
 	}
 	
-	@Override
-	public void registerHandlers() {
-		MinecraftForge.EVENT_BUS.register(this);		
-	}
-	
-	@SubscribeEvent
-	public void clientTick(ClientTickEvent evt) {
-		tick++;
-	}
-
-	public static long getTick() {
-		return tick;
-	}
 }

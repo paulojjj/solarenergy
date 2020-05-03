@@ -22,7 +22,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 import paulojjj.solarenergy.Log;
-import paulojjj.solarenergy.proxy.CommonProxy;
+import paulojjj.solarenergy.TickHandler;
 
 public abstract class BaseNetwork<T extends TileEntity & INetworkMember> implements INetwork<T> {
 
@@ -386,11 +386,11 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(world.isRemote) {
 			return;
 		}
-		if(CommonProxy.getTick() == lastUpdatedTick) {
+		if(TickHandler.getTick() == lastUpdatedTick) {
 			return;
 		}
 		synchronized(this) {
-			lastUpdatedTick = CommonProxy.getTick();
+			lastUpdatedTick = TickHandler.getTick();
 
 			energyStored = tiles.stream().map(x -> x.getUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			maxEnergyStored = tiles.stream().map(x -> x.getMaxUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
@@ -430,7 +430,6 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(sent == 0) {
 			return 0;
 		}
-		Log.debug(this + " Sent " + sent + " energy");
 		return extractUltraEnergy(sent, false);
 	}
 	
@@ -521,7 +520,6 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(received == 0) {
 			return 0;
 		}
-		Log.debug(this + " Extracted " + received + " energy");
 		return receiveUltraEnergy(received, false);
 	}
 
@@ -590,7 +588,6 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 				if(!simulate) {
 					energyStored += received;
 					receivedSinceLastTick += received;
-					Log.debug(this + " Received " + received + " energy");
 				}
 				if(totalReceived == maxReceive) {
 					break;

@@ -7,9 +7,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import paulojjj.solarenergy.IEnergyProducer;
 import paulojjj.solarenergy.NBT;
+import paulojjj.solarenergy.TickHandler;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.networks.SolarGeneratorNetwork;
-import paulojjj.solarenergy.proxy.CommonProxy;
 
 public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements IEnergyProducer {
 
@@ -89,7 +89,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	@Override
 	public double getMaxUltraEnergyStored() {
-		return activeProduction;
+		return maxProduction;
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	protected boolean isSunActive() {
-		long tick = CommonProxy.getTick();
+		long tick = TickHandler.getTick();
 		
 		if(!world.isDaytime()) {
 			return false;
