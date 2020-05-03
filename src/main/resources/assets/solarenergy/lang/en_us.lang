@@ -8,6 +8,7 @@ solarenergy.in=In
 solarenergy.out=Out
 solarenergy.output=Output
 solarenergy.maxproduction=Max Production
+solarenergy.producing=Producing
 solarenergy.energy_needed=Energy Needed
 
 tile.basic_battery.name=Basic Battery

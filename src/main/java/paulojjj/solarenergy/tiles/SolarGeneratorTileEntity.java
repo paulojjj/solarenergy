@@ -1,6 +1,7 @@
 package paulojjj.solarenergy.tiles;
 
-import java.util.stream.Collectors;
+import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -8,12 +9,18 @@ import paulojjj.solarenergy.IEnergyProducer;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.networks.SolarGeneratorNetwork;
+import paulojjj.solarenergy.proxy.CommonProxy;
 
 public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements IEnergyProducer {
 
-	private double production = 1;
+	private double maxProduction = 1;
+	private double activeProduction = 0;
 
 	private Tier tier;
+	
+	private boolean canSeeSky;
+	private long nextSkyCheck;
+	private static Random random = new Random();
 
 	public SolarGeneratorTileEntity() {
 		this(Tier.BASIC);
@@ -26,30 +33,41 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	protected void setTier(Tier tier) {
 		this.tier = tier;
-		production = (int) Math.pow(10, tier.ordinal());
+		maxProduction = (int) Math.pow(10, tier.ordinal());
 		markDirty();
 	}
 
 	public static class SolarGeneratorContainerUpdateMessage {
-		public double production;
+		public double activeProduction;
+		public double maxProduction;
 		public double output;
+		public boolean sunActive;
 
 		public SolarGeneratorContainerUpdateMessage() {
 		}
 
-		public SolarGeneratorContainerUpdateMessage(double production,
+		public SolarGeneratorContainerUpdateMessage(double activeProduction, double maxProduction,
 				double output) {
 			super();
-			this.production = production;
+			this.activeProduction = activeProduction;
+			this.maxProduction = maxProduction;
 			this.output = output;
 		}
 	}
 
-	@Override
-	public double getProduction() {
-		return production;
+	public double getMaxProduction() {
+		return maxProduction;
 	}
 
+	public double getActiveProduction() {
+		return activeProduction;
+	}
+	
+	@Override
+	public double getProduction() {
+		return getActiveProduction();
+	}
+	
 	@Override
 	public double receiveUltraEnergy(double maxReceive, boolean simulate) {
 		return 0;
@@ -71,7 +89,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	@Override
 	public double getMaxUltraEnergyStored() {
-		return production;
+		return activeProduction;
 	}
 
 	@Override
@@ -83,6 +101,21 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	public boolean canReceive() {
 		return false;
 	}
+	
+	protected boolean isSunActive() {
+		long tick = CommonProxy.getTick();
+		
+		if(!world.isDaytime()) {
+			return false;
+		}
+		
+		if(tick >= nextSkyCheck) {
+			nextSkyCheck = nextSkyCheck + random.nextInt(100) + 1;
+			canSeeSky = world.canSeeSky(getPos().offset(EnumFacing.UP)); 
+		}
+		
+		return canSeeSky;
+	}
 
 	@Override
 	public void update() {
@@ -90,12 +123,11 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		if(world.isRemote || !world.isBlockLoaded(pos)) {
 			return;
 		}
-		if(!world.isDaytime() || !world.canSeeSky(getPos().offset(EnumFacing.UP))) {
-			return;
-		}
+		
+		activeProduction = isSunActive() ? maxProduction : 0;
 
-		if(energy < getMaxUltraEnergyStored()) {
-			energy += Math.min(production, getMaxUltraEnergyStored() - energy);
+		if(activeProduction > 0 && energy < getMaxUltraEnergyStored()) {
+			energy += Math.min(activeProduction, getMaxUltraEnergyStored() - energy);
 		}
 	}
 
@@ -124,11 +156,17 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		return SolarGeneratorNetwork.class;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Object getContainerUpdateMessage() {
 		double output = getNetwork().getEnergyOutput();
-		double production = getNetwork().getTiles().stream().map(x -> ((SolarGeneratorTileEntity)x).getProduction()).collect(Collectors.summingDouble(x -> x));
-		return new SolarGeneratorContainerUpdateMessage(production, output);
+		double activeProduction = 0;
+		double maxProduction = 0;
+		for(SolarGeneratorTileEntity tile : (Set<SolarGeneratorTileEntity>)getNetwork().getTiles()) {
+			activeProduction += tile.getActiveProduction();
+			maxProduction += tile.getMaxProduction();
+		}
+		return new SolarGeneratorContainerUpdateMessage(activeProduction, maxProduction, output);
 	}
 
 }

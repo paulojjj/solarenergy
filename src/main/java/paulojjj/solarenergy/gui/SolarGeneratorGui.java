@@ -43,7 +43,7 @@ public class SolarGeneratorGui extends GuiContainer {
 		SolarGeneratorContainer container = (SolarGeneratorContainer)inventorySlots;
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
-		fontRenderer.drawString(I18n.format("solarenergy.maxproduction") + ": " + EnergyFormatter.format(container.getProduction()) + "/t", 25, 90, 0x202020);
-		fontRenderer.drawString(I18n.format("solarenergy.output") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 25, 105, 0x202020);
+		fontRenderer.drawString(I18n.format("solarenergy.producing") + ": " + EnergyFormatter.format(container.getActiveProduction()) + "/t", 15, 92, 0x202020);
+		fontRenderer.drawString(I18n.format("solarenergy.output") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 15, 107, 0x202020);
 	}
 }

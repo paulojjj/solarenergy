@@ -10,7 +10,8 @@ public class SolarGeneratorContainer extends Container implements IMessageListen
 	
 	private SolarGeneratorTileEntity tileEntity;
 	
-	private double production = 0;
+	private double maxProduction = 0;
+	private double activeProduction = 0;
 	private double output = 0;
 	
 	public SolarGeneratorContainer(SolarGeneratorTileEntity tileEntity, EntityPlayer player) {
@@ -32,12 +33,17 @@ public class SolarGeneratorContainer extends Container implements IMessageListen
 
 	@Override
 	public void onMessage(SolarGeneratorContainerUpdateMessage message) {
-		production = message.production;
+		activeProduction = message.activeProduction;
+		maxProduction = message.maxProduction;
 		output = message.output;
 	}
 	
-	public double getProduction() {
-		return production;
+	public double getActiveProduction() {
+		return activeProduction;
+	}
+
+	public double getMaxProduction() {
+		return maxProduction;
 	}
 
 	public double getOutput() {
