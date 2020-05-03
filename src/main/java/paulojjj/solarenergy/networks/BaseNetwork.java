@@ -394,11 +394,15 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 			energyStored = tiles.stream().map(x -> x.getUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
 			maxEnergyStored = tiles.stream().map(x -> x.getMaxUltraEnergyStored()).collect(Collectors.summingDouble(x -> x));
-			canExtract = tiles.stream().anyMatch(x -> x.canExtract());
-			canReceive = tiles.stream().anyMatch(x -> x.canReceive());
+			canExtract = tiles.iterator().next().canExtract();
+			canReceive = tiles.iterator().next().canReceive();
 
-			sendEnergyToConsumers();
-			extractEnergyFromProducers();
+			if(canExtract()) {
+				sendEnergyToConsumers();
+			}
+			if(canReceive()) {
+				extractEnergyFromProducers();
+			}
 			
 			energyOutput = sentSinceLastTick;
 			energyInput = receivedSinceLastTick;
@@ -423,10 +427,10 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy) {
 		maxEnergy = Math.min(maxEnergy,  energyStored);
 		double sent = consumer.receiveUltraEnergy(maxEnergy, false);
-		Log.debug("Sent " + sent + " energy");
 		if(sent == 0) {
 			return 0;
 		}
+		Log.debug(this + " Sent " + sent + " energy");
 		return extractUltraEnergy(sent, false);
 	}
 	
@@ -513,19 +517,19 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	double extractEnergy(IUltraEnergyStorage producer, double maxExtract) {
-		double received = producer.receiveUltraEnergy(maxExtract, false);
-		System.out.println("Received " + received + " energy");
+		double received = producer.extractUltraEnergy(maxExtract, false);
 		if(received == 0) {
 			return 0;
 		}
-		return extractUltraEnergy(received, false);
+		Log.debug(this + " Extracted " + received + " energy");
+		return receiveUltraEnergy(received, false);
 	}
 
 	protected void extractEnergyFromProducers() {
 		Collection<IEnergyStorage> producers = getProducers();
 		
 		for(IEnergyStorage producer : producers) {
-			double maxExtract = getMaxUltraEnergyStored() - getEnergyStored();
+			double maxExtract = getMaxUltraEnergyStored() - getUltraEnergyStored();
 			extractEnergy(producer, maxExtract);
 		}
 	}
@@ -586,6 +590,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 				if(!simulate) {
 					energyStored += received;
 					receivedSinceLastTick += received;
+					Log.debug(this + " Received " + received + " energy");
 				}
 				if(totalReceived == maxReceive) {
 					break;
