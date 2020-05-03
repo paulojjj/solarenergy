@@ -555,6 +555,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	@Override
 	public double extractUltraEnergy(double maxExtract, boolean simulate) {
+		maxExtract = Math.min(maxExtract, energyStored);
 		if(energyStored == 0) {
 			return 0;
 		}
