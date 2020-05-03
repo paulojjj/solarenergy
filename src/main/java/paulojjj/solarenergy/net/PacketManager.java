@@ -4,19 +4,18 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
 public class PacketManager {
@@ -141,10 +140,7 @@ public class PacketManager {
 	public static class TileEntityMessageHandler implements IMessageHandler<TileEntityUpdateMessage, IMessage> {
 
 		private EntityPlayer getPlayer(MessageContext ctx) {
-	        if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-	            return ctx.getServerHandler().player;
-	        }
-	        return Minecraft.getMinecraft().player;			
+			return Main.getProxy().getFactory().getPlayerProvider().getPlayer(ctx);
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -164,10 +160,7 @@ public class PacketManager {
 	public static class ContainerMessageHandler implements IMessageHandler<ContainerUpdateMessage, IMessage> {
 
 		private EntityPlayer getPlayer(MessageContext ctx) {
-	        if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-	            return ctx.getServerHandler().player;
-	        }
-	        return Minecraft.getMinecraft().player;			
+			return Main.getProxy().getFactory().getPlayerProvider().getPlayer(ctx);
 		}
 		
 		@SuppressWarnings("unchecked")

@@ -61,5 +61,10 @@ public class CommonProxy implements Proxy {
 	public void registerHandlers() {
 		MinecraftForge.EVENT_BUS.register(TickHandler.class);		
 	}
+
+	@Override
+	public ISidedFactory getFactory() {
+		return ServerFactory.getInstance();
+	}
 	
 }

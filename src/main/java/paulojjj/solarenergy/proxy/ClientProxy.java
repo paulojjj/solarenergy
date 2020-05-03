@@ -26,4 +26,9 @@ public class ClientProxy extends CommonProxy {
 		ModelLoader.setCustomModelResourceLocation(item, 0, mrl);		
 	}
 	
+	@Override
+	public ISidedFactory getFactory() {
+		return ClientFactory.getInstance();
+	}
+	
 }

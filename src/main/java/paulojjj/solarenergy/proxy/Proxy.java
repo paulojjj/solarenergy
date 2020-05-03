@@ -10,4 +10,6 @@ public interface Proxy {
 	
 	public void registerCommands();
 	
+	ISidedFactory getFactory();
+	
 }
