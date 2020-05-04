@@ -131,7 +131,7 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return false;
+		return (oldState.getBlock() != newSate.getBlock());
 	}
 	
 	public void setBlockActive(boolean active) {
