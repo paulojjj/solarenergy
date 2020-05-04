@@ -79,12 +79,17 @@ public class EnergyAssembler extends Block {
 	
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-	    EnergyAssemblerTileEntity te = (EnergyAssemblerTileEntity) worldIn.getTileEntity(pos);
-	    IItemHandler itemHandler = te.getPlayerHandler();
-	    for(int i=0; i<itemHandler.getSlots(); i++) {
-	    	ItemStack is = itemHandler.getStackInSlot(i);
-	    	InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), is);
-	    }
+		if(!worldIn.isRemote) {
+			EnergyAssemblerTileEntity te = (EnergyAssemblerTileEntity) worldIn.getTileEntity(pos);
+			IItemHandler itemHandler = te.getPlayerHandler();
+			for(int i=0; i<itemHandler.getSlots(); i++) {
+				ItemStack stack = itemHandler.getStackInSlot(i);
+				if(stack != ItemStack.EMPTY) {
+					InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
+				}
+			}
+		}
+	    super.breakBlock(worldIn, pos, state);
 	}
 	
 
