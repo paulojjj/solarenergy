@@ -90,6 +90,7 @@ public class EnergyAssemblerContainer extends Container implements IMessageListe
 				return ItemStack.EMPTY;
 			slot.onTake(playerInventory.player, current);
 		}
+		detectAndSendChanges();
 		return previous;
 	}
 	
