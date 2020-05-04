@@ -83,7 +83,7 @@ public class Battery extends BlockDirectional {
 		ItemStack stack = drops.iterator().next();
 		NBTTagCompound nbt = new NBTTagCompound();
 		stack.setTagCompound(nbt);
-		nbt.setDouble(NBT.ENERGY, te.getEnergyStored());
+		nbt.setDouble(NBT.ENERGY, te.getUltraEnergyStored());
 		nbt.setDouble(NBT.MAX_ENERGY, te.getMaxUltraEnergyStored());
 	}
 
