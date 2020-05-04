@@ -34,7 +34,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	protected void setTier(Tier tier) {
 		this.tier = tier;
-		maxProduction = (int) Math.pow(10, tier.ordinal());
+		maxProduction = Math.pow(10, tier.ordinal());
 		markDirty();
 	}
 
@@ -80,7 +80,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		if(!simulate) {
 			energy -= sent;
 		}
-		return (int)sent;		
+		return sent;		
 	}
 
 	@Override

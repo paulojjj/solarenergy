@@ -413,15 +413,16 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	double sendEnergy(IEnergyStorage consumer, double maxEnergy) {
 		maxEnergy = Math.min(maxEnergy,  energyStored);
-		int maxEnergyInt = (int)Math.min(Integer.MAX_VALUE, maxEnergy);
 		if(consumer instanceof IUltraEnergyStorage) {
-			return (int)sendEnergy((IUltraEnergyStorage)consumer, maxEnergyInt);
+			return sendEnergy((IUltraEnergyStorage)consumer, maxEnergy);
 		}
-		double sent = consumer.receiveEnergy(maxEnergyInt, false);
+		
+		int maxEnergyInt = (int)Math.min(Integer.MAX_VALUE, maxEnergy);
+		int sent = consumer.receiveEnergy(maxEnergyInt, false);
 		if(sent == 0) {
 			return 0;
 		}
-		return extractEnergy((int)sent, false);
+		return extractEnergy(sent, false);
 	}
 
 	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy) {
