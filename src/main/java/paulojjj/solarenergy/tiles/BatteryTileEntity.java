@@ -31,7 +31,8 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 
 	protected void setTier(Tier tier) {
 		this.tier = tier;
-		setMaxUltraEnergyStored(Math.pow(10, tier.ordinal()) * 10000);
+		int tierInt = tier.ordinal();
+		setMaxUltraEnergyStored(Math.pow(10, tierInt < Tier.BASIC_DENSE.ordinal() ? tierInt : tierInt + 1) * 10000);
 		markDirty();
 	}
 
