@@ -2,9 +2,9 @@
     "type": "minecraft:crafting_shaped",
     "pattern":
     [
-        "bbb",
-        "cac",
-        "ccc"
+        "cbc",
+        "bab",
+        "cbc"
     ],
     "key":
     {

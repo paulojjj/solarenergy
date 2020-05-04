@@ -3,7 +3,7 @@
     "pattern":
     [
         "bab",
-        "aaa",
+        "aca",
         "bab"
     ],
     "key":
@@ -15,6 +15,10 @@
         "b":
         {
         	"item": "minecraft:iron_ingot"
+        },
+        "c":
+        {
+        	"item": "solarenergy:basic_energy_core"
         }
     },
     "result":
