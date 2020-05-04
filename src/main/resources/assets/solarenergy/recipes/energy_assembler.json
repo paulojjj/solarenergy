@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bab",
+        "bab",
+        "bab"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:basic_energy_core"
+        },
+        "b":
+        {
+        	"item": "minecraft:stone",
+        	"data": 0
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:energy_assembler",
+        "count": 1
+    }
+}

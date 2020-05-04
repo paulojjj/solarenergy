@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bab",
+        "aca",
+        "bab"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:intermediate_battery_cell"
+        },
+        "b":
+        {
+        	"item": "minecraft:iron_ingot"
+        },
+        "c":
+        {
+        	"item": "solarenergy:intermediate_energy_core"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:intermediate_battery",
+        "count": 1
+    }
+}

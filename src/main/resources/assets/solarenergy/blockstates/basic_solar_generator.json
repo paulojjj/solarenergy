@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"normal": {
+			"model": "solarenergy:basic_solar_generator"
+		}
+	}
+}

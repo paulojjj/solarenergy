@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bbb",
+        "cac",
+        "ccc"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:regular_energy_core"
+        },
+        "b":
+        {
+            "item": "solarenergy:basic_solar_cell"
+        },
+        "c":
+        {
+            "item": "minecraft:redstone"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:regular_solar_cell",
+        "count": 1
+    }
+}

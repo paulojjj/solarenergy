@@ -1,0 +1,7 @@
+{
+	"parent": "solarenergy:block/battery",
+	"textures": {
+		"front": "solarenergy:blocks/regular_dense_battery_front",
+		"side": "solarenergy:blocks/regular_dense_battery_side"
+	}
+}

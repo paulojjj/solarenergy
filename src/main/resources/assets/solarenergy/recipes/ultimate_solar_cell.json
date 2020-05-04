@@ -1,0 +1,33 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bbb",
+        "cac",
+        "dcd"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:ultimate_energy_core"
+        },
+        "b":
+        {
+            "item": "solarenergy:elite_solar_cell"
+        },
+        "c":
+        {
+            "item": "minecraft:diamond_block"
+        },
+        "d":
+        {
+            "item": "minecraft:emerald_block"
+        }        
+    },
+    "result":
+    {
+        "item": "solarenergy:ultimate_solar_cell",
+        "count": 1
+    }
+}

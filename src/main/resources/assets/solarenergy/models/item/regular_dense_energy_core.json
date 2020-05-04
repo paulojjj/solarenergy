@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "solarenergy:items/regular_dense_energy_core"
+    }
+}

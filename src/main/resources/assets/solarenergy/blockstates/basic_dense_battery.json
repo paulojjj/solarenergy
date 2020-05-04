@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=north": { "model": "solarenergy:basic_dense_battery" },
+        "facing=south": { "model": "solarenergy:basic_dense_battery", "y": 180 },
+        "facing=west":  { "model": "solarenergy:basic_dense_battery", "y": 270 },
+        "facing=east":  { "model": "solarenergy:basic_dense_battery", "y": 90 },
+        "facing=up":  { "model": "solarenergy:basic_dense_battery", "x": -90 },
+        "facing=down":  { "model": "solarenergy:basic_dense_battery", "x": 90 }
+    }
+}

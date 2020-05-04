@@ -1,0 +1,8 @@
+{
+	"parent": "solarenergy:block/energy_assembler",
+	"textures": {
+		"top": "solarenergy:blocks/energy_assembler_top",
+		"bottom": "solarenergy:blocks/energy_assembler_top",
+		"side": "solarenergy:blocks/energy_assembler_side_on"
+	}
+}

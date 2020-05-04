@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "solarenergy:items/ultimate_dense_battery_cell"
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        " b ",
+        "bab",
+        " b "
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "minecraft:coal",
+			"data": 0                        
+        },
+        "b":
+        {
+            "item": "minecraft:glass_pane"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:basic_energy_core",
+        "count": 1
+    }
+}

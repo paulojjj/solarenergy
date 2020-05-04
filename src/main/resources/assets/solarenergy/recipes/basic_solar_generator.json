@@ -1,0 +1,30 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "aaa",
+        "cbc",
+        "cbc"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:basic_solar_cell"
+        },
+        "b":
+        {
+            "item": "minecraft:iron_ingot"
+        },
+        "c":
+        {
+            "item": "minecraft:stone",
+			"data": 0            
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:basic_solar_generator",
+        "count": 1
+    }
+}

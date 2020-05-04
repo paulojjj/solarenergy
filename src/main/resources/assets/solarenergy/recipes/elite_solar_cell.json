@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bbb",
+        "cac",
+        "ccc"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:elite_energy_core"
+        },
+        "b":
+        {
+            "item": "solarenergy:advanced_solar_cell"
+        },
+        "c":
+        {
+            "item": "minecraft:emerald"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:elite_solar_cell",
+        "count": 1
+    }
+}

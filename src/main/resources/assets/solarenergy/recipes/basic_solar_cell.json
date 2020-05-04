@@ -1,0 +1,34 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bbb",
+        "cac",
+        "ddd"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:basic_energy_core"
+        },
+        "b":
+        {
+            "item": "minecraft:glass_pane"
+        },
+        "c":
+        {
+            "item": "minecraft:iron_ingot"
+        },
+        "d":
+        {
+            "item": "minecraft:coal",
+			"data": 0            
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:basic_solar_cell",
+        "count": 1
+    }
+}

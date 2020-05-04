@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bbb",
+        "cac",
+        "ccc"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:advanced_energy_core"
+        },
+        "b":
+        {
+            "item": "solarenergy:intermediate_solar_cell"
+        },
+        "c":
+        {
+            "item": "minecraft:diamond"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:advanced_solar_cell",
+        "count": 1
+    }
+}

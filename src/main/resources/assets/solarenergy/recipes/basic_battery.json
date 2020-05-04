@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "bab",
+        "aaa",
+        "bab"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:basic_battery_cell"
+        },
+        "b":
+        {
+        	"item": "minecraft:iron_ingot"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:basic_battery",
+        "count": 1
+    }
+}

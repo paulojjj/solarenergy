@@ -1,0 +1,30 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "cbc",
+        "cac",
+        "cbc"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "solarenergy:elite_energy_core"
+        },
+        "b":
+        {
+            "item": "solarenergy:advanced_battery_cell"
+        },
+        "c":
+        {
+        	"type": "forge:ore_dict",
+            "ore": "ingotLead"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:elite_battery_cell",
+        "count": 1
+    }
+}
