@@ -134,7 +134,9 @@ public class PacketManager {
 	
 	public static Object readMessage(IMessageListener<?> listener, GenericMessage message) {
 		Class<?> messageClass = getGenericClass(listener);
-		return serializer.read(messageClass, message.getData());
+		Object data = serializer.read(messageClass, message.getData());
+		message.getData().release();
+		return data;
 	}
 	
 	public static class TileEntityMessageHandler implements IMessageHandler<TileEntityUpdateMessage, IMessage> {
