@@ -24,7 +24,7 @@ public class SolarGeneratorItemBlock extends ItemBlock {
 	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)this.getBlock().createTileEntity(worldIn, this.getBlock().getDefaultState());
-		double production = te.getProduction();
+		double production = te.getMaxProduction();
 		tooltip.add(String.format("%s: %s/t", I18n.format(Main.MODID + ".produces"), EnergyFormatter.format(production)));
 	}
 	
