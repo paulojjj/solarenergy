@@ -3,7 +3,6 @@
 /*.project
 /*.txt
 /.gradle
-/gradle*
 /bin
 /saves
 /screenshots
@@ -22,3 +21,7 @@
 /run
 /crash-reports
 /servers.dat
+/gradle
+/gradle.bat
+/gradlew.bat
+/gradlew
