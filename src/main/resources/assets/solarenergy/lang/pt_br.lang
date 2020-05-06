@@ -1,0 +1,71 @@
+itemGroup.solarenergy=Energia Solar
+
+solarenergy.energy=Energia
+solarenergy.stored_energy=Energia Armazenada
+solarenergy.capacity=Capacidade
+solarenergy.produces=Produz
+solarenergy.in=Ent.
+solarenergy.out=Saída
+solarenergy.output=Saída
+solarenergy.maxproduction=Produção Máxima
+solarenergy.producing=Produzindo
+solarenergy.energy_needed=Energia Necessária
+
+tile.basic_battery.name=Bateria Básica
+tile.regular_battery.name=Bateria Regular
+tile.intermediate_battery.name=Bateria Intermediária
+tile.advanced_battery.name=Bateria Avançada
+tile.elite_battery.name=Bateria Elite
+tile.ultimate_battery.name=Bateria Ultimate
+tile.basic_dense_battery.name=Bateria Densa Básica
+tile.regular_dense_battery.name=Bateria Densa Regular
+tile.intermediate_dense_battery.name=Bateria Densa Intermediária
+tile.advanced_dense_battery.name=Bateria Densa Avançada
+tile.elite_dense_battery.name=Bateria Densa Elite
+tile.ultimate_dense_battery.name=Bateria Densa Ultimate
+
+tile.basic_solar_generator.name=Gerador Solar Básico
+tile.regular_solar_generator.name=Gerador Solar Regular
+tile.intermediate_solar_generator.name=Gerador Solar Intermediário
+tile.advanced_solar_generator.name=Gerador Solar Avançado
+tile.elite_solar_generator.name=Gerador Solar Elite
+tile.ultimate_solar_generator.name=Gerador Solar Ultimate
+
+tile.energy_assembler.name=Agregador de Energia
+
+item.basic_energy_core.name=Núcleo de Energia Básico
+item.regular_energy_core.name=Núcleo de Energia Regular
+item.intermediate_energy_core.name=Núcleo de Energia Intermediário
+item.advanced_energy_core.name=Núcleo de Energia Avançado
+item.elite_energy_core.name=Núcleo de Energia Elite
+item.ultimate_energy_core.name=Núcleo de Energia Ultimate
+item.basic_solar_cell.name=Célula Solar Básica
+item.regular_solar_cell.name=Célula Solar Regular
+item.intermediate_solar_cell.name=Célula Solar Intermdiária
+item.advanced_solar_cell.name=Célula Solar Avançada
+item.elite_solar_cell.name=Célula Solar Elite
+item.ultimate_solar_cell.name=Célula Solar Ultimate
+item.basic_battery_cell.name=Célula de Bateria Básica
+item.regular_battery_cell.name=Célula de Bateria Regular
+item.intermediate_battery_cell.name=Célula de Bateria Intermediária
+item.advanced_battery_cell.name=Célula de Bateria Avançada
+item.elite_battery_cell.name=Célula de Bateria Elite
+item.ultimate_battery_cell.name=Célula de Bateria Ultimate
+item.ingotLead.name=Barra de Chumbo
+
+item.basic_dense_energy_core.name=Núcleo de Energia Denso Básico
+item.regular_dense_energy_core.name=Núcleo de Energia Denso Regular
+item.intermediate_dense_energy_core.name=Núcleo de Energia Denso Intermediário
+item.advanced_dense_energy_core.name=Núcleo de Energia Denso Avançado
+item.elite_dense_energy_core.name=Núcleo de Energia Denso Elite
+item.ultimate_dense_energy_core.name=Núcleo de Energia Denso Ultimate
+item.basic_dense_battery_cell.name=Célula de Bateria Densa Básica
+item.regular_dense_battery_cell.name=Célula de Bateria Densa Regular
+item.intermediate_dense_battery_cell.name=Célula de Bateria Densa Intermdiária
+item.advanced_dense_battery_cell.name=Célula de Bateria Densa Avançada
+item.elite_dense_battery_cell.name=Célula de Bateria Densa Elite
+item.ultimate_dense_battery_cell.name=Célula de Bateria Densa Ultimate
+
+
+
+
