@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -22,6 +24,9 @@ import paulojjj.solarenergy.networks.INetworkMember;
 public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity implements INetworkMember, ITickable, IMessageListener<EnergyNetworkUpdateMessage> {
 
 	public static final int BLOCK_UPDATE = 2;
+
+	public static final int UPDATE_BLOCK = 1;
+	public static final int SEND_TO_CLIENT = 2;
 
 	protected CapabilityDelegate delegate = new CapabilityDelegate(getNetwork());
 	private INetwork<EnergyNetworkTileEntity> network = null;
@@ -85,7 +90,9 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 					}
 				}
 			}
-			updateClientTileEntity();			
+			IBlockState bs = world.getBlockState(pos);
+			int flags = SEND_TO_CLIENT | UPDATE_BLOCK;
+			world.notifyBlockUpdate(pos, bs, bs, flags);			
 		}
 	}
 
@@ -192,6 +199,34 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 
 	public synchronized boolean hasStorage(EnumFacing facing) {
 		return neighborStorages.contains(facing);
+	}
+
+	@Override
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt = super.getUpdateTag();
+
+		synchronized(this) {
+			int size = neighborStorages.size();
+			byte[] neighbors = new byte[size];
+			int i=0;
+			for(EnumFacing facing : neighborStorages) {
+				neighbors[i++] = (byte)facing.ordinal();
+			}
+			nbt.setByteArray("storages", neighbors);
+		}
+		return nbt;
+	}
+
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag) {
+		super.handleUpdateTag(tag);
+		byte[] storages = tag.getByteArray("storages");
+		synchronized(this) {
+			neighborStorages.clear();
+			for(int i=0; i<storages.length; i++) {
+				neighborStorages.add(EnumFacing.getFront(storages[i]));
+			}
+		}
 	}
 
 	@Override
