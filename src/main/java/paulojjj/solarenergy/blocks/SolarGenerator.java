@@ -8,6 +8,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -66,11 +67,6 @@ public class SolarGenerator extends Block {
 	}
 
 	@Override
-	public boolean isOpaqueCube(IBlockState bs) {
-		return false;
-	}
-
-	@Override
 	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
 		super.onBlockExploded(world, pos, explosion);
 	}
@@ -93,6 +89,16 @@ public class SolarGenerator extends Block {
 			SolarGeneratorTileEntity tileEntity = (SolarGeneratorTileEntity)worldIn.getTileEntity(pos);
 			tileEntity.onNeighborChanged(fromPos);
 		}
+	}
+	
+	@Override
+	public boolean isOpaqueCube(IBlockState bs) {
+		return false;
+	}
+	
+	@Override
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.INVISIBLE;
 	}
 	
 }
