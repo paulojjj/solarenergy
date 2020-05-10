@@ -19,7 +19,7 @@ public class SolarGeneratorGui extends GuiContainer {
 		super(new SolarGeneratorContainer(tileEntity, player));
 	}
 
-	private static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/solar_generator_gui.png");
+	private static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/empty_gui.png");
 	private static final ResourceLocation SUN_RESOURCE = new ResourceLocation(Main.MODID, "gui/sun.png");
 
 

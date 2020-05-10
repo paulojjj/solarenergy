@@ -6,6 +6,7 @@ import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.blocks.BatteryItemBlock;
 import paulojjj.solarenergy.blocks.EnergyAssembler;
+import paulojjj.solarenergy.blocks.EnergyCable;
 import paulojjj.solarenergy.blocks.SolarGeneratorItemBlock;
 
 public enum Blocks {
@@ -28,7 +29,8 @@ public enum Blocks {
 	ADVANCED_DENSE_BATTERY("advanced_dense_battery", new BatteryItemBlock(Tier.ADVANCED_DENSE)),
 	ELITE_DENSE_BATTERY("elite_dense_battery", new BatteryItemBlock(Tier.ELITE_DENSE)),
 	ULTIMATE_DENSE_BATTERY("ultimate_dense_battery", new BatteryItemBlock(Tier.ULTIMATE_DENSE)),
-	ENERGY_ASSEMBLER("energy_assembler", new EnergyAssembler());
+	ENERGY_ASSEMBLER("energy_assembler", new EnergyAssembler()),
+	ENERGY_CABLE("energy_cable", new EnergyCable());
 	
 	private ItemBlock itemBlock;
 	

@@ -28,21 +28,21 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	protected boolean valid = true;
 
-	private Set<T> tiles = new HashSet<>();
-	private Map<T, Map<EnumFacing, IEnergyStorage>> storages = new HashMap<>();
+	protected Set<T> tiles = new HashSet<>();
+	protected Map<T, Map<EnumFacing, IEnergyStorage>> storages = new HashMap<>();
 
 	protected World world;
 
-	private double energyStored = 0;
-	private double maxEnergyStored = 0;
-	private boolean canReceive = false;
-	private boolean canExtract = false;
+	protected double energyStored = 0;
+	protected double maxEnergyStored = 0;
+	protected boolean canReceive = false;
+	protected boolean canExtract = false;
 
-	private double receivedSinceLastTick = 0;
-	private double sentSinceLastTick = 0;
+	protected double receivedSinceLastTick = 0;
+	protected double sentSinceLastTick = 0;
 
-	private double energyInput = 0;
-	private double energyOutput = 0;
+	protected double energyInput = 0;
+	protected double energyOutput = 0;
 	
 	protected long lastUpdatedTick = 0;
 
@@ -398,10 +398,9 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 			canReceive = tiles.iterator().next().canReceive();
 
 			if(canExtract()) {
-				sendEnergyToConsumers();
-			}
-			if(canReceive()) {
-				extractEnergyFromProducers();
+				double sent = sendToConsumers(energyStored, false);
+				double extracted = extractUltraEnergy(sent, false);
+				energyStored -= extracted;
 			}
 			
 			energyOutput = sentSinceLastTick;
@@ -411,27 +410,22 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 	}
 
-	double sendEnergy(IEnergyStorage consumer, double maxEnergy) {
-		maxEnergy = Math.min(maxEnergy,  energyStored);
+	double sendEnergy(IEnergyStorage consumer, double maxEnergy, boolean simulate) {
 		if(consumer instanceof IUltraEnergyStorage) {
-			return sendEnergy((IUltraEnergyStorage)consumer, maxEnergy);
+			return sendEnergy((IUltraEnergyStorage)consumer, maxEnergy, simulate);
 		}
 		
 		int maxEnergyInt = (int)Math.min(Integer.MAX_VALUE, maxEnergy);
-		int sent = consumer.receiveEnergy(maxEnergyInt, false);
-		if(sent == 0) {
-			return 0;
-		}
-		return extractEnergy(sent, false);
+		int sent = consumer.receiveEnergy(maxEnergyInt, simulate);
+		return sent;
 	}
 
-	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy) {
-		maxEnergy = Math.min(maxEnergy,  energyStored);
-		double sent = consumer.receiveUltraEnergy(maxEnergy, false);
+	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy, boolean simulate) {
+		double sent = consumer.receiveUltraEnergy(maxEnergy, simulate);
 		if(sent == 0) {
 			return 0;
 		}
-		return extractUltraEnergy(sent, false);
+		return sent;
 	}
 	
 	
@@ -460,76 +454,73 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return getStorages((t, f, s) -> s.canExtract());
 	}
 	
-	protected void sendEnergyToConsumers() {
-		Collection<IEnergyStorage> consumers = getConsumers();
+	protected double sendEqually(Set<IEnergyStorage> activeConsumers, double maxEnergy, boolean simulate) {
+		double totalSent = 0;
+		double lastTotalSent = -1;
 		
-		Map<IEnergyStorage, Double> mapWeights = new HashMap<>();
-
-		//Calculate weights, used to simulate energy consumer priority
-		double sentSum = 0;
-		for(IEnergyStorage consumer : consumers) {
-			double sent = 0;
-			if(consumer instanceof IUltraEnergyStorage) {
-				sent = ((IUltraEnergyStorage)consumer).receiveUltraEnergy(energyStored, true);
+		while(!activeConsumers.isEmpty() && totalSent < maxEnergy && lastTotalSent != totalSent) {
+			lastTotalSent = totalSent;
+			Iterator<IEnergyStorage> it = activeConsumers.iterator();
+			double consumerSlice = Math.floor((maxEnergy - totalSent) / activeConsumers.size());
+			if(consumerSlice == 0) {
+				consumerSlice = 1;
 			}
-			else {
-				sent = consumer.receiveEnergy((int)Math.min(Integer.MAX_VALUE, energyStored), true);
-			}
-			mapWeights.put(consumer, sent);
-			sentSum += sent;
-		}
-		if(sentSum == 0) {
-			return;
-		}
-		double energyPerWeight = energyStored/sentSum;
-
-
-		//Send weighted energy to consumers
-		for(IEnergyStorage consumer : consumers) {
-			double weight = mapWeights.get(consumer);
-			double energyToSend = Math.floor(energyPerWeight * weight);
-			if(weight > 0 && energyToSend == 0) {
-				energyToSend = 1;
-			}
-			sendEnergy(consumer, energyToSend);
-		}
-		//Send remaining energy to consumers (remaining from rounding)
-		if(energyStored > 0) {
-			for(IEnergyStorage consumer : consumers) {
-				if(energyStored == 0) {
-					break;
+			while(it.hasNext()) {
+				IEnergyStorage consumer = it.next();
+				double consumerMax = Math.min(maxEnergy - totalSent, consumerSlice);
+				double sent = sendEnergy(consumer, consumerMax, simulate);
+				if(sent == 0) {
+					it.remove();
 				}
-				sendEnergy(consumer, energyStored);
+				totalSent += sent;
 			}
 		}
+		return totalSent;
+	}
+	
+	protected double sendToConsumers(double maxEnergy, boolean simulate) {
+		double energyNeeded = 0;
+		Set<IEnergyStorage> activeConsumers = new HashSet<>();
+		for(IEnergyStorage consumer : getConsumers()) {
+			double consumerNeeds = sendEnergy(consumer, Double.MAX_VALUE, true);
+			energyNeeded += consumerNeeds;
+			if(consumerNeeds > 0) {
+				activeConsumers.add(consumer);
+			}
+		}
+		if(simulate) {
+			return energyNeeded;
+		}
+		
+		return sendEqually(activeConsumers, maxEnergy, simulate);
 	}
 
-	double extractEnergy(IEnergyStorage producer, double maxExtract) {
+	double extractEnergy(IEnergyStorage producer, double maxExtract, boolean simulate) {
 		if(producer instanceof IUltraEnergyStorage) {
-			return (int)extractEnergy((IUltraEnergyStorage)producer, maxExtract);
+			return (int)extractEnergy((IUltraEnergyStorage)producer, maxExtract, simulate);
 		}
 		int maxExtractInt = (int)Math.min(Integer.MAX_VALUE, maxExtract);
-		double received = producer.extractEnergy(maxExtractInt, false);
+		double received = producer.extractEnergy(maxExtractInt, simulate);
 		if(received == 0) {
 			return 0;
 		}
-		return receiveEnergy((int)received, false);
+		return receiveEnergy((int)received, simulate);
 	}
 
-	double extractEnergy(IUltraEnergyStorage producer, double maxExtract) {
-		double received = producer.extractUltraEnergy(maxExtract, false);
+	double extractEnergy(IUltraEnergyStorage producer, double maxExtract, boolean simulate) {
+		double received = producer.extractUltraEnergy(maxExtract, simulate);
 		if(received == 0) {
 			return 0;
 		}
-		return receiveUltraEnergy(received, false);
+		return receiveUltraEnergy(received, simulate);
 	}
 
-	protected void extractEnergyFromProducers() {
+	protected void extractEnergyFromProducers(boolean simulate) {
 		Collection<IEnergyStorage> producers = getProducers();
 		
 		for(IEnergyStorage producer : producers) {
 			double maxExtract = getMaxUltraEnergyStored() - getUltraEnergyStored();
-			extractEnergy(producer, maxExtract);
+			extractEnergy(producer, maxExtract, simulate);
 		}
 	}
 
@@ -579,7 +570,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 	@Override
 	public double receiveUltraEnergy(double maxReceive, boolean simulate) {
-		if(maxEnergyStored == 0 || energyStored == maxEnergyStored) {
+		if(maxEnergyStored == 0 || energyStored == maxEnergyStored || maxReceive == 0) {
 			return 0;
 		}
 		double totalReceived = 0;

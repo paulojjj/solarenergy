@@ -3,12 +3,12 @@ package paulojjj.solarenergy.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import paulojjj.solarenergy.net.IMessageListener;
-import paulojjj.solarenergy.tiles.BatteryTileEntity;
+import paulojjj.solarenergy.tiles.EnergyStorageTileEntity;
 import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
 
-public class BatteryContainer extends Container implements IMessageListener<EnergyStorageContainerUpdateMessage> {
+public class EnergyStorageContainer extends Container implements IMessageListener<EnergyStorageContainerUpdateMessage> {
 	
-	private BatteryTileEntity tileEntity;
+	private EnergyStorageTileEntity tileEntity;
 	
 	private double energy;
 	private double maxEnergy;
@@ -16,7 +16,7 @@ public class BatteryContainer extends Container implements IMessageListener<Ener
 	private double output;
 	
 	
-	public BatteryContainer(BatteryTileEntity tileEntity, EntityPlayer player) {
+	public EnergyStorageContainer(EnergyStorageTileEntity tileEntity, EntityPlayer player) {
 		super();
 		this.tileEntity = tileEntity;
 		tileEntity.onContainerOpened(player);

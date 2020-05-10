@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "aba",
+        "aba",
+        "aba"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "minecraft:stone",
+            "data" : 0
+        },
+        "b":
+        {
+        	"item": "minecraft:iron_ingot"
+        }
+    },
+    "result":
+    {
+        "item": "solarenergy:energy_cable",
+        "count": 8
+    }
+}

@@ -39,7 +39,8 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 
 		GlStateManager.translate(x, y, z);
 		RenderHelper.enableStandardItemLighting();
-		GlStateManager.disableCull();
+		GlStateManager.disableLighting();
+		GlStateManager.enableCull();
 
 		BufferBuilder builder = Tessellator.getInstance().getBuffer();
 
@@ -53,6 +54,7 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 
 		BlockPos pos = te.getPos();
 
+		GlStateManager.disableCull();
 		for(EnumFacing facing : EnumFacing.HORIZONTALS) {
 			if(!te.hasStorage(facing)) {
 				continue;

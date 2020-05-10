@@ -6,7 +6,9 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import paulojjj.solarenergy.registry.Items;
+import paulojjj.solarenergy.renderers.EnergyCableRenderer;
 import paulojjj.solarenergy.renderers.SolarGeneratorRenderer;
+import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class ClientProxy extends CommonProxy {
@@ -37,7 +39,9 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerAssets() {
 		super.registerAssets();
+		
 		ClientRegistry.bindTileEntitySpecialRenderer(SolarGeneratorTileEntity.class, new SolarGeneratorRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(EnergyCableTileEntity.class, new EnergyCableRenderer());
 	}
 	
 }

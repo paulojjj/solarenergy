@@ -6,6 +6,7 @@ import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IEnergyProducer;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.TickHandler;
@@ -30,6 +31,10 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	public SolarGeneratorTileEntity(Tier tier) {
 		super();
 		setTier(tier);
+	}
+	
+	public Tier getTier() {
+		return tier;
 	}
 
 	protected void setTier(Tier tier) {
@@ -156,11 +161,6 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + " [position=" + pos + "]";
-	}
-
-	@Override
 	public Class<?> getNetworkClass() {
 		return SolarGeneratorNetwork.class;
 	}
@@ -176,6 +176,15 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 			maxProduction += tile.getMaxProduction();
 		}
 		return new SolarGeneratorContainerUpdateMessage(activeProduction, maxProduction, output);
+	}
+	
+	@Override
+	protected IEnergyStorage getNeighborStorage(EnumFacing facing) {
+		IEnergyStorage storage = super.getNeighborStorage(facing);
+		if(storage != null && storage instanceof SolarGeneratorTileEntity) {
+			storage = null;
+		}
+		return storage;
 	}
 
 }

@@ -16,6 +16,7 @@ import paulojjj.solarenergy.registry.Items;
 import paulojjj.solarenergy.registry.Items.ItemType;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
+import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class CommonProxy implements Proxy {
@@ -32,6 +33,7 @@ public class CommonProxy implements Proxy {
 		GameRegistry.registerTileEntity(SolarGeneratorTileEntity.class, new ResourceLocation(Main.MODID, "solar_generator_tile_entity"));
 		GameRegistry.registerTileEntity(BatteryTileEntity.class, new ResourceLocation(Main.MODID,"battery_tile_entity"));
 		GameRegistry.registerTileEntity(EnergyAssemblerTileEntity.class, new ResourceLocation(Main.MODID,"energy_assembler_tile_entity"));
+		GameRegistry.registerTileEntity(EnergyCableTileEntity.class, new ResourceLocation(Main.MODID,"energy_cable_tile_entity"));
 	}
 	
 	public void registerBlock(ItemBlock ib) {

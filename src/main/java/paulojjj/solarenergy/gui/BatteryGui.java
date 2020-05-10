@@ -9,14 +9,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
-import paulojjj.solarenergy.containers.BatteryContainer;
+import paulojjj.solarenergy.containers.EnergyStorageContainer;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
 @SideOnly(Side.CLIENT)
 public class BatteryGui extends GuiContainer {
 	
 	public BatteryGui(EntityPlayer player, BatteryTileEntity tileEntity) {
-		super(new BatteryContainer(tileEntity, player));
+		super(new EnergyStorageContainer(tileEntity, player));
 	}
 
 	private static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/battery_gui.png");
@@ -26,7 +26,7 @@ public class BatteryGui extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
 		
-		BatteryContainer container = (BatteryContainer)inventorySlots;
+		EnergyStorageContainer container = (EnergyStorageContainer)inventorySlots;
 		
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         mc.getTextureManager().bindTexture(ASSET_RESOURCE);
@@ -51,7 +51,7 @@ public class BatteryGui extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		
-		BatteryContainer container = (BatteryContainer)inventorySlots;
+		EnergyStorageContainer container = (EnergyStorageContainer)inventorySlots;
 
 		String text = "";
 		text += EnergyFormatter.format(container.getEnergy());

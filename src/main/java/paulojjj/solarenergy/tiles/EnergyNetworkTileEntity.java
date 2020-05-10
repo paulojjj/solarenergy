@@ -7,6 +7,8 @@ import java.util.Set;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -91,17 +93,18 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 				}
 			}
 			IBlockState bs = world.getBlockState(pos);
-			int flags = SEND_TO_CLIENT | UPDATE_BLOCK;
+			int flags = SEND_TO_CLIENT;
+			updateClientTileEntity();
 			world.notifyBlockUpdate(pos, bs, bs, flags);			
 		}
 	}
 
-	private IEnergyStorage getNeighborStorage(EnumFacing facing) {
+	protected IEnergyStorage getNeighborStorage(EnumFacing facing) {
 		BlockPos neighbosPos = pos.offset(facing);
 		IEnergyStorage storage = null;
 		if(world.isBlockLoaded(neighbosPos)) {
 			TileEntity te = world.getTileEntity(neighbosPos);
-			if(te == null || te.getClass().equals(getClass())) {
+			if(te == null) {
 				return null;
 			}
 			if(te.hasCapability(CapabilityEnergy.ENERGY, facing)) {
@@ -227,6 +230,12 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 				neighborStorages.add(EnumFacing.getFront(storages[i]));
 			}
 		}
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		super.onDataPacket(net, pkt);
+		handleUpdateTag(pkt.getNbtCompound());
 	}
 
 	@Override

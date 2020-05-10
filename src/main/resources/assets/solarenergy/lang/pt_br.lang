@@ -10,6 +10,7 @@ solarenergy.output=Saída
 solarenergy.maxproduction=Produção Máxima
 solarenergy.producing=Produzindo
 solarenergy.energy_needed=Energia Necessária
+solarenergy.throughput=Transferência
 
 tile.basic_battery.name=Bateria Básica
 tile.regular_battery.name=Bateria Regular
@@ -32,6 +33,7 @@ tile.elite_solar_generator.name=Gerador Solar Elite
 tile.ultimate_solar_generator.name=Gerador Solar Ultimate
 
 tile.energy_assembler.name=Agregador de Energia
+tile.energy_cable.name=Cabo de Energia
 
 item.basic_energy_core.name=Núcleo de Energia Básico
 item.regular_energy_core.name=Núcleo de Energia Regular

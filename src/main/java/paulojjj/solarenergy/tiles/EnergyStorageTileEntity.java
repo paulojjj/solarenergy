@@ -163,7 +163,11 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 		if(!world.isRemote) {
 			playersUsing.remove(player);
 		}
-	}	
-
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " [position=" + pos + "]";
+	}
 
 }

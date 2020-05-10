@@ -21,39 +21,42 @@ public class Render {
 	}
 
 	public static void buildSquare(BufferBuilder builder, double startX, double startY, double startZ, double endX, double endY, double endZ, EnumFacing facing) {
-		double width = endX - startX;
-		double height = endY - startY;
-
 		switch(facing) {
 		case NORTH:
+			builder.pos(startX, startY, startZ).tex(0.0, 1.0).endVertex(); //Bottom left
+			builder.pos(startX, endY, startZ).tex(0.0, 0.0).endVertex(); //Top left
+			builder.pos(endX, endY, startZ).tex(1.0, 0.0).endVertex(); //Top right
+			builder.pos(endX, startY, startZ).tex(1.0, 1.0).endVertex(); //Bottom right
+			break;
 		case SOUTH:
-			width = endX - startX;
-			height = endY - startY;
-			double z = facing == EnumFacing.SOUTH ? endZ : startZ;
-			builder.pos(startX, startY, z).tex(0.0, height).endVertex(); //Bottom left
-			builder.pos(endX, startY, z).tex(width, height).endVertex(); //Bottom right
-			builder.pos(endX, endY, z).tex(width, 0.0).endVertex(); //Top right
-			builder.pos(startX, endY, z).tex(0.0, 0.0).endVertex(); //Top left
+			builder.pos(startX, startY, endZ).tex(0.0, 1.0).endVertex(); //Bottom left
+			builder.pos(endX, startY, endZ).tex(1.0, 1.0).endVertex(); //Bottom right
+			builder.pos(endX, endY, endZ).tex(1.0, 0.0).endVertex(); //Top right
+			builder.pos(startX, endY, endZ).tex(0.0, 0.0).endVertex(); //Top left
 			break;
 		case EAST:
+			builder.pos(endX, startY, startZ).tex(0.0, 1.0).endVertex(); //Bottom left
+			builder.pos(endX, endY, startZ).tex(0.0, 0.0).endVertex(); //Top left
+			builder.pos(endX, endY, endZ).tex(1.0, 0.0).endVertex(); //Top right
+			builder.pos(endX, startY, endZ).tex(1.0, 1.0).endVertex(); //Bottom right
+			break;
 		case WEST:
-			width = endZ - startZ;
-			height = endY - startY;
-			double x = (facing == EnumFacing.EAST ? endX : startX);
-			builder.pos(x, startY, startZ).tex(0.0, height).endVertex(); //Bottom left
-			builder.pos(x, startY, endZ).tex(width, height).endVertex(); //Bottom right
-			builder.pos(x, endY, endZ).tex(width, 0.0).endVertex(); //Top right
-			builder.pos(x, endY, startZ).tex(0.0, 0.0).endVertex(); //Top left
+			builder.pos(startX, startY, startZ).tex(0.0, 1.0).endVertex(); //Bottom left
+			builder.pos(startX, startY, endZ).tex(1.0, 1.0).endVertex(); //Bottom right
+			builder.pos(startX, endY, endZ).tex(1.0, 0.0).endVertex(); //Top right
+			builder.pos(startX, endY, startZ).tex(0.0, 0.0).endVertex(); //Top left
 			break;
 		case UP:
+			builder.pos(startX, endY, endZ).tex(0.0, 1.0).endVertex(); //Bottom left
+			builder.pos(endX, endY, endZ).tex(1.0, 1.0).endVertex(); //Bottom right
+			builder.pos(endX , endY, startZ).tex(1.0, 0.0).endVertex(); //Top right
+			builder.pos(startX, endY, startZ).tex(0.0, 0.0).endVertex(); //Top left
+			break;
 		case DOWN:
-			width = endX - startX;
-			height = endZ - startZ;
-			double y = (facing == EnumFacing.UP ? endY : startY);
-			builder.pos(startX, y, endZ).tex(0.0, height).endVertex(); //Bottom left
-			builder.pos(endX, y, endZ).tex(width, height).endVertex(); //Bottom right
-			builder.pos(endX , y, startZ).tex(width, 0.0).endVertex(); //Top right
-			builder.pos(startX, y, startZ).tex(0.0, 0.0).endVertex(); //Top left
+			builder.pos(startX, startY, endZ).tex(0.0, 1.0).endVertex(); //Bottom left
+			builder.pos(startX, startY, startZ).tex(0.0, 0.0).endVertex(); //Top left
+			builder.pos(endX , startY, startZ).tex(1.0, 0.0).endVertex(); //Top right
+			builder.pos(endX, startY, endZ).tex(1.0, 1.0).endVertex(); //Bottom right
 			break;
 		}
 	}
