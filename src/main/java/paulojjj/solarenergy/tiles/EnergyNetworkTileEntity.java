@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.tiles;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +19,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	public abstract Class<?> getNetworkClass();
 
 	private boolean unloaded = false;
+
 
 	@Override
 	public INetwork<?> getNetwork() {
@@ -51,6 +53,20 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		if(!world.isRemote) {
 			Log.info("TileEntity Loaded: " + this);
 			INetwork.newInstance((Class<INetwork<EnergyNetworkTileEntity>>)getNetworkClass(), this);
+
+			for(EnumFacing facing : EnumFacing.values()) {
+				//Calls onNeighborChanged so neighbors that are still not loaded can be detected after loaded (on neighborChanged is not called by default when world loads)
+				BlockPos neighborPos = pos.offset(facing);
+				if(world.isBlockLoaded(neighborPos)) {
+					TileEntity te = world.getTileEntity(neighborPos);
+					if(te instanceof EnergyStorageTileEntity) {
+						EnergyNetworkTileEntity ente = (EnergyNetworkTileEntity)te;
+						if(ente.network != null) {
+							ente.onNeighborChanged(pos);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -85,7 +101,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 			network.onNeighborChanged(this, neighborPos);
 		}
 	}
-	
+
 	protected Object getContainerUpdateMessage() {
 		double energy = getNetwork().getUltraEnergyStored();
 		double maxEnergy = getNetwork().getMaxUltraEnergyStored();
