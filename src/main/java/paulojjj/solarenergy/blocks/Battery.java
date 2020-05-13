@@ -135,7 +135,7 @@ public class Battery extends BlockDirectional {
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if(!worldIn.isRemote) {
 			BatteryTileEntity tileEntity = (BatteryTileEntity)worldIn.getTileEntity(pos);
-			tileEntity.onNeighborChanged(fromPos);
+			tileEntity.onNeighborChanged(pos);
 		}
 	}
 
