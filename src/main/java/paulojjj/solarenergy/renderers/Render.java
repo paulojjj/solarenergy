@@ -8,8 +8,13 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class Render {
+	
+	public static void drawCubeFaces(BufferBuilder builder, ResourceLocation texture, AxisAlignedBB bb, EnumFacing... facings) {
+		drawCubeFaces(builder, texture, bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, facings);		
+	}
 	
 	public static void drawCubeFaces(BufferBuilder builder, ResourceLocation texture, double startX, double startY, double startZ, double endX, double endY, double endZ, EnumFacing... facings) {
 		builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);

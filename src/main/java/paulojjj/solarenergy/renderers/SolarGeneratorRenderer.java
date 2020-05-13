@@ -63,7 +63,7 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 			BlockPos neighborPos = pos.offset(facing);
 			IBlockState bs = te.getWorld().getBlockState(neighborPos);
 			AxisAlignedBB bbNeighbor = bs.getBoundingBox(te.getWorld(), neighborPos);
-			if(bbNeighbor.maxY == 1 || bbNeighbor.maxY <= height) {
+			if(bs.isFullBlock() || bbNeighbor.maxY <= height) {
 				continue;
 			}
 

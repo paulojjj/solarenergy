@@ -10,7 +10,7 @@ public class EnergyCableTileEntity extends EnergyNetworkTileEntity {
 
 	@Override
 	public boolean canExtract() {
-		return true;
+		return false;
 	}
 
 	@Override
