@@ -144,7 +144,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 			energy += Math.min(activeProduction, getMaxUltraEnergyStored() - energy);
 		}
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
@@ -158,6 +158,20 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		compound = super.writeToNBT(compound);
 		compound.setInteger(NBT.TIER, tier.ordinal());
 		return compound;
+	}
+	
+	@Override
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt =  super.getUpdateTag();
+		nbt.setInteger(NBT.TIER, tier.ordinal());
+		return nbt;
+	}
+	
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag) {
+		super.handleUpdateTag(tag);
+		Tier tier =  Tier.values()[tag.getInteger(NBT.TIER)];
+		setTier(tier);
 	}
 
 	@Override
