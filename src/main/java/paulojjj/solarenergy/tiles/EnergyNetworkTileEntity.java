@@ -84,7 +84,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 				BlockPos neighborPos = pos.offset(facing);
 				if(world.isBlockLoaded(neighborPos)) {
 					TileEntity te = world.getTileEntity(neighborPos);
-					if(te instanceof EnergyStorageTileEntity) {
+					if(te instanceof EnergyNetworkTileEntity) {
 						EnergyNetworkTileEntity ente = (EnergyNetworkTileEntity)te;
 						if(ente.network != null) {
 							ente.onNeighborChanged(pos);
