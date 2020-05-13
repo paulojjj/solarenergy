@@ -163,10 +163,10 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	}
 
 	public void onNeighborChanged(BlockPos neighborPos) {
-		if(neighborPos.equals(pos)) {
-			return;
-		}
 		if(!world.isRemote) {
+			if(neighborPos.equals(pos)) {
+				return;
+			}
 			Log.info(pos + " neighbor changed: " + neighborPos);
 			EnumFacing facing = getNeighborFacing(neighborPos);
 			IEnergyStorage storage = getNeighborStorage(facing);

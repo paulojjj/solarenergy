@@ -70,7 +70,7 @@ public class EnergyCable extends Block {
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if(!worldIn.isRemote) {
 			EnergyCableTileEntity tileEntity = (EnergyCableTileEntity)worldIn.getTileEntity(pos);
-			tileEntity.onNeighborChanged(pos);
+			tileEntity.onNeighborChanged(fromPos);
 		}
 	}
 	

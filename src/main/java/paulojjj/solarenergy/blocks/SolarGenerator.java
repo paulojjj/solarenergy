@@ -87,7 +87,7 @@ public class SolarGenerator extends Block {
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if(!worldIn.isRemote) {
 			SolarGeneratorTileEntity tileEntity = (SolarGeneratorTileEntity)worldIn.getTileEntity(pos);
-			tileEntity.onNeighborChanged(pos);
+			tileEntity.onNeighborChanged(fromPos);
 		}
 	}
 	
