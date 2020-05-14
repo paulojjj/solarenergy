@@ -1,9 +1,9 @@
 package paulojjj.solarenergy.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.material.Material;
+import java.util.List;
+
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,53 +11,30 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
-import paulojjj.solarenergy.gui.GuiHandler;
 import paulojjj.solarenergy.gui.GuiHandler.GUI;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
 
-public class Battery extends BlockDirectional {
+public class Battery extends EnergyNetworkBlock<BatteryTileEntity> {
 
-	private Tier tier;
+    public static PropertyDirection FACING = PropertyDirection.create("facing");
 
 	public Battery(Tier tier) {
-		super(Material.ROCK);
-		setResistance(50.0f);
-		setHardness(3.5f);
-		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		this.tier = tier;
+		super();
+		configBuilder()
+			.with(FACING, EnumFacing.NORTH)
+			.gui(GUI.BATTERY)
+			.createTileEntity((x) -> new BatteryTileEntity(tier))
+			.getDrops(this::setDropNBT)
+			.init();
 	}
-
-	@Override
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.SOLID;
-	}
-
-	@Override
-	public boolean hasTileEntity(IBlockState state) {
-		return true;
-	}
-
-	@Override
-	public TileEntity createTileEntity(World world, IBlockState state) {
-		return new BatteryTileEntity(tier);
-	}
-
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
-	}
-
+	
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer( this, new IProperty[] {FACING});
@@ -74,12 +51,9 @@ public class Battery extends BlockDirectional {
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(FACING).getIndex();
 	}
-
-	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
-			int fortune) {
-		super.getDrops(drops, world, pos, state, fortune);
-		BatteryTileEntity te = (BatteryTileEntity)world.getTileEntity(pos);
+	
+	public void setDropNBT(List<ItemStack> drops, TileEntity tileEntity) {
+		BatteryTileEntity te = (BatteryTileEntity)tileEntity;
 		ItemStack stack = drops.iterator().next();
 		NBTTagCompound nbt = new NBTTagCompound();
 		stack.setTagCompound(nbt);
@@ -110,49 +84,14 @@ public class Battery extends BlockDirectional {
 		worldIn.setBlockState(pos, state.withProperty(FACING, facing));
 	}	
 
-	/*	@Override
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-		worldIn.getClosestPlayer(pos.get, posY, posZ, distance, spectator)
-		// TODO Auto-generated method stub
-		super.onBlockAdded(worldIn, pos, state);
-	}*/
-
-
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(worldIn.isRemote) {
-			return true;
-		}
 		if(playerIn.isSneaking()) {
 			worldIn.setBlockState(pos, state.withProperty(FACING, facing));
 			return true;
 		}
-		return GuiHandler.openGui(playerIn, worldIn, GUI.BATTERY, pos);
+		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
 	}
 	
-	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-		if(!worldIn.isRemote) {
-			BatteryTileEntity tileEntity = (BatteryTileEntity)worldIn.getTileEntity(pos);
-			tileEntity.onNeighborChanged(fromPos);
-		}
-	}
-
-	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
-			boolean willHarvest) {
-		//Delay deletion of the block until after getDrops
-		if(willHarvest) return true;
-		return super.removedByPlayer(state, world, pos, player, willHarvest);
-	}
-
-	@Override
-	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
-			ItemStack stack) {
-		super.harvestBlock(worldIn, player, pos, state, te, stack);
-		worldIn.setBlockToAir(pos);
-	}
-
-
 }
