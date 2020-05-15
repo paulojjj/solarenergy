@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class ItemStackHandlerWrapper extends ItemStackHandler {
@@ -133,11 +133,11 @@ public class ItemStackHandlerWrapper extends ItemStackHandler {
 		return delegate.isItemValid(slot, stack);
 	}
 
-	public NBTTagCompound serializeNBT() {
+	public CompoundNBT serializeNBT() {
 		return delegate.serializeNBT();
 	}
 
-	public void deserializeNBT(NBTTagCompound nbt) {
+	public void deserializeNBT(CompoundNBT nbt) {
 		delegate.deserializeNBT(nbt);
 	}
 

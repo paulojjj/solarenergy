@@ -1,43 +1,41 @@
 package paulojjj.solarenergy.containers;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.SlotItemHandler;
 import paulojjj.solarenergy.net.IMessageListener;
+import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
 
-public class EnergyAssemblerContainer extends Container implements IMessageListener<EnergyStorageContainerUpdateMessage> {
+public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerContainer> implements IMessageListener<EnergyStorageContainerUpdateMessage> {
 
-	private InventoryPlayer playerInventory;
-	private EnergyAssemblerTileEntity tileEntity;
+	private PlayerInventory playerInventory;
 	private int firstPlayerIndex;
 	private int lastPlayerIndex;
 	
 	private EnergyStorageContainerUpdateMessage statusMessage;
 
-	public EnergyAssemblerContainer(EnergyAssemblerTileEntity tileEntity, InventoryPlayer playerInventory) {
-		this.tileEntity = tileEntity;
+	public EnergyAssemblerContainer(int windowId, PlayerInventory playerInventory, PacketBuffer additionalData) {
+		super(Containers.ENERGY_ASSEMBLER.getType(), windowId, playerInventory, additionalData);
 		this.playerInventory = playerInventory;
 
-		this.addSlotToContainer(new SlotItemHandler(tileEntity.getPlayerHandler(), 0, 26, 10));
-		this.addSlotToContainer(new SlotItemHandler(tileEntity.getPlayerHandler(), 1, 26, 59));
+		EnergyAssemblerTileEntity tileEntity = (EnergyAssemblerTileEntity)super.getTileEntity();
+		
+		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 0, 26, 10));
+		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 1, 26, 59));
 		
 		firstPlayerIndex = inventorySlots.size();
 		addPlayerSlots(playerInventory);
 		lastPlayerIndex = inventorySlots.size() - 1;
-		
-		tileEntity.onContainerOpened(playerInventory.player);		
 	}
 	
-	@Override
-	public void onContainerClosed(EntityPlayer playerIn) {
-		super.onContainerClosed(playerIn);
-		tileEntity.onContainerClosed(playerInventory.player);
+	public EnergyAssemblerContainer(int windowId, PlayerInventory playerInventory) {
+		this(windowId, playerInventory, null);
 	}
 	
 	private void addPlayerSlots(IInventory playerInventory) {
@@ -45,25 +43,25 @@ public class EnergyAssemblerContainer extends Container implements IMessageListe
 		{
 			for (int j = 0; j < 9; ++j)
 			{
-				this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
 		for (int k = 0; k < 9; ++k)
 		{
-			this.addSlotToContainer(new Slot(playerInventory, k, 8 + k * 18, 142));
+			this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
 		}
 
 	}
 	
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return true;
 	}
 
 	@Override
 	//Shift + Right Click
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
 		ItemStack previous = ItemStack.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(index);
 

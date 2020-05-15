@@ -1,51 +1,42 @@
 package paulojjj.solarenergy;
 
-import java.io.File;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import paulojjj.solarenergy.net.PacketManager;
+import paulojjj.solarenergy.proxy.ClientProxy;
 import paulojjj.solarenergy.proxy.CommonProxy;
 import paulojjj.solarenergy.proxy.Proxy;
 import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Items;
 
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION)
+@Mod(Main.MODID)
 public class Main {
 	public static final String MODID = "solarenergy";
-	public static final String NAME = "Solar Energy";
-	public static final String VERSION = "0.2.0.3";
 
 	public static SoundEvent sound = null;
 	
-	@Instance(value = MODID)
 	public static Main instance;
 	
-	@SidedProxy(clientSide = "paulojjj.solarenergy.proxy.ClientProxy", serverSide = "paulojjj.solarenergy.proxy.CommonProxy")
-	private static CommonProxy proxy;
+	private static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 	
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event)
+	public Main() {
+		instance = this;
+		preInit();
+		init();
+		proxy.registerCommands();
+	}
+	
+	public void preInit()
 	{
-		File configFile = event.getSuggestedConfigurationFile();
-		Configuration cfg = new Configuration(configFile);
-		Config.init(cfg);
+		Config.init();
 
 		proxy.registerAssets();
 	}
 
-	@EventHandler
-	public void init(FMLInitializationEvent event)
+	public void init()
 	{
-		proxy.registerGuiHandler();
 		proxy.registerHandlers();
 		
 		RecipeHandler.addEnergyAssemblerRecipe(Items.BASIC_ENERGY_CORE.getItem(), new ItemStack(Items.REGULAR_ENERGY_CORE.getItem(), 1), 100000);
@@ -53,23 +44,17 @@ public class Main {
 		RecipeHandler.addEnergyAssemblerRecipe(Items.INTERMEDIATE_ENERGY_CORE.getItem(), new ItemStack(Items.ADVANCED_ENERGY_CORE.getItem(), 1), 10000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ADVANCED_ENERGY_CORE.getItem(), new ItemStack(Items.ELITE_ENERGY_CORE.getItem(), 1), 100000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ELITE_ENERGY_CORE.getItem(), new ItemStack(Items.ULTIMATE_ENERGY_CORE.getItem(), 1), 1000000000d);
-		RecipeHandler.addEnergyAssemblerRecipe(net.minecraft.init.Items.IRON_INGOT, new ItemStack(Items.LEAD_INGOT.getItem(), 1), 1000000);
+		RecipeHandler.addEnergyAssemblerRecipe(net.minecraft.item.Items.IRON_INGOT, new ItemStack(Items.LEAD_INGOT.getItem(), 1), 1000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ULTIMATE_ENERGY_CORE.getItem(), new ItemStack(Items.BASIC_DENSE_ENERGY_CORE.getItem(), 1), 10000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.BASIC_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), 1), 100000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.INTERMEDIATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.INTERMEDIATE_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ADVANCED_DENSE_ENERGY_CORE.getItem(), 1), 10000000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ADVANCED_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ELITE_DENSE_ENERGY_CORE.getItem(), 1), 100000000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ELITE_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ULTIMATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000000d);
-
 		
 		PacketManager.init();
 	}
 	
-	@EventHandler
-	public void serverStarting(FMLServerStartingEvent event)
-	{
-		proxy.registerCommands();
-	}
 	
 	public static Proxy getProxy() {
 		return proxy;

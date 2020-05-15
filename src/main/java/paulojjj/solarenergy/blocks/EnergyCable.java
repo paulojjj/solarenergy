@@ -1,20 +1,16 @@
 package paulojjj.solarenergy.blocks;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import paulojjj.solarenergy.gui.GuiHandler.GUI;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
@@ -38,79 +34,52 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 			return bb;
 		}
 
-		public static Boxes getBox(EnumFacing facing) {
+		public static Boxes getBox(Direction facing) {
 			return Boxes.values()[facing.ordinal()];
 		}
 	}
 
 	public EnergyCable() {
-		super();
+		super(propertiesBuilder().resistance(1.0f).hardness(1.0f));
 		configBuilder()
-			.resistance(1.0f)
-			.hardness(1.0f)
 			.gui(GUI.ENERGY_CABLE)
 			.createTileEntity((x) -> new EnergyCableTileEntity())
+			.renderType(BlockRenderType.INVISIBLE)
 			.init();
 	}
-
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.INVISIBLE;
+	
+	protected VoxelShape getVoxelShape(Boxes box) {
+		AxisAlignedBB bb = box.getBoundingBox();
+		return makeCuboidShape(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
 	}
 
-	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
-			List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState) {
-		EnergyCableTileEntity te = (EnergyCableTileEntity)worldIn.getTileEntity(pos);
-
-		List<AxisAlignedBB> collisionBoxes = new ArrayList<>();
-		collisionBoxes.add(Boxes.CENTER.getBoundingBox());
-		for(EnumFacing facing : EnumFacing.values()) {
+	public VoxelShape getShape(IBlockReader world, BlockPos pos) {
+		EnergyCableTileEntity te = (EnergyCableTileEntity)world.getTileEntity(pos);
+		
+		if(te == null) {
+			return VoxelShapes.fullCube();
+		}
+		
+		VoxelShape shape = getVoxelShape(Boxes.CENTER);
+		for(Direction facing : Direction.values()) {
 			if(te.hasStorage(facing)) {
 				Boxes box = Boxes.getBox(facing);
-				collisionBoxes.add(box.getBoundingBox());
+				VoxelShape boxShape = getVoxelShape(box);
+				shape = VoxelShapes.combine(shape, boxShape, IBooleanFunction.OR);
 			}
 		}
-
-		AxisAlignedBB offsetEntityBox = entityBox.offset(-pos.getX(), -pos.getY(), -pos.getZ());
-		for(AxisAlignedBB collisionBox : collisionBoxes) {
-			if(offsetEntityBox.intersects(collisionBox)) {
-				collidingBoxes.add(collisionBox.offset(pos));
-			}
-		}
+		return shape;
+	}
+	
+	@Override
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+		return getShape(worldIn, pos);
 	}
 
 	@Override
-	@Deprecated
-	public boolean isBlockNormalCube(IBlockState state) {
-		return false;
+	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos,
+			ISelectionContext context) {
+		return getShape(worldIn, pos);
 	}
-
-	@Override
-	@Deprecated
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	@Deprecated
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	@Deprecated
-	public boolean isFullBlock(IBlockState state) {
-		return false;
-	}
-
-	@Nonnull
-	@Override
-	@Deprecated
-	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face) {
-		return BlockFaceShape.UNDEFINED;
-	}
-
-
-
+	
 }

@@ -1,7 +1,8 @@
 package paulojjj.solarenergy.registry;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.blocks.BatteryItemBlock;
@@ -32,24 +33,21 @@ public enum Blocks {
 	ENERGY_ASSEMBLER("energy_assembler", new EnergyAssembler()),
 	ENERGY_CABLE("energy_cable", new EnergyCable());
 	
-	private ItemBlock itemBlock;
-	
+	private BlockItem itemBlock;
 	
 	Blocks(String name, Block block) {
-		this(name, new ItemBlock(block));
+		this(name, new BlockItem(block, new Item.Properties().group(ModCreativeTab.getInstance())));
 	}
 
-	Blocks(String name, ItemBlock itemBlock) {
+	Blocks(String name, BlockItem itemBlock) {
 		this.itemBlock = itemBlock;
 		
 		itemBlock.setRegistryName(name);
 		Block block = itemBlock.getBlock();
 		block.setRegistryName(name);
-		block.setUnlocalizedName(name);
-		block.setCreativeTab(ModCreativeTab.getInstance());
 	}
 	
-	public ItemBlock getItemBlock() {
+	public BlockItem getItemBlock() {
 		return itemBlock;
 	}
 	

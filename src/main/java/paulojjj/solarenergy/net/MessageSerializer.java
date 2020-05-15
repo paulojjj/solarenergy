@@ -6,11 +6,11 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import io.netty.buffer.ByteBuf;
-import scala.collection.mutable.HashSet;
 
 public class MessageSerializer {
 

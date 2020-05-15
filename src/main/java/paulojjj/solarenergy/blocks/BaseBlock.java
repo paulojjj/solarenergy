@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.blocks;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,49 +9,62 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.IProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootContext.Builder;
+import net.minecraft.world.storage.loot.LootParameters;
 import paulojjj.solarenergy.gui.GuiHandler;
-import paulojjj.solarenergy.gui.GuiHandler.GUI;
+import paulojjj.solarenergy.registry.GUI;
 
 public class BaseBlock extends Block {
 	
 	private GUI gui;
 	private Function<Void, ? extends TileEntity> createTileEntity;
 	private BiConsumer<List<ItemStack>, TileEntity> getDrops;
-	private BlockRenderLayer blockRenderLayer;
-	private EnumBlockRenderType blockRenderType;
+	private BlockRenderType blockRenderType;
 	
-	private Function<Void, BlockStateContainer> createBlockStateContainer;
+	private List<IProperty<?>> properties;
+
 	
-	public BaseBlock() {
-		super(Material.ROCK);
+	public BaseBlock(Block.Properties properties) {
+		super(properties);
+	}
+	
+	public BaseBlock(PropertiesBuilder builder) {
+		super(builder.build());
+	}
+	
+	public static PropertiesBuilder propertiesBuilder() {
+		return new PropertiesBuilderImpl();
 	}
 	
 	public ConfigBuilder configBuilder() {
 		return new ConfigBuilderImpl();
 	}
 	
+	public interface PropertiesBuilder {
+		PropertiesBuilder hardness(float value);
+		PropertiesBuilder resistance(float value);
+		Block.Properties build();
+	}
+	
 	public interface ConfigBuilder {
-		public ConfigBuilder resistance(float value);
-		public ConfigBuilder hardness(float value);
 		public <T extends Comparable<T>, V extends T> ConfigBuilder with(IProperty<T> property, V value);
 		
-		public ConfigBuilder blockLayer(BlockRenderLayer value);
-		public ConfigBuilder renderType(EnumBlockRenderType value);
+		public ConfigBuilder renderType(BlockRenderType value);
 		
 		public ConfigBuilder gui(GUI value);
 		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value);
@@ -59,28 +73,49 @@ public class BaseBlock extends Block {
 		public void init();
 	}
 	
+	public static class PropertiesBuilderImpl implements PropertiesBuilder {
+		
+		Block.Properties properties;
+		private float hardness = 50.0f;
+		private float resistance = 3.5f;
+
+		public PropertiesBuilderImpl() {
+			this(Material.ROCK);
+		}
+		
+		public PropertiesBuilderImpl(Material material) {
+			properties = Block.Properties.create(material);
+			properties.hardnessAndResistance(50.0f,  3.5f);
+		}
+
+		@Override
+		public PropertiesBuilder hardness(float value) {
+			this.hardness = value;
+			return this;
+		}
+
+		@Override
+		public PropertiesBuilder resistance(float value) {
+			this.resistance = value;
+			return this;
+		}
+		
+		@Override
+		public Properties build() {
+			properties.hardnessAndResistance(hardness, resistance);
+			return properties;
+		}
+		
+		
+	}
+	
 	public class ConfigBuilderImpl implements ConfigBuilder {
 		
 		private BaseBlock block = BaseBlock.this;
 		private Map<IProperty<?>, Comparable<?>> properties = new LinkedHashMap<>();
 		
 		public ConfigBuilderImpl() {
-			block.setResistance(50.0f);
-			block.setHardness(3.5f);
-			blockRenderLayer = BlockRenderLayer.SOLID;
-			blockRenderType = EnumBlockRenderType.MODEL;
-		}
-
-		@Override
-		public ConfigBuilder resistance(float value) {
-			block.setResistance(value);
-			return this;
-		}
-
-		@Override
-		public ConfigBuilder hardness(float value) {
-			block.setHardness(value);
-			return this;
+			blockRenderType = BlockRenderType.MODEL;
 		}
 
 		@Override
@@ -90,27 +125,31 @@ public class BaseBlock extends Block {
 		}
 		
 		@SuppressWarnings("unchecked")
-		protected <T extends Comparable<T>, V extends T> void setProperty(IBlockState state, IProperty<?> t, Comparable<?> v) {
-			state.withProperty((IProperty<T>)t, (V)v);			
+		protected <T extends Comparable<T>, V extends T> void setProperty(BlockState state, IProperty<?> t, Comparable<?> v) {
+			properties.put(t, v);
+			state.with((IProperty<T>)t, (V)v);			
 		}
 		
 		public void init() {
-			IBlockState state = block.getDefaultState();
+			StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(BaseBlock.this);
+			//builder.
+			//BlockState. state = new BlockState(BaseBlock.this, null);
 			
-			/*IProperty<?>[] containerProperties = new IProperty<?>[properties.size()];
-			int i=0;
+			BaseBlock.this.properties = new ArrayList<>();
 			for(IProperty<?> property: properties.keySet()) {
-				containerProperties[i++] = property;
+				BaseBlock.this.properties.add(property);
+				builder.add(property);
 			}
-			createBlockStateContainer = (x) -> new BlockStateContainer(block, containerProperties);*/
 
+			StateContainer<Block, BlockState> sc = builder.create(BlockState::new);
+			BlockState state = sc.getBaseState();
+			block.setDefaultState(sc.getBaseState());
 			for(Entry<IProperty<?>, Comparable<?>> entry: properties.entrySet()) {
 				IProperty<? extends Comparable<?>> key = entry.getKey();
 				Comparable<?> value = entry.getValue();
 				setProperty(state, key, value);
 			}
 			block.setDefaultState(state);
-			
 		}
 
 		@Override
@@ -132,88 +171,78 @@ public class BaseBlock extends Block {
 		}
 
 		@Override
-		public ConfigBuilder blockLayer(BlockRenderLayer value) {
-			block.blockRenderLayer = value;
-			return this;
-		}
-
-		@Override
-		public ConfigBuilder renderType(EnumBlockRenderType value) {
+		public ConfigBuilder renderType(BlockRenderType value) {
 			block.blockRenderType = value;
 			return this;
 		}
 
 	}
 	
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	@Override
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+			Hand handIn, BlockRayTraceResult hit) {
 		if(worldIn.isRemote || gui == null) {
-			return true;
+			return ActionResultType.PASS;
 		}
-		return GuiHandler.openGui(playerIn, worldIn, gui, pos);
+		GuiHandler.openGui(player, worldIn, gui, pos);
+		return ActionResultType.CONSUME;
 	}
 	
 	@Override
-	public boolean hasTileEntity(IBlockState state) {
+	public boolean hasTileEntity(BlockState state) {
 		return createTileEntity != null;
 	}
 	
 	@Override
-	public TileEntity createTileEntity(World world, IBlockState state) {
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		if(createTileEntity != null) {
 			TileEntity te = createTileEntity.apply(null); 
 			return te;
 		}
-		return super.createTileEntity(world, state);
+		return super.createTileEntity(state, world);
 	}
 	
 	@Override
-	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player,
-			boolean willHarvest) {
+	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player,
+			boolean willHarvest, IFluidState fluid) {
 		if(getDrops != null && willHarvest) {
 			return true;
 		}
-		return super.removedByPlayer(state, world, pos, player, willHarvest);
+		return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
 	}
-
+	
 	@Override
-	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te,
+	public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te,
 			ItemStack stack) {
 		super.harvestBlock(worldIn, player, pos, state, te, stack);
 		if(getDrops != null) {
-			worldIn.setBlockToAir(pos);
+			worldIn.removeBlock(pos, false);
 		}
 	}
 	
 	@Override
-	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state,
-			int fortune) {
-		super.getDrops(drops, world, pos, state, fortune);
+	@Deprecated
+	public List<ItemStack> getDrops(BlockState state, Builder builder) {
+		List<ItemStack> stacks = super.getDrops(state, builder);
 		if(getDrops != null) {
-			TileEntity te = world.getTileEntity(pos);
-			getDrops.accept(drops, te);
+			TileEntity te = builder.get(LootParameters.BLOCK_ENTITY);
+			getDrops.accept(stacks, te);
 		}
+		return stacks;
 	}
 	
 	@Override
-	public BlockRenderLayer getBlockLayer() {
-		return blockRenderLayer;
-	}
-
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return blockRenderType;
 	}
 	
 	@Override
-	protected BlockStateContainer createBlockState() {
-		if(createBlockStateContainer == null) {
-			return super.createBlockState();
+	protected void fillStateContainer(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
+		if(properties != null) {
+			for(IProperty<?> p : properties) {
+				builder.add(p);
+			}
 		}
-		return createBlockStateContainer.apply(null);
 	}
 	
-	
-	
-
 }

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -29,7 +29,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected boolean valid = true;
 
 	protected Set<T> tiles = new HashSet<>();
-	protected Map<T, Map<EnumFacing, IEnergyStorage>> storages = new HashMap<>();
+	protected Map<T, Map<Direction, IEnergyStorage>> storages = new HashMap<>();
 
 	protected World world;
 
@@ -50,7 +50,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 
 	protected boolean canAdd(T tileEntity) {
-		return tileEntity != null && !tileEntity.isInvalid() && getTileClass().isInstance(tileEntity) && tileEntity.hasWorld() && world.isBlockLoaded(tileEntity.getPos());
+		return tileEntity != null && !tileEntity.isRemoved() && getTileClass().isInstance(tileEntity) && tileEntity.hasWorld() && world.isBlockLoaded(tileEntity.getPos());
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return this;
 	}
 
-	protected INetwork<T> init(Set<T> tiles, Map<T, Map<EnumFacing, IEnergyStorage>> storages) {
+	protected INetwork<T> init(Set<T> tiles, Map<T, Map<Direction, IEnergyStorage>> storages) {
 		world = tiles.iterator().next().getWorld();
 		this.tiles.addAll(tiles);
 		this.storages.putAll(storages);
@@ -150,17 +150,20 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	
 	//World.getTileEntity in unloaded chunks triggers TileEntity.onLoad
 	protected TileEntity getTileEntity(BlockPos pos) {
-		return world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
+		if(!world.isAreaLoaded(pos, 0)) {
+			return null;
+		}
+		return world.getTileEntity(pos);
 	}
 	
-	protected Map<EnumFacing, IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, EnumFacing,  Boolean> canAdd) {
+	protected Map<Direction, IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, Direction,  Boolean> canAdd) {
 		BlockPos pos = tileEntity.getPos();
-		Map<EnumFacing, IEnergyStorage> storages = new HashMap<>();
-		for(EnumFacing facing : EnumFacing.values()) {
+		Map<Direction, IEnergyStorage> storages = new HashMap<>();
+		for(Direction facing : Direction.values()) {
 			TileEntity tile = getTileEntity(pos.offset(facing));
-			if(tile != null && !tile.getClass().equals(tileEntity.getClass()) && tile.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
-				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
-				if(canAdd.apply(energyStorage, facing)) {
+			if(tile != null && !tile.getClass().equals(tileEntity.getClass())) {
+				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite()).orElse(null);
+				if(energyStorage != null && canAdd.apply(energyStorage, facing)) {
 					storages.put(facing, energyStorage);
 				}
 			}
@@ -168,12 +171,12 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return storages;
 	}
 	
-	protected Map<EnumFacing, IEnergyStorage> getStorages(TileEntity tileEntity) {
+	protected Map<Direction, IEnergyStorage> getStorages(TileEntity tileEntity) {
 		return getNeighborStorages(tileEntity, (s, f) -> true);
 	}
 
-	protected Map<EnumFacing, IEnergyStorage> getOrCreateStorageMap(T tile) {
-		Map<EnumFacing, IEnergyStorage> storagesMap = storages.get(tile);
+	protected Map<Direction, IEnergyStorage> getOrCreateStorageMap(T tile) {
+		Map<Direction, IEnergyStorage> storagesMap = storages.get(tile);
 		if(storagesMap == null) {
 			storagesMap = new HashMap<>();
 			storages.put(tile, storagesMap);
@@ -184,7 +187,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected void updateStorages() {
 		storages.clear();
 		for(T tile : tiles) {
-			Map<EnumFacing, IEnergyStorage> tileStorages = getStorages(tile);
+			Map<Direction, IEnergyStorage> tileStorages = getStorages(tile);
 			storages.put(tile, tileStorages);
 		}
 	}
@@ -198,7 +201,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		tile.setNetwork(this);
 		tiles.add(tile);
 		
-		Map<EnumFacing, IEnergyStorage> storages = getStorages(tile);
+		Map<Direction, IEnergyStorage> storages = getStorages(tile);
 		if(!storages.isEmpty()) {
 			this.storages.put(tile, storages);
 		}
@@ -274,7 +277,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	@Override
 	public void onNeighborChanged(T source, BlockPos neighborPos) {
 		storages.remove(source);
-		for(Entry<EnumFacing, IEnergyStorage> entry : getStorages(source).entrySet()) {
+		for(Entry<Direction, IEnergyStorage> entry : getStorages(source).entrySet()) {
 			getOrCreateStorageMap(source).put(entry.getKey(), entry.getValue());
 		}
 	}
@@ -282,7 +285,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected INetwork<T> split(Set<T> newNetworkTiles) {
 		Log.info("Splitting network " + this);
 		try {
-			Map<T, Map<EnumFacing, IEnergyStorage>> newNetworkStorages = new HashMap<>();
+			Map<T, Map<Direction, IEnergyStorage>> newNetworkStorages = new HashMap<>();
 			for(T tile : newNetworkTiles) {
 				if(storages.containsKey(tile)) {
 					newNetworkStorages.put(tile, storages.get(tile));
@@ -337,14 +340,14 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 	}
 	
-	public EnumFacing[] getPossibleNeighborsPositions(T tile) {
-		return EnumFacing.VALUES;
+	public Direction[] getPossibleNeighborsPositions(T tile) {
+		return Direction.values();
 		
 	}
 
 	Set<T> getNeighbors(T tile) {
 		Set<T> neighbors = new HashSet<>();
-		for(EnumFacing facing : getPossibleNeighborsPositions(tile)) {
+		for(Direction facing : getPossibleNeighborsPositions(tile)) {
 			BlockPos neighborPos = tile.getPos().offset(facing);
 			T neighbor = as(getTileClass(), getTileEntity(neighborPos));
 			if(neighbor != null && canAdd(tile)) {
@@ -360,7 +363,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 	
 	@Override
-	public Map<T, Map<EnumFacing, IEnergyStorage>> getStorages() {
+	public Map<T, Map<Direction, IEnergyStorage>> getStorages() {
 		return storages;
 	}
 
@@ -434,10 +437,10 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 	
 	
-	protected Set<IEnergyStorage> getStorages(TriFunction<T, EnumFacing, IEnergyStorage, Boolean> filter) {
+	protected Set<IEnergyStorage> getStorages(TriFunction<T, Direction, IEnergyStorage, Boolean> filter) {
 		Set<IEnergyStorage> storages = new HashSet<>();
-		for(Entry<T, Map<EnumFacing, IEnergyStorage>> storageEntry : this.storages.entrySet()) {
-			for(Entry<EnumFacing, IEnergyStorage> entry : storageEntry.getValue().entrySet()) {
+		for(Entry<T, Map<Direction, IEnergyStorage>> storageEntry : this.storages.entrySet()) {
+			for(Entry<Direction, IEnergyStorage> entry : storageEntry.getValue().entrySet()) {
 				if(filter.apply(storageEntry.getKey(), entry.getKey(), entry.getValue())) {
 					storages.add(entry.getValue());
 				}

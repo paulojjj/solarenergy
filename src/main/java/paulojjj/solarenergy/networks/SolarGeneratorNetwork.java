@@ -2,7 +2,7 @@ package paulojjj.solarenergy.networks;
 
 import java.util.Set;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
@@ -16,13 +16,13 @@ public class SolarGeneratorNetwork extends BaseNetwork<SolarGeneratorTileEntity>
 		return SolarGeneratorTileEntity.class;
 	}
 	
-	public EnumFacing[] getPossibleNeighborsPositions(SolarGeneratorTileEntity tile) {
-		return EnumFacing.HORIZONTALS;
+	public Direction[] getPossibleNeighborsPositions(SolarGeneratorTileEntity tile) {
+		return new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 	}
 	
 	@Override
 	protected Set<IEnergyStorage> getConsumers() {
-		return getStorages((t, f, s) -> (f != EnumFacing.UP && s.canReceive()));
+		return getStorages((t, f, s) -> (f != Direction.UP && s.canReceive()));
 	}
 	
 }

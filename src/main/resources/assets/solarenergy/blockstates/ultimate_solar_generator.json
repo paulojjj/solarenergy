@@ -1,6 +1,6 @@
 {
   "variants": {
-    "normal": {
+    "": {
       "model": "solarenergy:ultimate_solar_generator"
     }
   }

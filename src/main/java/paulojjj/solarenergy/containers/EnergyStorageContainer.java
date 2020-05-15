@@ -1,36 +1,31 @@
 package paulojjj.solarenergy.containers;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.network.PacketBuffer;
 import paulojjj.solarenergy.net.IMessageListener;
-import paulojjj.solarenergy.tiles.EnergyStorageTileEntity;
 import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
 
-public class EnergyStorageContainer extends Container implements IMessageListener<EnergyStorageContainerUpdateMessage> {
-	
-	private EnergyStorageTileEntity tileEntity;
+public class EnergyStorageContainer<T extends Container> extends BaseContainer<T> implements IMessageListener<EnergyStorageContainerUpdateMessage> {
 	
 	private double energy;
 	private double maxEnergy;
 	private double input;
 	private double output;
 	
-	
-	public EnergyStorageContainer(EnergyStorageTileEntity tileEntity, EntityPlayer player) {
-		super();
-		this.tileEntity = tileEntity;
-		tileEntity.onContainerOpened(player);
+	public EnergyStorageContainer(ContainerType<?> type, int windowId, PlayerInventory playerInventory, PacketBuffer additionalData) {
+		super(type, windowId, playerInventory, additionalData);
 	}
-
+	
+	public EnergyStorageContainer(ContainerType<?> type, int windowId, PlayerInventory playerInventory) {
+		this(type, windowId, playerInventory, null);
+	}
+	
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return true;
-	}
-	
-	@Override
-	public void onContainerClosed(EntityPlayer playerIn) {
-		super.onContainerClosed(playerIn);
-		tileEntity.onContainerClosed(playerIn);
 	}
 
 	@Override

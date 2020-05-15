@@ -1,32 +1,29 @@
 package paulojjj.solarenergy.tiles;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 import paulojjj.solarenergy.NBT;
-import paulojjj.solarenergy.net.PacketManager;
 
-public abstract class EnergyStorageTileEntity extends TileEntity implements IUltraEnergyStorage, ITickable {
+public abstract class EnergyStorageTileEntity extends BaseTileEntity implements IUltraEnergyStorage, ITickableTileEntity {
 
 	protected double energy = 0;
 	protected double maxEnergy = 0;
-	
+
 	protected double sentSinceLastUpdate;
 	protected double receivedSinceLastUpdate;
 	protected double input;
 	protected double output;
-	
-	private Set<EntityPlayer> playersUsing = new HashSet<>();
 
+	public EnergyStorageTileEntity(TileEntityType<?> tileEntityTypeIn) {
+		super(tileEntityTypeIn);
+	}
+	
 	public static class EnergyStorageContainerUpdateMessage {
 		public double energyStored;
 		public double maxEnergyStored;
@@ -45,7 +42,7 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 			this.output = output;
 		}
 	}
-	
+
 	protected Object getContainerUpdateMessage() {
 		double energy = getUltraEnergyStored();
 		double maxEnergy = getMaxUltraEnergyStored();
@@ -53,24 +50,16 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 		double output = getOutput();
 		return new EnergyStorageContainerUpdateMessage(energy, maxEnergy, input, output);		
 	}
-	
-	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
-			return true;
-		}
-		return super.hasCapability(capability, facing);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
 		if(capability == CapabilityEnergy.ENERGY) {
-			return (T) this;
+			return LazyOptional.of(() -> (T) this);
 		}
 		return super.getCapability(capability, facing);
 	}
-	
+
 	@Override
 	public double extractUltraEnergy(double maxExtract, boolean simulate) {
 		if(energy == 0 || !canExtract()) {
@@ -126,45 +115,31 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
+	public void read(CompoundNBT compound) {
+		super.read(compound);
 		energy = compound.getDouble(NBT.ENERGY);
 		maxEnergy = compound.getDouble(NBT.MAX_ENERGY);
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		compound = super.writeToNBT(compound);
-		compound.setDouble(NBT.ENERGY, energy);
-		compound.setDouble(NBT.MAX_ENERGY, maxEnergy);
+	public CompoundNBT write(CompoundNBT compound) {
+		compound = super.write(compound);
+		compound.putDouble(NBT.ENERGY, energy);
+		compound.putDouble(NBT.MAX_ENERGY, maxEnergy);
 		return compound;
 	}
-	
+
 	@Override
-	public void update() {
+	public void tick() {
 		input = receivedSinceLastUpdate;
 		output = sentSinceLastUpdate;
-		
+
 		receivedSinceLastUpdate = 0;
 		sentSinceLastUpdate = 0;
 		
-		for(EntityPlayer player : playersUsing) {
-			PacketManager.sendContainerUpdateMessage((EntityPlayerMP)player, getContainerUpdateMessage());
-		}
-	}
-	
-	public void onContainerOpened(EntityPlayer player) {
-		if(!world.isRemote) {
-			playersUsing.add(player);
-		}
+		super.tick();
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		if(!world.isRemote) {
-			playersUsing.remove(player);
-		}
-	}
-	
 	@Override
 	public String toString() {
 		return super.toString() + " [position=" + pos + "]";

@@ -3,23 +3,27 @@ package paulojjj.solarenergy.jei;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Blocks;
 
-@JEIPlugin
-@SideOnly(Side.CLIENT)
+@JeiPlugin
+@OnlyIn(Dist.CLIENT)
 public class JEIModPlugin implements IModPlugin {
 	
-	public static final String ENERGY_ASSMBLER_UID = "solarenergy.energy_assembler";
+	private static final ResourceLocation ID = new ResourceLocation(Main.MODID, "main");
+	public static final ResourceLocation ENERGY_ASSMBLER_UID = new ResourceLocation(Main.MODID, "energy_assembler");
 	
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
@@ -32,13 +36,22 @@ public class JEIModPlugin implements IModPlugin {
 	}
 	
 	@Override
-	public void register(IModRegistry registry) {
-		IModPlugin.super.register(registry);
+	public void registerRecipes(IRecipeRegistration registry) {
+		IModPlugin.super.registerRecipes(registry);
 		
 		List<EnergyAssemblerRecipeWrapper> recipes = RecipeHandler.getEnergyAssemblerRecipes().values().stream().map(x -> new EnergyAssemblerRecipeWrapper(x)).collect(Collectors.toList());
 		
 		registry.addRecipes(recipes, ENERGY_ASSMBLER_UID);
+	}
+	
+	@Override
+	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
 		registry.addRecipeCatalyst(new ItemStack(Blocks.ENERGY_ASSEMBLER.getItemBlock().getBlock()), ENERGY_ASSMBLER_UID);
+	}
+
+	@Override
+	public ResourceLocation getPluginUid() {
+		return ID;
 	}
 	
 

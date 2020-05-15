@@ -1,18 +1,21 @@
 package paulojjj.solarenergy.net;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientPlayerProvider implements IPlayerProvider {
 
 	@Override
-	public EntityPlayer getPlayer(MessageContext ctx) {
-        if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-            return ctx.getServerHandler().player;
+	public PlayerEntity getPlayer(NetworkEvent.Context ctx) {
+        if (EffectiveSide.get().isServer()) {
+            return ctx.getSender();
         }
-        return Minecraft.getMinecraft().player;			
+        Minecraft mc = Minecraft.getInstance();
+        PlayerEntity player = mc.player;
+        mc.close();
+        return player;			
 	}
 
 }

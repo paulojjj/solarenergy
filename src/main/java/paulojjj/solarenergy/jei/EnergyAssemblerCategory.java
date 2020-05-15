@@ -1,44 +1,36 @@
 package paulojjj.solarenergy.jei;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
-import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
-import paulojjj.solarenergy.Main;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
+import paulojjj.solarenergy.registry.Blocks;
 
-public class EnergyAssemblerCategory implements IRecipeCategory<IRecipeWrapper> {
+public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerRecipeWrapper> {
 
 	private IGuiHelper guiHelper;
 	private IDrawableAnimated gauge;
+	private IDrawable icon;
 	
 	public EnergyAssemblerCategory(IGuiHelper guiHelper) {
 		this.guiHelper = guiHelper;
 		IDrawableStatic gauge = guiHelper.createDrawable(EnergyAssemblerGui.ASSET_RESOURCE, 176, 0, 11, 23);
 		this.gauge = guiHelper.createAnimatedDrawable(gauge, 40, StartDirection.TOP, false);
+		this.icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.BASIC_SOLAR_GENERATOR.getItemBlock()));
 	}
 	
 	@Override
-	public String getUid() {
-		return JEIModPlugin.ENERGY_ASSMBLER_UID;
-	}
-
-	@Override
 	public String getTitle() {
 		return I18n.format("tile.energy_assembler.name");
-	}
-
-	@Override
-	public String getModName() {
-		return Main.NAME;
 	}
 
 	@Override
@@ -47,7 +39,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<IRecipeWrapper> 
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, IRecipeWrapper recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, EnergyAssemblerRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(0, true, 3, 1);
@@ -57,8 +49,28 @@ public class EnergyAssemblerCategory implements IRecipeCategory<IRecipeWrapper> 
 	}
 	
 	@Override
-	public void drawExtras(Minecraft minecraft) {
-		gauge.draw(minecraft, 7, 24);
+	public void draw(EnergyAssemblerRecipeWrapper recipe, double mouseX, double mouseY) {
+		gauge.draw(7, 24);
+	}
+	
+	@Override
+	public ResourceLocation getUid() {
+		return JEIModPlugin.ENERGY_ASSMBLER_UID;
+	}
+
+	@Override
+	public Class<? extends EnergyAssemblerRecipeWrapper> getRecipeClass() {
+		return EnergyAssemblerRecipeWrapper.class;
+	}
+
+	@Override
+	public IDrawable getIcon() {
+		return icon;
+	}
+
+	@Override
+	public void setIngredients(EnergyAssemblerRecipeWrapper recipe, IIngredients ingredients) {
+		recipe.getIngredients(ingredients);
 	}
 
 }

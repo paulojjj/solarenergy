@@ -3,15 +3,18 @@ package paulojjj.solarenergy.tiles;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IEnergyProducer;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.TickHandler;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.networks.SolarGeneratorNetwork;
+import paulojjj.solarenergy.registry.TileEntities;
 
 public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements IEnergyProducer {
 
@@ -29,7 +32,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 
 	public SolarGeneratorTileEntity(Tier tier) {
-		super();
+		super(TileEntities.SOLAR_GENERATOR.getType());
 		setTier(tier);
 	}
 	
@@ -109,11 +112,11 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		if(facing == EnumFacing.UP) {
-			return false;
+	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
+		if(capability ==  CapabilityEnergy.ENERGY && facing == Direction.UP) {
+			return LazyOptional.empty();
 		}
-		return super.hasCapability(capability, facing);
+		return super.getCapability(capability, facing);
 	}
 	
 	protected boolean isSunActive() {
@@ -125,15 +128,15 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		
 		if(tick >= nextSkyCheck) {
 			nextSkyCheck = nextSkyCheck + random.nextInt(100) + 1;
-			canSeeSky = world.canSeeSky(getPos().offset(EnumFacing.UP)); 
+			canSeeSky = world.canSeeSky(getPos().offset(Direction.UP)); 
 		}
 		
 		return canSeeSky;
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if(world.isRemote || !world.isBlockLoaded(pos)) {
 			return;
 		}
@@ -146,31 +149,31 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-		int tierValue = compound.getInteger(NBT.TIER);
+	public void read(CompoundNBT compound) {
+		super.read(compound);
+		int tierValue = compound.getInt(NBT.TIER);
 		Tier tier =  Tier.values()[tierValue];
 		setTier(tier);
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		compound = super.writeToNBT(compound);
-		compound.setInteger(NBT.TIER, tier.ordinal());
+	public CompoundNBT write(CompoundNBT compound) {
+		compound = super.write(compound);
+		compound.putInt(NBT.TIER, tier.ordinal());
 		return compound;
 	}
 	
 	@Override
-	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound nbt =  super.getUpdateTag();
-		nbt.setInteger(NBT.TIER, tier.ordinal());
+	public CompoundNBT getUpdateTag() {
+		CompoundNBT nbt =  super.getUpdateTag();
+		nbt.putInt(NBT.TIER, tier.ordinal());
 		return nbt;
 	}
 	
 	@Override
-	public void handleUpdateTag(NBTTagCompound tag) {
+	public void handleUpdateTag(CompoundNBT tag) {
 		super.handleUpdateTag(tag);
-		Tier tier =  Tier.values()[tag.getInteger(NBT.TIER)];
+		Tier tier =  Tier.values()[tag.getInt(NBT.TIER)];
 		setTier(tier);
 	}
 
@@ -193,7 +196,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	protected IEnergyStorage getNeighborStorage(EnumFacing facing) {
+	protected IEnergyStorage getNeighborStorage(Direction facing) {
 		IEnergyStorage storage = super.getNeighborStorage(facing);
 		if(storage != null && storage instanceof SolarGeneratorTileEntity) {
 			storage = null;

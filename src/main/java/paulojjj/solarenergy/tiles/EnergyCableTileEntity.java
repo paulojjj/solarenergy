@@ -1,11 +1,12 @@
 package paulojjj.solarenergy.tiles;
 
 import paulojjj.solarenergy.networks.EnergyCableNetwork;
+import paulojjj.solarenergy.registry.TileEntities;
 
 public class EnergyCableTileEntity extends EnergyNetworkTileEntity {
 
 	public EnergyCableTileEntity() {
-		super();
+		super(TileEntities.ENERGY_CABLE.getType());
 	}
 
 	@Override

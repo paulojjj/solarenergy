@@ -1,34 +1,37 @@
 package paulojjj.solarenergy.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.containers.EnergyAssemblerContainer;
-import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
 
-public class EnergyAssemblerGui extends GuiContainer {
+@OnlyIn(Dist.CLIENT)
+public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 	
-	public EnergyAssemblerGui(EnergyAssemblerTileEntity tileEntity, EntityPlayer player) {
-		super(new EnergyAssemblerContainer(tileEntity, player.inventory));
+	public EnergyAssemblerGui(EnergyAssemblerContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+		super(screenContainer, inv, titleIn);
 	}
-
+	
 	public static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/energy_assembler_gui.png");
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		EnergyAssemblerContainer container = (EnergyAssemblerContainer)inventorySlots;
+		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.container;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.getTextureManager().bindTexture(ASSET_RESOURCE);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
         int marginHorizontal = (width - xSize) / 2;
         int marginVertical = (height - ySize) / 2;
-        drawTexturedModalRect(marginHorizontal, marginVertical, 0, 0, 
+        blit(marginHorizontal, marginVertical, 0, 0, 
               xSize, ySize);
         
         int GAUGE_WIDTH = 11;
@@ -40,7 +43,7 @@ public class EnergyAssemblerGui extends GuiContainer {
         	double gaugeLevel = message.energyStored / message.maxEnergyStored;
         	int gaugeLevelHeight = (int)(gaugeMarginY + gaugeLevel * GAUGE_HEIGHT);
         	if(gaugeLevel > 0) {
-        		drawRect(gaugeMarginX, gaugeMarginY, gaugeMarginX + GAUGE_WIDTH, gaugeLevelHeight, 0x7000d0ff);
+        		fill(gaugeMarginX, gaugeMarginY, gaugeMarginX + GAUGE_WIDTH, gaugeLevelHeight, 0x7000d0ff);
         	}
         }
 	}
@@ -49,15 +52,15 @@ public class EnergyAssemblerGui extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		
-		EnergyAssemblerContainer container = (EnergyAssemblerContainer)inventorySlots;
+		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.container;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
 		if(message != null && message.maxEnergyStored > 0) {
 			String text = "";
 			text += EnergyFormatter.format(message.energyStored);
 			text += "/" + EnergyFormatter.format(message.maxEnergyStored);
-			fontRenderer.drawString(text, 52, 27, 0x202020);
-			fontRenderer.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
+			font.drawString(text, 52, 27, 0x202020);
+			font.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
 		}
 	}
 

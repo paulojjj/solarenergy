@@ -1,49 +1,33 @@
 package paulojjj.solarenergy.blocks;
 
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
-import paulojjj.solarenergy.gui.GuiHandler.GUI;
+import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 
 public class EnergyAssembler extends BaseBlock {
 	
-    public static final PropertyBool ACTIVE = PropertyBool.create("active");
+    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     
 	public EnergyAssembler() {
-		super();
+		super(BaseBlock.propertiesBuilder().resistance(3.5f));
 		configBuilder()
-			.resistance(3.5f)
 			.with(ACTIVE, false)
 			.gui(GUI.ENERGY_ASSEMBLER)
 			.createTileEntity((x) -> new EnergyAssemblerTileEntity())
 			.init();
 	}
 	
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer( this, new IProperty[] {ACTIVE});
-
-	}
-	
-	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(ACTIVE, meta != 0);
-	}
 
 	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(ACTIVE) ? 1 : 0;
-	}
-	
-	@Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.onBlockHarvested(worldIn, pos, state, player);
 		if(!worldIn.isRemote) {
 			EnergyAssemblerTileEntity te = (EnergyAssemblerTileEntity) worldIn.getTileEntity(pos);
 			IItemHandler itemHandler = te.getPlayerHandler();
@@ -54,8 +38,6 @@ public class EnergyAssembler extends BaseBlock {
 				}
 			}
 		}
-	    super.breakBlock(worldIn, pos, state);
 	}
-	
 
 }

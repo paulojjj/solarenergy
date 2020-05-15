@@ -2,96 +2,86 @@ package paulojjj.solarenergy.blocks;
 
 import java.util.List;
 
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
-import paulojjj.solarenergy.gui.GuiHandler.GUI;
+import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
 
 public class Battery extends EnergyNetworkBlock<BatteryTileEntity> {
 
-    public static PropertyDirection FACING = PropertyDirection.create("facing");
+	public static EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class);
 
 	public Battery(Tier tier) {
-		super();
+		super(propertiesBuilder());
 		configBuilder()
-			.with(FACING, EnumFacing.NORTH)
-			.gui(GUI.BATTERY)
-			.createTileEntity((x) -> new BatteryTileEntity(tier))
-			.getDrops(this::setDropNBT)
-			.init();
-	}
-	
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer( this, new IProperty[] {FACING});
-
+		.with(FACING, Direction.NORTH)
+		.gui(GUI.BATTERY)
+		.createTileEntity((x) -> new BatteryTileEntity(tier))
+		.getDrops(this::setDropNBT)
+		.init();
 	}
 
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getFront(meta);
-		return this.getDefaultState().withProperty(FACING, enumfacing);
+	protected void fillStateContainer(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
+		super.fillStateContainer(builder);
+		builder.add(FACING);
 	}
 
-	@Override
-	public int getMetaFromState(IBlockState state) {
-		return state.getValue(FACING).getIndex();
-	}
-	
 	public void setDropNBT(List<ItemStack> drops, TileEntity tileEntity) {
 		BatteryTileEntity te = (BatteryTileEntity)tileEntity;
 		ItemStack stack = drops.iterator().next();
-		NBTTagCompound nbt = new NBTTagCompound();
-		stack.setTagCompound(nbt);
-		nbt.setDouble(NBT.ENERGY, te.getUltraEnergyStored());
-		nbt.setDouble(NBT.MAX_ENERGY, te.getMaxUltraEnergyStored());
+		CompoundNBT nbt = new CompoundNBT();
+		stack.setTag(nbt);
+		nbt.putDouble(NBT.ENERGY, te.getUltraEnergyStored());
+		nbt.putDouble(NBT.MAX_ENERGY, te.getMaxUltraEnergyStored());
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer,
 			ItemStack stack) {
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-		NBTTagCompound nbt = stack.getTagCompound();
+		CompoundNBT nbt = stack.getTag();
 		if(nbt != null) {
-			double energy = stack.getTagCompound().getDouble(NBT.ENERGY);
-			double maxEnergy = stack.getTagCompound().getDouble(NBT.MAX_ENERGY);
+			double energy = nbt.getDouble(NBT.ENERGY);
+			double maxEnergy = nbt.getDouble(NBT.MAX_ENERGY);
 			BatteryTileEntity te = (BatteryTileEntity)worldIn.getTileEntity(pos);
 			te.setUltraEnergyStored(energy);
 			te.setMaxUltraEnergyStored(maxEnergy);
 		}
-        
-        EnumFacing facing = placer.getHorizontalFacing().getOpposite();
-        int height = Math.round(placer.rotationPitch);
-        if (height >= 65) {
-        	facing = EnumFacing.UP;
-        } else if (height <= -30) {
-        	facing = EnumFacing.DOWN;
-        }
-		worldIn.setBlockState(pos, state.withProperty(FACING, facing));
-	}	
+
+		Direction facing = placer.getHorizontalFacing().getOpposite();
+		int height = Math.round(placer.rotationPitch);
+		if (height >= 65) {
+			facing = Direction.UP;
+		} else if (height <= -30) {
+			facing = Direction.DOWN;
+		}
+		worldIn.setBlockState(pos, state.with(FACING, facing));
+	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(playerIn.isSneaking()) {
-			worldIn.setBlockState(pos, state.withProperty(FACING, facing));
-			return true;
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+			Hand handIn, BlockRayTraceResult hit) {
+		if(player.isCrouching()) {
+			worldIn.setBlockState(pos, state.with(FACING, hit.getFace()));
+			return ActionResultType.SUCCESS;
 		}
-		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
 	}
 	
 }

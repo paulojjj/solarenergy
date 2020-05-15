@@ -35,7 +35,7 @@ public enum Items {
 	ADVANCED_DENSE_BATTERY_CELL("advanced_dense_battery_cell"),
 	ELITE_DENSE_BATTERY_CELL("elite_dense_battery_cell"),
 	ULTIMATE_DENSE_BATTERY_CELL("ultimate_dense_battery_cell"),
-	LEAD_INGOT("ingotLead", ItemType.FORGE_ORE_DICT);
+	LEAD_INGOT("ingots/lead", ItemType.FORGE_ORE_DICT);
 
 	public enum ItemType {
 		NORMAL, FORGE_ORE_DICT;
@@ -58,10 +58,8 @@ public enum Items {
 	}
 
 	Items(String name, String registryName, ItemType type) {
-		Item item = new Item();
-		item.setUnlocalizedName(name);
+		Item item = new Item(new Item.Properties().group(ModCreativeTab.getInstance()));
 		item.setRegistryName(Main.MODID, registryName);
-		item.setCreativeTab(ModCreativeTab.getInstance());
 		this.item = item;
 		this.type = type;
 		this.registryName = registryName;

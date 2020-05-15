@@ -2,40 +2,69 @@ package paulojjj.solarenergy.net;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.world.dimension.Dimension;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import paulojjj.solarenergy.Main;
 
 public class PacketManager {
 
+	private static final String PROTOCOL_VERSION = "1";	
+	
 	public enum Message {
 		TILE_ENTITY_MESSAGE, CONTAINER_UPDATE_MESSAGE
 	}
 
-	protected static SimpleNetworkWrapper wrapper;
+	protected static SimpleChannel wrapper;
 
 	protected static MessageSerializer serializer = new MessageSerializer();
 
 
 	public static void init() {
-		wrapper = NetworkRegistry.INSTANCE.newSimpleChannel("SolarEnergy");
+		wrapper = NetworkRegistry.newSimpleChannel(
+				new ResourceLocation(Main.MODID, "main"),
+				() -> PROTOCOL_VERSION,
+				PROTOCOL_VERSION::equals,
+				PROTOCOL_VERSION::equals
+		);
 
-		wrapper.registerMessage(TileEntityMessageHandler.class, TileEntityUpdateMessage.class, Message.TILE_ENTITY_MESSAGE.ordinal(), Side.CLIENT);
-		wrapper.registerMessage(TileEntityMessageHandler.class, TileEntityUpdateMessage.class, Message.TILE_ENTITY_MESSAGE.ordinal(), Side.SERVER);		
-		wrapper.registerMessage(ContainerMessageHandler.class, ContainerUpdateMessage.class, Message.CONTAINER_UPDATE_MESSAGE.ordinal(), Side.CLIENT);
-		wrapper.registerMessage(ContainerMessageHandler.class, ContainerUpdateMessage.class, Message.CONTAINER_UPDATE_MESSAGE.ordinal(), Side.SERVER);		
+		wrapper.registerMessage(Message.TILE_ENTITY_MESSAGE.ordinal(), TileEntityUpdateMessage.class, DefaultEncoder::encode, (b) -> DefaultEncoder.decode(b, TileEntityUpdateMessage.class), TileEntityMessageHandler::onMessage);
+		wrapper.registerMessage(Message.CONTAINER_UPDATE_MESSAGE.ordinal(), ContainerUpdateMessage.class, DefaultEncoder::encode, (b) -> DefaultEncoder.decode(b, ContainerUpdateMessage.class), ContainerMessageHandler::onMessage);
+	}
+	
+	public static interface IMessage {
+		void fromBytes(PacketBuffer buf);
+		void toBytes(PacketBuffer buf);
+	}
+	
+	public static class DefaultEncoder {
+		public static <T extends IMessage> void encode(T message, PacketBuffer buffer) {
+			message.toBytes(buffer);
+		}
+
+		public static <T extends IMessage> T decode(PacketBuffer buffer, Class<T> clazz) {
+			T message;
+			try {
+				message = clazz.newInstance();
+				message.fromBytes(buffer);
+				return message;
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	public static class GenericMessage implements IMessage {
@@ -47,7 +76,7 @@ public class PacketManager {
 		protected ByteBuf data;
 
 		public GenericMessage() {
-
+			
 		}
 
 		public GenericMessage(Object message) {
@@ -59,12 +88,12 @@ public class PacketManager {
 		}
 
 		@Override
-		public void fromBytes(ByteBuf buf) {
+		public void fromBytes(PacketBuffer buf) {
 			data = buf.copy();
 		}
 
 		@Override
-		public void toBytes(ByteBuf buf) {
+		public void toBytes(PacketBuffer buf) {
 			serializer.write(message, buf);
 		}
 
@@ -98,7 +127,7 @@ public class PacketManager {
 		}
 
 		@Override
-		public void fromBytes(ByteBuf buf) {
+		public void fromBytes(PacketBuffer buf) {
 			int x = buf.readInt();
 			int y = buf.readInt();
 			int z = buf.readInt();
@@ -108,7 +137,7 @@ public class PacketManager {
 		}
 
 		@Override
-		public void toBytes(ByteBuf buf) {
+		public void toBytes(PacketBuffer buf) {
 			BlockPos pos = tileEntity.getPos();
 
 			buf.writeInt(pos.getX());
@@ -143,59 +172,65 @@ public class PacketManager {
 		return data;
 	}
 
-	public static class TileEntityMessageHandler implements IMessageHandler<TileEntityUpdateMessage, IMessage> {
+	public static class TileEntityMessageHandler {
 
-		private EntityPlayer getPlayer(MessageContext ctx) {
+		private static PlayerEntity getPlayer(NetworkEvent.Context ctx) {
 			return Main.getProxy().getFactory().getPlayerProvider().getPlayer(ctx);
 		}
 
 		@SuppressWarnings("unchecked")
-		@Override
-		public IMessage onMessage(TileEntityUpdateMessage message, MessageContext ctx) {
-			EntityPlayer player = getPlayer(ctx);
-			TileEntity tileEntity = player.getEntityWorld().getTileEntity(message.getPos());
-			if(tileEntity instanceof IMessageListener<?>)  {
-				Object tileMessage = PacketManager.readMessage((IMessageListener<?>)tileEntity, message);
-				((IMessageListener<Object>)tileEntity).onMessage(tileMessage);
-			}
-			return null;
+		public static void onMessage(TileEntityUpdateMessage message, Supplier<NetworkEvent.Context> ctx) {
+			final NetworkEvent.Context c;
+			c = ctx.get();
+			c.enqueueWork(() -> {
+				PlayerEntity player = getPlayer(c);
+				TileEntity tileEntity = player.getEntityWorld().getTileEntity(message.getPos());
+				if(tileEntity instanceof IMessageListener<?>)  {
+					Object tileMessage = PacketManager.readMessage((IMessageListener<?>)tileEntity, message);
+					((IMessageListener<Object>)tileEntity).onMessage(tileMessage);
+				}
+			});
+			c.setPacketHandled(true);
 		}
 
 	}
 
-	public static class ContainerMessageHandler implements IMessageHandler<ContainerUpdateMessage, IMessage> {
+	public static class ContainerMessageHandler {
 
-		private EntityPlayer getPlayer(MessageContext ctx) {
+		private static PlayerEntity getPlayer(NetworkEvent.Context ctx) {
 			return Main.getProxy().getFactory().getPlayerProvider().getPlayer(ctx);
 		}
 
 		@SuppressWarnings("unchecked")
-		@Override
-		public IMessage onMessage(ContainerUpdateMessage message, MessageContext ctx) {
-			EntityPlayer player = getPlayer(ctx);
-			Container container = player.openContainer;
-			if(container instanceof IMessageListener<?>)  {
-				Object tileMessage = PacketManager.readMessage((IMessageListener<?>)container, message);
-				((IMessageListener<Object>)container).onMessage(tileMessage);
-			}
-			return null;
+		public static void onMessage(ContainerUpdateMessage message, Supplier<NetworkEvent.Context> ctx) {
+			final NetworkEvent.Context c;
+			c = ctx.get();
+			c.enqueueWork(() -> {
+				PlayerEntity player = getPlayer(c);
+				Container container = player.openContainer;
+				if(container instanceof IMessageListener<?>)  {
+					Object tileMessage = PacketManager.readMessage((IMessageListener<?>)container, message);
+					((IMessageListener<Object>)container).onMessage(tileMessage);
+				}
+			});
+			c.setPacketHandled(true);
 		}
 
 	}
 
 	public static void sendToAllTracking(TileEntity tileEntity, Object message) {
-		int dimension = tileEntity.getWorld().provider.getDimension();
+		Dimension dimension = tileEntity.getWorld().getDimension();
 		BlockPos pos = tileEntity.getPos();
-		NetworkRegistry.TargetPoint point = new TargetPoint(dimension, pos.getX(), pos.getY(), pos.getZ(), 1.0);
-		wrapper.sendToAllTracking(new TileEntityUpdateMessage(tileEntity, message), point);
+		TargetPoint point = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1.0, dimension.getType());
+		wrapper.send(PacketDistributor.NEAR.with(() -> point), new TileEntityUpdateMessage(tileEntity, message));
 	}
 
-	public static void sendTileEntityMessage(TileEntity tileEntity, EntityPlayerMP player, Object message) {
-		wrapper.sendTo(new TileEntityUpdateMessage(tileEntity, message), player);
+	public static void sendTileEntityMessage(TileEntity tileEntity, ServerPlayerEntity player, Object message) {
+		wrapper.send(PacketDistributor.PLAYER.with(() -> player), new TileEntityUpdateMessage(tileEntity, message));
 	}
 
-	public static void sendContainerUpdateMessage(EntityPlayerMP player, Object message) {
-		wrapper.sendTo(new ContainerUpdateMessage(message), player);
+	public static void sendContainerUpdateMessage(ServerPlayerEntity player, Object message) {
+		wrapper.send(PacketDistributor.PLAYER.with(() -> player), new ContainerUpdateMessage(message));
 	}
 
 }

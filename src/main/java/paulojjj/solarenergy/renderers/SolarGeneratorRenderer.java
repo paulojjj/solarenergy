@@ -1,22 +1,36 @@
 package paulojjj.solarenergy.renderers;
 
-import net.minecraft.block.state.IBlockState;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
-@SideOnly(Side.CLIENT)
-public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGeneratorTileEntity> {
+@OnlyIn(Dist.CLIENT)
+public class SolarGeneratorRenderer extends TileEntityRenderer<TileEntity> {
+	
+	public static final Direction[] HORIZONTALS = new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
+
+
+	public SolarGeneratorRenderer(TileEntityRendererDispatcher dispatcher) {
+		super(dispatcher);
+	}
 
 	public enum TopResources {
 		BASIC, REGULAR, INTERMEDIATE, ADVANCED, ELITE, ULTIMATE;
@@ -33,13 +47,12 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 	private static final ResourceLocation SIDES_TEXTURE = new ResourceLocation(Main.MODID, "textures/blocks/solar_generator_side.png");
 
 	@Override
-	public void render(SolarGeneratorTileEntity te, double x, double y, double z, float partialTicks, int destroyStage,
-			float alpha) {
-		GlStateManager.pushMatrix();
+	public void render(TileEntity tile, float partialTicks, MatrixStack transformation, IRenderTypeBuffer buffer, int combinedLight, int packetLight) {
+		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)tile;
+		transformation.push();
 
-		GlStateManager.translate(x, y, z);
+		
 		RenderHelper.enableStandardItemLighting();
-		GlStateManager.disableLighting();
 		GlStateManager.enableCull();
 
 		BufferBuilder builder = Tessellator.getInstance().getBuffer();
@@ -48,22 +61,23 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 		double height = bb.maxY - bb.minY;
 
 		ResourceLocation topResource = TopResources.values()[te.getTier().ordinal()].resourceLocation;
-		Render.drawCubeFaces(builder, topResource, 0.0, 0.0, 0.0, 1.0, height, 1.0, EnumFacing.UP);
-		Render.drawCubeFaces(builder, BOTTOM_TEXTURE, 0.0, 0.0, 0.0, 1.0, height, 1.0, EnumFacing.DOWN);
-		Render.drawCubeFaces(builder, SIDES_TEXTURE, 0.0, 0.0, 0.0, 1.0, height, 1.0, EnumFacing.HORIZONTALS);
+		Render.drawCubeFaces(builder, topResource, 0.0, 0.0, 0.0, 1.0, height, 1.0, Direction.UP);
+		Render.drawCubeFaces(builder, BOTTOM_TEXTURE, 0.0, 0.0, 0.0, 1.0, height, 1.0, Direction.DOWN);
+		Render.drawCubeFaces(builder, SIDES_TEXTURE, 0.0, 0.0, 0.0, 1.0, height, 1.0, HORIZONTALS);
 
 		BlockPos pos = te.getPos();
 
 		GlStateManager.disableCull();
-		for(EnumFacing facing : EnumFacing.HORIZONTALS) {
+		for(Direction facing : HORIZONTALS) {
 			if(!te.hasStorage(facing)) {
 				continue;
 			}
 
 			BlockPos neighborPos = pos.offset(facing);
-			IBlockState bs = te.getWorld().getBlockState(neighborPos);
-			AxisAlignedBB bbNeighbor = bs.getBoundingBox(te.getWorld(), neighborPos);
-			if(bs.isFullBlock() || bbNeighbor.maxY <= height) {
+			BlockState bs = te.getWorld().getBlockState(neighborPos);
+			VoxelShape shape = bs.getShape(te.getWorld(), neighborPos);
+			AxisAlignedBB bbNeighbor = shape.getBoundingBox();
+			if(shape.equals(VoxelShapes.fullCube()) || bbNeighbor.maxY <= height) {
 				continue;
 			}
 
@@ -73,7 +87,7 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 
 		}
 
-		GlStateManager.popMatrix();	
+		transformation.pop();	
 	}
 
 }
