@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.tiles.BaseTileEntity;
@@ -18,10 +19,8 @@ public abstract class BaseContainer<T extends Container> extends Container {
 		super(type, id);
 		this.playerInventory = inventory;
 		if(data != null) {
-			World world = inventory.player.world;
 			BlockPos pos = data.readBlockPos();
-			tileEntity = (BaseTileEntity)world.getTileEntity(pos);
-			tileEntity.onContainerOpened(inventory.player);
+			setPos(pos);
 		}
 	}
 	
@@ -41,7 +40,15 @@ public abstract class BaseContainer<T extends Container> extends Container {
 	@Override
 	public void onContainerClosed(PlayerEntity playerIn) {
 		super.onContainerClosed(playerIn);
-		tileEntity.onContainerClosed(playerIn);
+		if(tileEntity != null) {
+			tileEntity.onContainerClosed(playerIn);
+		}
+	}
+	
+	public void setPos(BlockPos pos) {
+		World world = playerInventory.player.world;
+		tileEntity = (BaseTileEntity)world.getTileEntity(pos);
+		tileEntity.onContainerOpened(playerInventory.player);
 	}
 
 }

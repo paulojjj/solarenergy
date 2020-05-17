@@ -14,7 +14,6 @@ public class ClientPlayerProvider implements IPlayerProvider {
         }
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
-        mc.close();
         return player;			
 	}
 

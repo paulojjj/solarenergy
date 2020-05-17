@@ -9,9 +9,11 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.IContainerFactory;
+import paulojjj.solarenergy.containers.BaseContainer;
 import paulojjj.solarenergy.gui.BatteryGui;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
 import paulojjj.solarenergy.gui.EnergyCableGui;
@@ -27,10 +29,10 @@ public enum GUI {
 	private INamedContainerProvider containerProvider;
 	private ContainerType<?> containerType;
 	
-	public static class ContainerFactory<T extends Container> implements INamedContainerProvider, IContainerFactory<T> {
+	public static class ContainerFactory<T extends BaseContainer<T>> implements INamedContainerProvider, IContainerFactory<T> {
 
-		
 		private Containers container;
+		private BlockPos pos;
 		
 		public ContainerFactory(Containers container) {
 			this.container = container;
@@ -40,7 +42,9 @@ public enum GUI {
 		@Override
 		public T createMenu(int windowId, PlayerInventory playerInventory,
 				PlayerEntity playerEntity) {
-			return (T)container.getType().create(windowId, playerInventory);
+			T c = (T)container.getType().create(windowId, playerInventory);
+			c.setPos(pos);
+			return c;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -56,7 +60,7 @@ public enum GUI {
 		
 	}
 	
-	public <T extends Container> INamedContainerProvider getProvider(Containers containers) {
+	public <T extends BaseContainer<T>> INamedContainerProvider getProvider(Containers containers) {
 		return new ContainerFactory<T>(containers);
 	}
 	
@@ -74,7 +78,9 @@ public enum GUI {
 		return factory;
 	}
 
-	public INamedContainerProvider getContainerProvider() {
+	public INamedContainerProvider getContainerProvider(BlockPos pos) {
+		ContainerFactory<?> factory = (ContainerFactory<?>)containerProvider;
+		factory.pos = pos;
 		return containerProvider;
 	}
 	

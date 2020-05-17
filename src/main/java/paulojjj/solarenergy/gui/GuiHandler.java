@@ -13,7 +13,7 @@ public class GuiHandler {
 		if(world.isRemote) {
 			return true;
 		}
-        NetworkHooks.openGui((ServerPlayerEntity) player, gui.getContainerProvider(), pos);
+        NetworkHooks.openGui((ServerPlayerEntity) player, gui.getContainerProvider(pos), pos);
 		return true;
 	}
 
