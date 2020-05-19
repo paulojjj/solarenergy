@@ -74,7 +74,6 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		return super.getCapability(capability, facing);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	//World.getTileEntity in unloaded chunks triggers TileEntity.onLoad
 	public void onLoad() {
@@ -175,10 +174,11 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		return new EnergyStorageContainerUpdateMessage(energy, maxEnergy, input, output);		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void tick() {
 		super.tick();
-		if(world.isRemote || !world.isBlockLoaded(pos)) {
+		if(world.isRemote || !world.isAreaLoaded(pos, 0)) {
 			return;
 		}
 		if(!loaded) {
@@ -196,7 +196,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 				
 				//Calls onNeighborChanged so neighbors that are still not loaded can be detected after loaded (on neighborChanged is not called by default when world loads)
 				BlockPos neighborPos = pos.offset(facing);
-				if(world.isBlockLoaded(neighborPos)) {
+				if(world.isAreaLoaded(neighborPos, 0)) {
 					TileEntity te = world.getTileEntity(neighborPos);
 					if(te instanceof EnergyNetworkTileEntity) {
 						EnergyNetworkTileEntity ente = (EnergyNetworkTileEntity)te;

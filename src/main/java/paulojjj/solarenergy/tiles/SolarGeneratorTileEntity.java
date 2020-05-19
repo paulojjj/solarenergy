@@ -137,7 +137,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public void tick() {
 		super.tick();
-		if(world.isRemote || !world.isBlockLoaded(pos)) {
+		if(world.isRemote || !world.isAreaLoaded(pos, 0)) {
 			return;
 		}
 		

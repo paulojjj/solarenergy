@@ -50,7 +50,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 
 	protected boolean canAdd(T tileEntity) {
-		return tileEntity != null && !tileEntity.isRemoved() && getTileClass().isInstance(tileEntity) && tileEntity.hasWorld() && world.isBlockLoaded(tileEntity.getPos());
+		return tileEntity != null && !tileEntity.isRemoved() && getTileClass().isInstance(tileEntity) && tileEntity.hasWorld() && world.isAreaLoaded(tileEntity.getPos(), 0);
 	}
 
 	@Override

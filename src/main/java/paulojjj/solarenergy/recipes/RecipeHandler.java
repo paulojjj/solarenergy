@@ -8,6 +8,7 @@ import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 public class RecipeHandler {
 	
@@ -31,7 +32,7 @@ public class RecipeHandler {
 	}
 	
 	public static void addEnergyAssemblerRecipe(Block input, ItemStack output, double energyNeeded) {
-		addEnergyAssemblerRecipe(Item.getItemFromBlock(input), output, energyNeeded);
+		addEnergyAssemblerRecipe(Item.BLOCK_TO_ITEM.getOrDefault(input, Items.AIR), output, energyNeeded);
 	}
 	
 	public static Map<Item, EnergyAssemblerRecipe> getEnergyAssemblerRecipes() {
