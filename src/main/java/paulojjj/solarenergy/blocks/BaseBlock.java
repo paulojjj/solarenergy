@@ -13,7 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
@@ -199,27 +198,13 @@ public class BaseBlock extends Block {
 	}
 	
 	@Override
-	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player,
-			boolean willHarvest, IFluidState fluid) {
-		if(getDrops != null && willHarvest) {
-			return true;
-		}
-		return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
-	}
-	
-	@Override
-	public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te,
-			ItemStack stack) {
-		super.harvestBlock(worldIn, player, pos, state, te, stack);
-		if(getDrops != null) {
-			worldIn.removeBlock(pos, false);
-		}
-	}
-	
-	@Override
 	@Deprecated
 	public List<ItemStack> getDrops(BlockState state, Builder builder) {
 		List<ItemStack> stacks = super.getDrops(state, builder);
+		//Since 1.14 blocks have no drops by default (they must be defined in loot tables).
+		if(stacks.isEmpty()) {
+			stacks.add(new ItemStack(this));
+		}
 		if(getDrops != null) {
 			TileEntity te = builder.get(LootParameters.BLOCK_ENTITY);
 			getDrops.accept(stacks, te);
