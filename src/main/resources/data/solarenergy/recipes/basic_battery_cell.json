@@ -10,21 +10,20 @@
     {
         "a":
         {
-            "item": "solarenergy:advanced_energy_core"
+            "item": "solarenergy:basic_energy_core"
         },
         "b":
         {
-            "item": "solarenergy:intermediate_battery_cell"
+            "item": "minecraft:iron_ingot"
         },
         "c":
         {
-        	"type": "forge:ore_dict",
-            "ore": "ingotLead"
+        	"tag": "forge:ingots/lead"
         }
     },
     "result":
     {
-        "item": "solarenergy:advanced_battery_cell",
+        "item": "solarenergy:basic_battery_cell",
         "count": 1
     }
 }

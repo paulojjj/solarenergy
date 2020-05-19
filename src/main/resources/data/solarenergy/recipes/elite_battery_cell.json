@@ -10,21 +10,20 @@
     {
         "a":
         {
-            "item": "solarenergy:intermediate_energy_core"
+            "item": "solarenergy:elite_energy_core"
         },
         "b":
         {
-            "item": "solarenergy:regular_battery_cell"
+            "item": "solarenergy:advanced_battery_cell"
         },
         "c":
         {
-        	"type": "forge:ore_dict",
-            "ore": "ingotLead"
+        	"tag": "forge:ingots/lead"
         }
     },
     "result":
     {
-        "item": "solarenergy:intermediate_battery_cell",
+        "item": "solarenergy:elite_battery_cell",
         "count": 1
     }
 }

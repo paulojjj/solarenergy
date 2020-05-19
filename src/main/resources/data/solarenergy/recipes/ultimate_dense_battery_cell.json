@@ -10,21 +10,20 @@
     {
         "a":
         {
-            "item": "solarenergy:regular_dense_energy_core"
+            "item": "solarenergy:ultimate_dense_energy_core"
         },
         "b":
         {
-            "item": "solarenergy:basic_dense_battery_cell"
+            "item": "solarenergy:elite_dense_battery_cell"
         },
         "c":
         {
-        	"type": "forge:ore_dict",
-            "ore": "ingotLead"
+        	"tag": "forge:ingots/lead"
         }
     },
     "result":
     {
-        "item": "solarenergy:regular_dense_battery_cell",
+        "item": "solarenergy:ultimate_dense_battery_cell",
         "count": 1
     }
 }

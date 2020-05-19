@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "solarenergy:intermediate_solar_generator"
+      "model": "solarenergy:block/intermediate_solar_generator"
     }
   }
 }

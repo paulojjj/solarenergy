@@ -1,8 +1,8 @@
 {
 	"parent": "solarenergy:block/energy_cable_def",
 	"textures": {
-		"side": "solarenergy:blocks/energy_cable_center",
-		"bottom": "solarenergy:blocks/energy_cable_center",
-		"top": "solarenergy:blocks/energy_cable_center"
+		"side": "solarenergy:block/energy_cable_center",
+		"bottom": "solarenergy:block/energy_cable_center",
+		"top": "solarenergy:block/energy_cable_center"
 	}
 }

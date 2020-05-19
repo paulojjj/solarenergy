@@ -1,8 +1,8 @@
 {
 	"parent": "solarenergy:block/solar_generator",
 	"textures": {
-		"side": "solarenergy:blocks/solar_generator_side",
-		"bottom": "solarenergy:blocks/solar_generator_bottom",
-		"top": "solarenergy:blocks/basic_solar_generator_top"
+		"side": "solarenergy:block/solar_generator_side",
+		"bottom": "solarenergy:block/solar_generator_bottom",
+		"top": "solarenergy:block/basic_solar_generator_top"
 	}
 }

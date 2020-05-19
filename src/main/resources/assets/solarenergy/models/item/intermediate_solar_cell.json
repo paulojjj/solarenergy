@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "solarenergy:items/intermediate_solar_cell"
+        "layer0": "solarenergy:item/intermediate_solar_cell"
     }
 }

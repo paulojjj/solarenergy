@@ -1,10 +1,10 @@
 {
     "variants": {
-        "facing=north": { "model": "solarenergy:elite_battery" },
-        "facing=south": { "model": "solarenergy:elite_battery", "y": 180 },
-        "facing=west":  { "model": "solarenergy:elite_battery", "y": 270 },
-        "facing=east":  { "model": "solarenergy:elite_battery", "y": 90 },
-        "facing=up":  { "model": "solarenergy:elite_battery", "x": -90 },
-        "facing=down":  { "model": "solarenergy:elite_battery", "x": 90 }
+        "facing=north": { "model": "solarenergy:block/elite_battery" },
+        "facing=south": { "model": "solarenergy:block/elite_battery", "y": 180 },
+        "facing=west":  { "model": "solarenergy:block/elite_battery", "y": 270 },
+        "facing=east":  { "model": "solarenergy:block/elite_battery", "y": 90 },
+        "facing=up":  { "model": "solarenergy:block/elite_battery", "x": -90 },
+        "facing=down":  { "model": "solarenergy:block/elite_battery", "x": 90 }
     }
 }

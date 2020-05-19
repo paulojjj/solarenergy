@@ -1,0 +1,76 @@
+{
+
+"itemGroup.solarenergy": "Energia Solar",
+
+"solarenergy.energy": "Energia",
+"solarenergy.stored_energy": "Energia Armazenada",
+"solarenergy.capacity": "Capacidade",
+"solarenergy.produces": "Produz",
+"solarenergy.in": "Ent.",
+"solarenergy.out": "Saída",
+"solarenergy.output": "Saída",
+"solarenergy.maxproduction": "Produção Máxima",
+"solarenergy.producing": "Produzindo",
+"solarenergy.energy_needed": "Energia Necessária",
+"solarenergy.throughput": "Transferência",
+
+"block.solarenergy.basic_battery": "Bateria Básica",
+"block.solarenergy.regular_battery": "Bateria Regular",
+"block.solarenergy.intermediate_battery": "Bateria Intermediária",
+"block.solarenergy.advanced_battery": "Bateria Avançada",
+"block.solarenergy.elite_battery": "Bateria Elite",
+"block.solarenergy.ultimate_battery": "Bateria Ultimate",
+"block.solarenergy.basic_dense_battery": "Bateria Densa Básica",
+"block.solarenergy.regular_dense_battery": "Bateria Densa Regular",
+"block.solarenergy.intermediate_dense_battery": "Bateria Densa Intermediária",
+"block.solarenergy.advanced_dense_battery": "Bateria Densa Avançada",
+"block.solarenergy.elite_dense_battery": "Bateria Densa Elite",
+"block.solarenergy.ultimate_dense_battery": "Bateria Densa Ultimate",
+
+"block.solarenergy.basic_solar_generator": "Gerador Solar Básico",
+"block.solarenergy.regular_solar_generator": "Gerador Solar Regular",
+"block.solarenergy.intermediate_solar_generator": "Gerador Solar Intermediário",
+"block.solarenergy.advanced_solar_generator": "Gerador Solar Avançado",
+"block.solarenergy.elite_solar_generator": "Gerador Solar Elite",
+"block.solarenergy.ultimate_solar_generator": "Gerador Solar Ultimate",
+
+"block.solarenergy.energy_assembler": "Agregador de Energia",
+"block.solarenergy.energy_cable": "Cabo de Energia",
+
+"item.solarenergy.basic_energy_core": "Núcleo de Energia Básico",
+"item.solarenergy.regular_energy_core": "Núcleo de Energia Regular",
+"item.solarenergy.intermediate_energy_core": "Núcleo de Energia Intermediário",
+"item.solarenergy.advanced_energy_core": "Núcleo de Energia Avançado",
+"item.solarenergy.elite_energy_core": "Núcleo de Energia Elite",
+"item.solarenergy.ultimate_energy_core": "Núcleo de Energia Ultimate",
+"item.solarenergy.basic_solar_cell": "Célula Solar Básica",
+"item.solarenergy.regular_solar_cell": "Célula Solar Regular",
+"item.solarenergy.intermediate_solar_cell": "Célula Solar Intermdiária",
+"item.solarenergy.advanced_solar_cell": "Célula Solar Avançada",
+"item.solarenergy.elite_solar_cell": "Célula Solar Elite",
+"item.solarenergy.ultimate_solar_cell": "Célula Solar Ultimate",
+"item.solarenergy.basic_battery_cell": "Célula de Bateria Básica",
+"item.solarenergy.regular_battery_cell": "Célula de Bateria Regular",
+"item.solarenergy.intermediate_battery_cell": "Célula de Bateria Intermediária",
+"item.solarenergy.advanced_battery_cell": "Célula de Bateria Avançada",
+"item.solarenergy.elite_battery_cell": "Célula de Bateria Elite",
+"item.solarenergy.ultimate_battery_cell": "Célula de Bateria Ultimate",
+"item.solarenergy.ingotLead": "Barra de Chumbo",
+
+"item.solarenergy.basic_dense_energy_core": "Núcleo de Energia Denso Básico",
+"item.solarenergy.regular_dense_energy_core": "Núcleo de Energia Denso Regular",
+"item.solarenergy.intermediate_dense_energy_core": "Núcleo de Energia Denso Intermediário",
+"item.solarenergy.advanced_dense_energy_core": "Núcleo de Energia Denso Avançado",
+"item.solarenergy.elite_dense_energy_core": "Núcleo de Energia Denso Elite",
+"item.solarenergy.ultimate_dense_energy_core": "Núcleo de Energia Denso Ultimate",
+"item.solarenergy.basic_dense_battery_cell": "Célula de Bateria Densa Básica",
+"item.solarenergy.regular_dense_battery_cell": "Célula de Bateria Densa Regular",
+"item.solarenergy.intermediate_dense_battery_cell": "Célula de Bateria Densa Intermdiária",
+"item.solarenergy.advanced_dense_battery_cell": "Célula de Bateria Densa Avançada",
+"item.solarenergy.elite_dense_battery_cell": "Célula de Bateria Densa Elite",
+"item.solarenergy.ultimate_dense_battery_cell": "Célula de Bateria Densa Ultimate"
+}
+
+
+
+

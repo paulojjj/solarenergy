@@ -1,6 +1,6 @@
 {
     "variants": {
-        "active=false": { "model": "solarenergy:energy_assembler_off" },
-        "active=true": { "model": "solarenergy:energy_assembler_on" }
+        "active=false": { "model": "solarenergy:block/energy_assembler_off" },
+        "active=true": { "model": "solarenergy:block/energy_assembler_on" }
     }
 }

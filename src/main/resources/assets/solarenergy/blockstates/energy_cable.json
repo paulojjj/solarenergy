@@ -1,7 +1,7 @@
 {
 	"variants": {
 		"": {
-			"model": "solarenergy:energy_cable"
+			"model": "solarenergy:block/energy_cable"
 		}
 	}
 }

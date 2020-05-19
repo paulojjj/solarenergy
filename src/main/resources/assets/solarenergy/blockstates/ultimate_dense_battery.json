@@ -1,10 +1,10 @@
 {
     "variants": {
-        "facing=north": { "model": "solarenergy:ultimate_dense_battery" },
-        "facing=south": { "model": "solarenergy:ultimate_dense_battery", "y": 180 },
-        "facing=west":  { "model": "solarenergy:ultimate_dense_battery", "y": 270 },
-        "facing=east":  { "model": "solarenergy:ultimate_dense_battery", "y": 90 },
-        "facing=up":  { "model": "solarenergy:ultimate_dense_battery", "x": -90 },
-        "facing=down":  { "model": "solarenergy:ultimate_dense_battery", "x": 90 }
+        "facing=north": { "model": "solarenergy:block/ultimate_dense_battery" },
+        "facing=south": { "model": "solarenergy:block/ultimate_dense_battery", "y": 180 },
+        "facing=west":  { "model": "solarenergy:block/ultimate_dense_battery", "y": 270 },
+        "facing=east":  { "model": "solarenergy:block/ultimate_dense_battery", "y": 90 },
+        "facing=up":  { "model": "solarenergy:block/ultimate_dense_battery", "x": -90 },
+        "facing=down":  { "model": "solarenergy:block/ultimate_dense_battery", "x": 90 }
     }
 }
