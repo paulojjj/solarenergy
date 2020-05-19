@@ -6,6 +6,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 import paulojjj.solarenergy.net.IMessageListener;
 import paulojjj.solarenergy.registry.Containers;
@@ -14,7 +15,6 @@ import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainer
 
 public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerContainer> implements IMessageListener<EnergyStorageContainerUpdateMessage> {
 
-	private PlayerInventory playerInventory;
 	private int firstPlayerIndex;
 	private int lastPlayerIndex;
 	
@@ -22,16 +22,6 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 
 	public EnergyAssemblerContainer(int windowId, PlayerInventory playerInventory, PacketBuffer additionalData) {
 		super(Containers.ENERGY_ASSEMBLER.getType(), windowId, playerInventory, additionalData);
-		this.playerInventory = playerInventory;
-
-		EnergyAssemblerTileEntity tileEntity = (EnergyAssemblerTileEntity)super.getTileEntity();
-		
-		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 0, 26, 10));
-		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 1, 26, 59));
-		
-		firstPlayerIndex = inventorySlots.size();
-		addPlayerSlots(playerInventory);
-		lastPlayerIndex = inventorySlots.size() - 1;
 	}
 	
 	public EnergyAssemblerContainer(int windowId, PlayerInventory playerInventory) {
@@ -86,7 +76,7 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 
 			if (current.getCount() == previous.getCount())
 				return ItemStack.EMPTY;
-			slot.onTake(playerInventory.player, current);
+			slot.onTake(getPlayerInventory().player, current);
 		}
 		detectAndSendChanges();
 		return previous;
@@ -99,6 +89,20 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 	@Override
 	public void onMessage(EnergyStorageContainerUpdateMessage message) {
 		statusMessage = message;
+	}
+	
+	@Override
+	public void setPos(BlockPos pos) {
+		super.setPos(pos);
+		
+		EnergyAssemblerTileEntity tileEntity = (EnergyAssemblerTileEntity)super.getTileEntity();
+		
+		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 0, 26, 10));
+		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 1, 26, 59));
+		
+		firstPlayerIndex = inventorySlots.size();
+		addPlayerSlots(getPlayerInventory());
+		lastPlayerIndex = inventorySlots.size() - 1;
 	}
 
 

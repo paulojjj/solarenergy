@@ -1,10 +1,12 @@
 package paulojjj.solarenergy.blocks;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer.Builder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
@@ -18,7 +20,6 @@ public class EnergyAssembler extends BaseBlock {
 	public EnergyAssembler() {
 		super(BaseBlock.propertiesBuilder().resistance(3.5f));
 		configBuilder()
-			.property(ACTIVE)
 			.gui(GUI.ENERGY_ASSEMBLER)
 			.createTileEntity((x) -> new EnergyAssemblerTileEntity())
 			.init();
@@ -38,6 +39,11 @@ public class EnergyAssembler extends BaseBlock {
 				}
 			}
 		}
+	}
+	
+	@Override
+	protected void fillStateContainer(Builder<Block, BlockState> builder) {
+		builder.add(ACTIVE);
 	}
 
 }

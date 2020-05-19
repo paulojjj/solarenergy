@@ -132,7 +132,6 @@ public class BaseBlock extends Block {
 			BaseBlock.this.properties = new ArrayList<>();
 			for(IProperty<?> property: properties) {
 				block.properties.add(property);
-				//builder.add(property);
 			}
 		}
 
