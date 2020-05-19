@@ -53,6 +53,9 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTil
 			BlockPos neighborPos = pos.offset(facing);
 			BlockState bs = te.getWorld().getBlockState(neighborPos);
 			VoxelShape shape = bs.getShape(te.getWorld(), neighborPos);
+			if(shape.isEmpty()) {
+				continue;
+			}
 			AxisAlignedBB bbNeighbor = shape.getBoundingBox();
 			
 			if(bs.isSolid() || bbNeighbor.maxY <= height) {
