@@ -1,21 +1,19 @@
 package paulojjj.solarenergy.renderers;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.blocks.EnergyCable.Boxes;
+import paulojjj.solarenergy.registry.Textures;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 @OnlyIn(Dist.CLIENT)
@@ -25,26 +23,25 @@ public class EnergyCableRenderer extends TileEntityRenderer<EnergyCableTileEntit
 		super(dispatcher);
 	}
 
-	private static final ResourceLocation CENTER_TEXTURE = new ResourceLocation(Main.MODID, "textures/block/energy_cable_center.png");
-	private static final ResourceLocation SIDES_TEXTURE_HORIZONTAL = new ResourceLocation(Main.MODID, "textures/block/energy_cable_horizontal.png");
-	private static final ResourceLocation SIDES_TEXTURE_VERTICAL = new ResourceLocation(Main.MODID, "textures/block/energy_cable_vertical.png");
+	private static TextureAtlasSprite CENTER_TEXTURE;
+	private static TextureAtlasSprite SIDES_TEXTURE_HORIZONTAL;
+	private static TextureAtlasSprite SIDES_TEXTURE_VERTICAL;
 
 	@Override
-	public void render(EnergyCableTileEntity tile, float partialTicks, MatrixStack transformation, IRenderTypeBuffer buffer, int combinedLight, int packetLight) {
+	public void render(EnergyCableTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+		if(CENTER_TEXTURE == null) {
+			CENTER_TEXTURE = Textures.ENERGY_CABLE_CENTER.getSprite();
+			SIDES_TEXTURE_HORIZONTAL = Textures.ENERGY_CABLE_HORIZONTAL.getSprite();
+			SIDES_TEXTURE_VERTICAL = Textures.ENERGY_CABLE_VERTICAL.getSprite();
+		}
+		
 		EnergyCableTileEntity te = (EnergyCableTileEntity)tile;
-		//GlStateManager.pushMatrix();
-		transformation.push();
+		matrixStack.push();
 		
-		BlockPos pos = tile.getPos();
-		transformation.translate(pos.getX(), pos.getY(), pos.getZ());
-		
-		RenderHelper.enableStandardItemLighting();
-		//GlStateManager.disableLighting();
-		GlStateManager.enableCull();
+		IVertexBuilder builder = buffer.getBuffer(RenderType.getTranslucent());
+		Matrix4f matrix4f = matrixStack.getLast().getMatrix();
 
-		BufferBuilder builder = Tessellator.getInstance().getBuffer();
-
-		Render.drawCubeFaces(builder, CENTER_TEXTURE, Boxes.CENTER.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN);
+		Render.drawCubeFaces(matrix4f, builder, CENTER_TEXTURE, combinedLight, combinedOverlay, Boxes.CENTER.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN);
 
 		for(Direction facing : Direction.values()) {
 			if(!te.hasStorage(facing)) {
@@ -52,29 +49,28 @@ public class EnergyCableRenderer extends TileEntityRenderer<EnergyCableTileEntit
 			}
 
 			if(facing == Direction.NORTH) {
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_HORIZONTAL, Boxes.NORTH.getBoundingBox(), Direction.EAST, Direction.WEST);
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_VERTICAL, Boxes.NORTH.getBoundingBox(), Direction.UP, Direction.DOWN);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_HORIZONTAL, combinedLight, combinedOverlay, Boxes.NORTH.getBoundingBox(), Direction.EAST, Direction.WEST);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_VERTICAL, combinedLight, combinedOverlay, Boxes.NORTH.getBoundingBox(), Direction.UP, Direction.DOWN);
 			}
 			else if(facing == Direction.SOUTH) {
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_HORIZONTAL, Boxes.SOUTH.getBoundingBox(), Direction.EAST, Direction.WEST);
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_VERTICAL, Boxes.SOUTH.getBoundingBox(), Direction.UP, Direction.DOWN);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_HORIZONTAL, combinedLight, combinedOverlay, Boxes.SOUTH.getBoundingBox(), Direction.EAST, Direction.WEST);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_VERTICAL, combinedLight, combinedOverlay, Boxes.SOUTH.getBoundingBox(), Direction.UP, Direction.DOWN);
 			}
 			else if(facing == Direction.EAST) {
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_HORIZONTAL, Boxes.EAST.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.UP, Direction.DOWN);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_HORIZONTAL, combinedLight, combinedOverlay, Boxes.EAST.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.UP, Direction.DOWN);
 			}
 			else if(facing == Direction.WEST) {
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_HORIZONTAL, Boxes.WEST.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.UP, Direction.DOWN);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_HORIZONTAL, combinedLight, combinedOverlay, Boxes.WEST.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.UP, Direction.DOWN);
 			}
 			else if(facing == Direction.UP) {
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_VERTICAL, Boxes.UP.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_VERTICAL, combinedLight, combinedOverlay, Boxes.UP.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
 			}
 			else if(facing == Direction.DOWN) {
-				Render.drawCubeFaces(builder, SIDES_TEXTURE_VERTICAL, Boxes.DOWN.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE_VERTICAL, combinedLight, combinedOverlay, Boxes.DOWN.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
 			}
 		}
 		
-		transformation.pop();
-		//GlStateManager.popMatrix();	
+		matrixStack.pop();
 	}
 	
 	

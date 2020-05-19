@@ -19,7 +19,7 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 		configBuilder()
 		.gui(GUI.SOLAR_GENERATOR)
 		.createTileEntity((x) -> new SolarGeneratorTileEntity(tier))
-		.renderType(BlockRenderType.INVISIBLE)
+		.renderType(BlockRenderType.MODEL)
 		.init();
 	}
 	

@@ -1,8 +1,14 @@
 package paulojjj.solarenergy.registry;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.Main;
 
+@OnlyIn(Dist.CLIENT)
 public enum Textures {
 	
 	SOLAR_GENERATOR_SIDE("block/solar_generator_side"),
@@ -18,5 +24,9 @@ public enum Textures {
 
 	public ResourceLocation getResourceLocation() {
 		return resourceLocation;
+	}
+	
+	public TextureAtlasSprite getSprite() {
+		return Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(resourceLocation);
 	}
 }

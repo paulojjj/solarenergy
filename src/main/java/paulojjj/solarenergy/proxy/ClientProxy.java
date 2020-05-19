@@ -10,6 +10,7 @@ import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.BlockItem;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.registry.Textures;
@@ -24,6 +25,7 @@ public class ClientProxy extends CommonProxy {
 		super.init();
 		
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerTextures);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 	}
 	
 	@Override
@@ -45,19 +47,6 @@ public class ClientProxy extends CommonProxy {
 		registerScreen(screen.getContainerType(), screen.getFactory());
 	}
 	
-	
-	@Override
-	public void registerAssets() {
-		super.registerAssets();
-		
-		for(GUI gui : GUI.values()) {
-			registerScreen(gui);
-		}
-		
-		ClientRegistry.bindTileEntityRenderer(TileEntities.SOLAR_GENERATOR.getType(), SolarGeneratorRenderer::new);
-		ClientRegistry.bindTileEntityRenderer(TileEntities.ENERGY_CABLE.getType(), EnergyCableRenderer::new);
-	}
-	
     private void registerTextures(TextureStitchEvent.Pre evt) {
         if (!evt.getMap().getTextureLocation().equals(PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
             return;
@@ -67,5 +56,16 @@ public class ClientProxy extends CommonProxy {
         	evt.addSprite(texture.getResourceLocation());
         }
     }
+    
+    private void clientSetup(FMLClientSetupEvent evt) {
+		for(GUI gui : GUI.values()) {
+			registerScreen(gui);
+		}
+		
+    	ClientRegistry.bindTileEntityRenderer(TileEntities.ENERGY_CABLE.getType(), EnergyCableRenderer::new);
+    	ClientRegistry.bindTileEntityRenderer(TileEntities.SOLAR_GENERATOR.getType(), SolarGeneratorRenderer::new);
+    }
+    
+    
 	
 }
