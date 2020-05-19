@@ -12,6 +12,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -219,6 +220,10 @@ public class PacketManager {
 
 	public static void sendToAllTracking(TileEntity tileEntity, Object message) {
 		BlockPos pos = tileEntity.getPos();
+		World world = tileEntity.getWorld();
+		if(!world.isAreaLoaded(pos, 0)) {
+			return;
+		}
 		Chunk chunk = tileEntity.getWorld().getChunkAt(pos);
 		wrapper.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new TileEntityUpdateMessage(tileEntity, message));
 	}
