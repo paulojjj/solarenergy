@@ -128,30 +128,12 @@ public class BaseBlock extends Block {
 			return this;
 		}
 		
-		/*@SuppressWarnings("unchecked")
-		protected <T extends Comparable<T>, V extends T> void setProperty(BlockState state, IProperty<?> t, Comparable<?> v) {
-			properties.put(t, v);
-			state.with((IProperty<T>)t, (V)v);			
-		}*/
-		
 		public void init() {
-			//StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(BaseBlock.this);
-			
 			BaseBlock.this.properties = new ArrayList<>();
 			for(IProperty<?> property: properties) {
 				block.properties.add(property);
 				//builder.add(property);
 			}
-
-			//StateContainer<Block, BlockState> sc = builder.create(BlockState::new);
-			//BlockState state = sc.getBaseState();
-			//block.setDefaultState(sc.getBaseState());
-			//for(Entry<IProperty<?>, Comparable<?>> entry: properties.entrySet()) {
-				//IProperty<? extends Comparable<?>> key = entry.getKey();
-				//Comparable<?> value = entry.getValue();
-				//setProperty(state, key, value);
-			//}
-			//block.setDefaultState(state);*/
 		}
 
 		@Override
@@ -184,10 +166,10 @@ public class BaseBlock extends Block {
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
 		if(worldIn.isRemote || gui == null) {
-			return ActionResultType.PASS;
+			return ActionResultType.SUCCESS;
 		}
 		GuiHandler.openGui(player, worldIn, gui, pos);
-		return ActionResultType.CONSUME;
+		return ActionResultType.SUCCESS;
 	}
 	
 	@Override
