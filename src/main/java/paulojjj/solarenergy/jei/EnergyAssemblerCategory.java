@@ -1,5 +1,8 @@
 package paulojjj.solarenergy.jei;
 
+import java.awt.Color;
+
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -9,13 +12,16 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
+import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
 import paulojjj.solarenergy.registry.Blocks;
 
-public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerRecipeWrapper> {
+public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerRecipe> {
 
 	private IGuiHelper guiHelper;
 	private IDrawableAnimated gauge;
@@ -30,7 +36,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	
 	@Override
 	public String getTitle() {
-		return I18n.format("tile.energy_assembler.name");
+		return I18n.format("block.solarenergy.energy_assembler");
 	}
 
 	@Override
@@ -39,7 +45,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, EnergyAssemblerRecipeWrapper recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, EnergyAssemblerRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(0, true, 3, 1);
@@ -49,8 +55,12 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 	
 	@Override
-	public void draw(EnergyAssemblerRecipeWrapper recipe, double mouseX, double mouseY) {
+	public void draw(EnergyAssemblerRecipe recipe, double mouseX, double mouseY) {
 		gauge.draw(7, 24);
+		
+		String energyNeededString = EnergyFormatter.format(recipe.getEnergyNeeded());
+		Minecraft mc = Minecraft.getInstance(); 
+		mc.fontRenderer.drawString(energyNeededString, 28, 31, Color.gray.getRGB());
 	}
 	
 	@Override
@@ -59,8 +69,8 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 
 	@Override
-	public Class<? extends EnergyAssemblerRecipeWrapper> getRecipeClass() {
-		return EnergyAssemblerRecipeWrapper.class;
+	public Class<? extends EnergyAssemblerRecipe> getRecipeClass() {
+		return EnergyAssemblerRecipe.class;
 	}
 
 	@Override
@@ -69,8 +79,9 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 
 	@Override
-	public void setIngredients(EnergyAssemblerRecipeWrapper recipe, IIngredients ingredients) {
-		recipe.getIngredients(ingredients);
+	public void setIngredients(EnergyAssemblerRecipe recipe, IIngredients ingredients) {
+		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(recipe.getInput(), 1));
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
 	}
 
 }

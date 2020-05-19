@@ -1,7 +1,6 @@
 package paulojjj.solarenergy.jei;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -15,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.Main;
+import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
 import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Blocks;
 
@@ -39,7 +39,7 @@ public class JEIModPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registry) {
 		IModPlugin.super.registerRecipes(registry);
 		
-		List<EnergyAssemblerRecipeWrapper> recipes = RecipeHandler.getEnergyAssemblerRecipes().values().stream().map(x -> new EnergyAssemblerRecipeWrapper(x)).collect(Collectors.toList());
+		Collection<EnergyAssemblerRecipe> recipes = RecipeHandler.getEnergyAssemblerRecipes().values();
 		
 		registry.addRecipes(recipes, ENERGY_ASSMBLER_UID);
 	}
