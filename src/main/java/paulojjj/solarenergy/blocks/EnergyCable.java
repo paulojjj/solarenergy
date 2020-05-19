@@ -5,14 +5,20 @@ import java.util.Map;
 
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
+import paulojjj.solarenergy.registry.Blocks;
 import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
@@ -62,7 +68,7 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 		}
 		return shape;
 	}
-
+	
 	public VoxelShape getShape(IBlockReader world, BlockPos pos) {
 		EnergyCableTileEntity te = (EnergyCableTileEntity)world.getTileEntity(pos);
 		
@@ -90,6 +96,15 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos,
 			ISelectionContext context) {
 		return getShape(worldIn, pos);
+	}
+	
+	@Override
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+			Hand handIn, BlockRayTraceResult hit) {
+		if(player.getHeldItemMainhand().getItem() == Blocks.ENERGY_CABLE.getItemBlock()) {
+			return ActionResultType.PASS;
+		}
+		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
 	}
 	
 }
