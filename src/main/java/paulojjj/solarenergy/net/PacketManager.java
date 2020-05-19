@@ -12,11 +12,10 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import paulojjj.solarenergy.Main;
 
@@ -219,10 +218,9 @@ public class PacketManager {
 	}
 
 	public static void sendToAllTracking(TileEntity tileEntity, Object message) {
-		Dimension dimension = tileEntity.getWorld().getDimension();
 		BlockPos pos = tileEntity.getPos();
-		TargetPoint point = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1.0, dimension.getType());
-		wrapper.send(PacketDistributor.NEAR.with(() -> point), new TileEntityUpdateMessage(tileEntity, message));
+		Chunk chunk = tileEntity.getWorld().getChunkAt(pos);
+		wrapper.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new TileEntityUpdateMessage(tileEntity, message));
 	}
 
 	public static void sendTileEntityMessage(TileEntity tileEntity, ServerPlayerEntity player, Object message) {
