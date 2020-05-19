@@ -1,5 +1,8 @@
 package paulojjj.solarenergy.blocks;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
@@ -14,6 +17,8 @@ import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
+	
+	private static Map<Boxes, VoxelShape> boxShapes = new HashMap<>();
 
 	public enum Boxes {
 		DOWN(new AxisAlignedBB(0.33, 0.0, 0.33, 0.67, 0.33, 0.67)),
@@ -49,15 +54,20 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	}
 	
 	protected VoxelShape getVoxelShape(Boxes box) {
-		AxisAlignedBB bb = box.getBoundingBox();
-		return makeCuboidShape(bb.minX * 16, bb.minY * 16, bb.minZ * 16, bb.maxX * 16, bb.maxY * 16, bb.maxZ * 16);
+		VoxelShape shape = boxShapes.get(box);
+		if(shape == null) {
+			AxisAlignedBB bb = box.getBoundingBox();
+			shape = makeCuboidShape(bb.minX * 16, bb.minY * 16, bb.minZ * 16, bb.maxX * 16, bb.maxY * 16, bb.maxZ * 16);
+			boxShapes.put(box, shape);
+		}
+		return shape;
 	}
 
 	public VoxelShape getShape(IBlockReader world, BlockPos pos) {
 		EnergyCableTileEntity te = (EnergyCableTileEntity)world.getTileEntity(pos);
 		
 		if(te == null) {
-			return VoxelShapes.fullCube();
+			return VoxelShapes.empty();
 		}
 		
 		VoxelShape shape = getVoxelShape(Boxes.CENTER);
@@ -80,16 +90,6 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos,
 			ISelectionContext context) {
 		return getShape(worldIn, pos);
-	}
-	
-	@Override
-	public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-		return false;
-	}
-	
-	@Override
-	public int getOpacity(BlockState state, IBlockReader worldIn, BlockPos pos) {
-		return 0;
 	}
 	
 }
