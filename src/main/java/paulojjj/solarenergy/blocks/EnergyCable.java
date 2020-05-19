@@ -3,18 +3,19 @@ package paulojjj.solarenergy.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.gui.GuiHandler.GUI;
+import paulojjj.solarenergy.registry.Blocks;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
@@ -57,6 +58,15 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.INVISIBLE;
 	}
+	
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if(playerIn.getHeldItemMainhand().getItem() == Blocks.ENERGY_CABLE.getItemBlock()) {
+			return false;
+		}
+		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+	}	
 
 	@Override
 	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
@@ -104,13 +114,10 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 		return false;
 	}
 
-	@Nonnull
 	@Override
 	@Deprecated
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face) {
 		return BlockFaceShape.UNDEFINED;
 	}
-
-
 
 }
