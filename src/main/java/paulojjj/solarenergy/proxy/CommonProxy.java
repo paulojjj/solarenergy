@@ -8,10 +8,13 @@ import paulojjj.solarenergy.TickHandler;
 import paulojjj.solarenergy.registry.Blocks;
 import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.registry.Items;
-import paulojjj.solarenergy.registry.Items.ItemType;
 import paulojjj.solarenergy.registry.TileEntities;
 
 public class CommonProxy implements Proxy {
+	
+	public void init() {
+		
+	}
 	
 	@Override
 	public void registerAssets() {
@@ -38,9 +41,6 @@ public class CommonProxy implements Proxy {
 	
 	public void registerItem(Items item) {
 		ForgeRegistries.ITEMS.register(item.getItem());		
-		if(item.getType() == ItemType.FORGE_ORE_DICT) {
-			//OreDictionary.registerOre(item.getRegistryName(), item.getItem());			
-		}
 	}
 
 	public void registerTileEntity(TileEntities tile) {

@@ -40,7 +40,7 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	}
 
 	public EnergyCable() {
-		super(propertiesBuilder().resistance(1.0f).hardness(1.0f));
+		super(propertiesBuilder().resistance(1.0f).hardness(1.0f).notSolid());
 		configBuilder()
 			.gui(GUI.ENERGY_CABLE)
 			.createTileEntity((x) -> new EnergyCableTileEntity())
@@ -50,7 +50,7 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	
 	protected VoxelShape getVoxelShape(Boxes box) {
 		AxisAlignedBB bb = box.getBoundingBox();
-		return makeCuboidShape(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
+		return makeCuboidShape(bb.minX * 16, bb.minY * 16, bb.minZ * 16, bb.maxX * 16, bb.maxY * 16, bb.maxZ * 16);
 	}
 
 	public VoxelShape getShape(IBlockReader world, BlockPos pos) {
@@ -80,6 +80,16 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos,
 			ISelectionContext context) {
 		return getShape(worldIn, pos);
+	}
+	
+	@Override
+	public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
+		return false;
+	}
+	
+	@Override
+	public int getOpacity(BlockState state, IBlockReader worldIn, BlockPos pos) {
+		return 0;
 	}
 	
 }

@@ -4,15 +4,15 @@ import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import paulojjj.solarenergy.registry.GUI;
-import paulojjj.solarenergy.registry.Items;
+import paulojjj.solarenergy.registry.Textures;
 import paulojjj.solarenergy.registry.TileEntities;
 import paulojjj.solarenergy.renderers.EnergyCableRenderer;
 import paulojjj.solarenergy.renderers.SolarGeneratorRenderer;
@@ -20,21 +20,15 @@ import paulojjj.solarenergy.renderers.SolarGeneratorRenderer;
 public class ClientProxy extends CommonProxy {
 	
 	@Override
-	public void registerBlock(BlockItem ib) {
-		super.registerBlock(ib);
-		registerModelResourceLocation(ib);
+	public void init() {
+		super.init();
+		
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerTextures);
 	}
 	
 	@Override
-	public void registerItem(Items item) {
-		super.registerItem(item);
-		registerModelResourceLocation(item.getItem());
-	}
-	
-	protected void registerModelResourceLocation(Item item) {
-		String id = item.getRegistryName().toString();
-		ModelResourceLocation mrl = new ModelResourceLocation(id, "inventory");
-		ModelLoader.addSpecialModel(mrl);		
+	public void registerBlock(BlockItem ib) {
+		super.registerBlock(ib);
 	}
 	
 	@Override
@@ -63,5 +57,15 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntityRenderer(TileEntities.SOLAR_GENERATOR.getType(), SolarGeneratorRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(TileEntities.ENERGY_CABLE.getType(), EnergyCableRenderer::new);
 	}
+	
+    private void registerTextures(TextureStitchEvent.Pre evt) {
+        if (!evt.getMap().getTextureLocation().equals(PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
+            return;
+        }
+        
+        for(Textures texture : Textures.values()) {
+        	evt.addSprite(texture.getResourceLocation());
+        }
+    }
 	
 }

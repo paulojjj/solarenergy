@@ -11,9 +11,11 @@ import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity> {
+	
+	public static final VoxelShape SHAPE = makeCuboidShape(0, 0, 0, 16, 4, 16);
 
 	public SolarGenerator(Tier tier) {
-		super(propertiesBuilder().resistance(1.0f));
+		super(propertiesBuilder().resistance(1.0f).notSolid());
 		configBuilder()
 		.gui(GUI.SOLAR_GENERATOR)
 		.createTileEntity((x) -> new SolarGeneratorTileEntity(tier))
@@ -22,7 +24,7 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 	}
 	
 	public VoxelShape getShape() {
-		return makeCuboidShape(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D);
+		return SHAPE;
 	}
 	
 	@Override

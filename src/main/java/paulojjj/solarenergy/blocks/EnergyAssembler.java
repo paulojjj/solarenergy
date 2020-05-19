@@ -18,7 +18,7 @@ public class EnergyAssembler extends BaseBlock {
 	public EnergyAssembler() {
 		super(BaseBlock.propertiesBuilder().resistance(3.5f));
 		configBuilder()
-			.with(ACTIVE, false)
+			.property(ACTIVE)
 			.gui(GUI.ENERGY_ASSEMBLER)
 			.createTileEntity((x) -> new EnergyAssemblerTileEntity())
 			.init();

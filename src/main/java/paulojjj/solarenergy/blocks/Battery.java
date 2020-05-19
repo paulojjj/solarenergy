@@ -29,7 +29,7 @@ public class Battery extends EnergyNetworkBlock<BatteryTileEntity> {
 	public Battery(Tier tier) {
 		super(propertiesBuilder());
 		configBuilder()
-		.with(FACING, Direction.NORTH)
+		.property(FACING)
 		.gui(GUI.BATTERY)
 		.createTileEntity((x) -> new BatteryTileEntity(tier))
 		.getDrops(this::setDropNBT)

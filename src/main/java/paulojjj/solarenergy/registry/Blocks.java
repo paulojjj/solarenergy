@@ -8,11 +8,12 @@ import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.blocks.BatteryItemBlock;
 import paulojjj.solarenergy.blocks.EnergyAssembler;
 import paulojjj.solarenergy.blocks.EnergyCable;
+import paulojjj.solarenergy.blocks.SolarGenerator;
 import paulojjj.solarenergy.blocks.SolarGeneratorItemBlock;
 
 public enum Blocks {
 
-	BASIC_SOLAR_GENERATOR("basic_solar_generator", new SolarGeneratorItemBlock(Tier.BASIC)),
+	BASIC_SOLAR_GENERATOR("basic_solar_generator", new SolarGenerator(Tier.BASIC)),
 	REGULAR_SOLAR_GENERATOR("regular_solar_generator", new SolarGeneratorItemBlock(Tier.REGULAR)),
 	INTERMEDIATE_SOLAR_GENERATOR("intermediate_solar_generator", new SolarGeneratorItemBlock(Tier.INTERMEDIATE)),
 	ADVANCED_SOLAR_GENERATOR("advanced_solar_generator", new SolarGeneratorItemBlock(Tier.ADVANCED)),

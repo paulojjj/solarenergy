@@ -1,16 +1,19 @@
 package paulojjj.solarenergy.renderers;
 
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -23,7 +26,7 @@ import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 @OnlyIn(Dist.CLIENT)
-public class SolarGeneratorRenderer extends TileEntityRenderer<TileEntity> {
+public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTileEntity> {
 	
 	public static final Direction[] HORIZONTALS = new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
@@ -39,23 +42,45 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<TileEntity> {
 		
 		private TopResources() {
 			String tierName = this.name().toLowerCase();
-			this.resourceLocation = new ResourceLocation(Main.MODID, "textures/blocks/" + tierName + "_solar_generator_top.png");
+			this.resourceLocation = new ResourceLocation(Main.MODID, "textures/block/" + tierName + "_solar_generator_top.png");
 		}
 	}
 	
-	private static final ResourceLocation BOTTOM_TEXTURE = new ResourceLocation(Main.MODID, "textures/blocks/solar_generator_bottom.png");
-	private static final ResourceLocation SIDES_TEXTURE = new ResourceLocation(Main.MODID, "textures/blocks/solar_generator_side.png");
+	private static final ResourceLocation BOTTOM_TEXTURE = new ResourceLocation(Main.MODID, "textures/block/solar_generator_bottom.png");
+	private static final ResourceLocation SIDES_TEXTURE = new ResourceLocation(Main.MODID, "textures/block/solar_generator_side.png");
 
 	@Override
-	public void render(TileEntity tile, float partialTicks, MatrixStack transformation, IRenderTypeBuffer buffer, int combinedLight, int packetLight) {
+	public void render(SolarGeneratorTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
 		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)tile;
-		transformation.push();
-
+		matrixStack.push();
 		
-		RenderHelper.enableStandardItemLighting();
-		GlStateManager.enableCull();
+		BlockPos pos = tile.getPos();
+		matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
+		//transformation.scale(16, 16, 16);
+		//RenderHelper.enableStandardItemLighting();
+		RenderSystem.disableCull();
+		RenderSystem.disableLighting();
+		
+		/*BufferBuilder builder = Tessellator.getInstance().getBuffer();
+		//b.
+		builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+		Minecraft.getInstance().getTextureManager().bindTexture(SIDES_TEXTURE);
 
-		BufferBuilder builder = Tessellator.getInstance().getBuffer();
+		double start = 0;
+		double end = 1;
+		
+		builder.pos(start, 0.1, start).color(0f, 0f, 0f, 0f).endVertex(); //Bottom left
+		builder.pos(end, 0.1, start).color(0f, 0f, 0f, 0f).endVertex(); //Bottom right
+		builder.pos(end, 0.1, end).color(0f, 0f, 0f, 0f).endVertex(); //Top right
+		builder.pos(start, 0.1, end).color(0f, 0f, 0f, 0f).endVertex(); //Top left
+
+		Tessellator.getInstance().draw();
+		
+		
+		//ItemStack stack = new ItemStack(Blocks.BASIC_SOLAR_GENERATOR.getItemBlock());
+		//Minecraft.getInstance().getItemRenderer().renderItem(stack, TransformType.NONE, combinedLight, packetLight, transformation, buffer);
+
+		//BufferBuilder builder = Tessellator.getInstance().getBuffer();
 
 		AxisAlignedBB bb = te.getRenderBoundingBox();
 		double height = bb.maxY - bb.minY;
@@ -65,9 +90,7 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<TileEntity> {
 		Render.drawCubeFaces(builder, BOTTOM_TEXTURE, 0.0, 0.0, 0.0, 1.0, height, 1.0, Direction.DOWN);
 		Render.drawCubeFaces(builder, SIDES_TEXTURE, 0.0, 0.0, 0.0, 1.0, height, 1.0, HORIZONTALS);
 
-		BlockPos pos = te.getPos();
-
-		GlStateManager.disableCull();
+		RenderSystem.enableCull();
 		for(Direction facing : HORIZONTALS) {
 			if(!te.hasStorage(facing)) {
 				continue;
@@ -85,9 +108,9 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<TileEntity> {
 
 			Render.drawCubeFaces(builder, SIDES_TEXTURE, 0.0, 0.0, 0.0, 1.0, maxY, 1.0, facing);
 
-		}
+		}*/
 
-		transformation.pop();	
+		matrixStack.pop();	
 	}
 
 }

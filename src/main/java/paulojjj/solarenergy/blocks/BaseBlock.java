@@ -1,10 +1,9 @@
 package paulojjj.solarenergy.blocks;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -16,7 +15,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
-import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -34,7 +32,7 @@ public class BaseBlock extends Block {
 	private GUI gui;
 	private Function<Void, ? extends TileEntity> createTileEntity;
 	private BiConsumer<List<ItemStack>, TileEntity> getDrops;
-	private BlockRenderType blockRenderType;
+	private BlockRenderType blockRenderType = BlockRenderType.MODEL;
 	
 	private List<IProperty<?>> properties;
 
@@ -58,11 +56,12 @@ public class BaseBlock extends Block {
 	public interface PropertiesBuilder {
 		PropertiesBuilder hardness(float value);
 		PropertiesBuilder resistance(float value);
+		PropertiesBuilder notSolid();
 		Block.Properties build();
 	}
 	
 	public interface ConfigBuilder {
-		public <T extends Comparable<T>, V extends T> ConfigBuilder with(IProperty<T> property, V value);
+		public <T extends Comparable<T>, V extends T> ConfigBuilder property(IProperty<T> property);
 		
 		public ConfigBuilder renderType(BlockRenderType value);
 		
@@ -105,6 +104,12 @@ public class BaseBlock extends Block {
 			properties.hardnessAndResistance(hardness, resistance);
 			return properties;
 		}
+
+		@Override
+		public PropertiesBuilder notSolid() {
+			properties.notSolid();
+			return this;
+		}
 		
 		
 	}
@@ -112,44 +117,41 @@ public class BaseBlock extends Block {
 	public class ConfigBuilderImpl implements ConfigBuilder {
 		
 		private BaseBlock block = BaseBlock.this;
-		private Map<IProperty<?>, Comparable<?>> properties = new LinkedHashMap<>();
+		private Set<IProperty<?>> properties = new HashSet<>();
 		
 		public ConfigBuilderImpl() {
-			blockRenderType = BlockRenderType.MODEL;
 		}
 
 		@Override
-		public <T extends Comparable<T>, V extends T> ConfigBuilder with(IProperty<T> property, V value) {
-			properties.put(property, value);
+		public <T extends Comparable<T>, V extends T> ConfigBuilder property(IProperty<T> property) {
+			properties.add(property);
 			return this;
 		}
 		
-		@SuppressWarnings("unchecked")
+		/*@SuppressWarnings("unchecked")
 		protected <T extends Comparable<T>, V extends T> void setProperty(BlockState state, IProperty<?> t, Comparable<?> v) {
 			properties.put(t, v);
 			state.with((IProperty<T>)t, (V)v);			
-		}
+		}*/
 		
 		public void init() {
-			StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(BaseBlock.this);
-			//builder.
-			//BlockState. state = new BlockState(BaseBlock.this, null);
+			//StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(BaseBlock.this);
 			
 			BaseBlock.this.properties = new ArrayList<>();
-			for(IProperty<?> property: properties.keySet()) {
-				BaseBlock.this.properties.add(property);
-				builder.add(property);
+			for(IProperty<?> property: properties) {
+				block.properties.add(property);
+				//builder.add(property);
 			}
 
-			StateContainer<Block, BlockState> sc = builder.create(BlockState::new);
-			BlockState state = sc.getBaseState();
-			block.setDefaultState(sc.getBaseState());
-			for(Entry<IProperty<?>, Comparable<?>> entry: properties.entrySet()) {
-				IProperty<? extends Comparable<?>> key = entry.getKey();
-				Comparable<?> value = entry.getValue();
-				setProperty(state, key, value);
-			}
-			block.setDefaultState(state);
+			//StateContainer<Block, BlockState> sc = builder.create(BlockState::new);
+			//BlockState state = sc.getBaseState();
+			//block.setDefaultState(sc.getBaseState());
+			//for(Entry<IProperty<?>, Comparable<?>> entry: properties.entrySet()) {
+				//IProperty<? extends Comparable<?>> key = entry.getKey();
+				//Comparable<?> value = entry.getValue();
+				//setProperty(state, key, value);
+			//}
+			//block.setDefaultState(state);*/
 		}
 
 		@Override
@@ -160,7 +162,7 @@ public class BaseBlock extends Block {
 
 		@Override
 		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value) {
-			block.createTileEntity = value;
+		block.createTileEntity = value;
 			return this;
 		}
 

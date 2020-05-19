@@ -7,14 +7,12 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.ModCreativeTab;
-import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
@@ -32,21 +30,5 @@ public class SolarGeneratorItemBlock extends BlockItem {
 		String str = String.format("%s: %s/t", I18n.format(Main.MODID + ".produces"), EnergyFormatter.format(production));
 		tooltip.add(new StringTextComponent(str));
 	}
-	
-	@Override
-	public boolean showDurabilityBar(ItemStack stack) {
-		return stack.getTag() != null;
-	}
-	
-	@Override
-	public double getDurabilityForDisplay(ItemStack stack) {
-		CompoundNBT nbt = stack.getTag();
-		if(nbt != null) {
-			double energy = nbt.getDouble(NBT.ENERGY);
-			double capacity = nbt.getDouble(NBT.MAX_ENERGY);
-			return 1 - (energy/capacity);
-		}
-		return super.getDurabilityForDisplay(stack);
-	}	
 
 }

@@ -32,6 +32,7 @@ public class Main {
 	{
 		Config.init();
 
+		proxy.init();
 		proxy.registerAssets();
 	}
 

@@ -8,10 +8,14 @@ import paulojjj.solarenergy.tiles.EnergyNetworkTileEntity;
 
 public class EnergyNetworkBlock<T extends EnergyNetworkTileEntity> extends BaseBlock {
 
-	public EnergyNetworkBlock(PropertiesBuilder builder) {
+	public EnergyNetworkBlock(Block.Properties builder) {
 		super(builder);
 	}
 
+	public EnergyNetworkBlock(PropertiesBuilder builder) {
+		super(builder);
+	}
+	
 	@Override
 	public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
 			boolean isMoving) {

@@ -19,7 +19,7 @@ public enum TileEntities {
 	ENERGY_ASSEMBLER("energy_assembler_tile_entity", EnergyAssemblerTileEntity::new, Blocks.ENERGY_ASSEMBLER),
 	ENERGY_CABLE("energy_cable_tile_entity", EnergyCableTileEntity::new, Blocks.ENERGY_CABLE);
 	
-	private TileEntityType<TileEntity> type;
+	private TileEntityType<?> type;
 	
 	TileEntities(String registryName, Supplier<TileEntity> supplier, Blocks... blocks) {
 		
@@ -32,8 +32,9 @@ public enum TileEntities {
 		this.type.setRegistryName(Main.MODID, registryName);
 	}
 
-	public TileEntityType<TileEntity> getType() {
-		return type;
+	@SuppressWarnings("unchecked")
+	public <T extends TileEntity> TileEntityType<T> getType() {
+		return (TileEntityType<T>)type;
 	}
 	
 }
