@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
@@ -33,6 +34,7 @@ public class BaseBlock extends Block {
 	private Function<Void, ? extends TileEntity> createTileEntity;
 	private BiConsumer<List<ItemStack>, TileEntity> getDrops;
 	private BlockRenderType blockRenderType = BlockRenderType.MODEL;
+	private RenderType renderLayer;
 	
 	private List<IProperty<?>> properties;
 
@@ -43,6 +45,10 @@ public class BaseBlock extends Block {
 	
 	public BaseBlock(PropertiesBuilder builder) {
 		super(builder.build());
+	}
+	
+	public RenderType getRenderLayer() {
+		return renderLayer;
 	}
 	
 	public static PropertiesBuilder propertiesBuilder() {
@@ -64,6 +70,7 @@ public class BaseBlock extends Block {
 		public <T extends Comparable<T>, V extends T> ConfigBuilder property(IProperty<T> property);
 		
 		public ConfigBuilder renderType(BlockRenderType value);
+		public ConfigBuilder renderLayer(RenderType value);
 		
 		public ConfigBuilder gui(GUI value);
 		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value);
@@ -156,6 +163,12 @@ public class BaseBlock extends Block {
 		@Override
 		public ConfigBuilder renderType(BlockRenderType value) {
 			block.blockRenderType = value;
+			return this;
+		}
+
+		@Override
+		public ConfigBuilder renderLayer(RenderType value) {
+			block.renderLayer = value;
 			return this;
 		}
 

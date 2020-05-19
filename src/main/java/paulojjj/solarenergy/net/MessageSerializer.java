@@ -5,12 +5,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 
 public class MessageSerializer {
 
@@ -24,7 +27,7 @@ public class MessageSerializer {
 		throw new RuntimeException("Could not get generic class");
 	}
 
-	protected void write(Object object, Field field, ByteBuf buf) {
+	protected void write(Object object, Field field, PacketBuffer buf) {
 		if(!field.isAccessible()) {
 			field.setAccessible(true);
 		}
@@ -38,7 +41,7 @@ public class MessageSerializer {
 		write(buf, type, value, field.getGenericType());
 	}
 
-	private void write(ByteBuf buf, Class<?> type, Object value, Type genericType) {
+	private void write(PacketBuffer buf, Class<?> type, Object value, Type genericType) {
 		if(type == Boolean.TYPE || type.equals(Boolean.class)) {
 			buf.writeBoolean((boolean)value);
 		}
@@ -74,12 +77,18 @@ public class MessageSerializer {
 				write(buf, collectionClass, v, collectionClass);
 			}
 		}
+		else if(ItemStack.class.isAssignableFrom(type)) {
+			buf.writeItemStack((ItemStack)value);
+		}
+		else if(Item.class.isAssignableFrom(type)) {
+			buf.writeItemStack(new ItemStack((Item)value));
+		}
 		else {
 			throw new UnsupportedOperationException("Field type " + type + " not supported");
 		}
 	}
 
-	protected void read(Object object, Field field, ByteBuf buf) {
+	protected void read(Object object, Field field, PacketBuffer buf) {
 		if(!field.isAccessible()) {
 			field.setAccessible(true);
 		}
@@ -94,7 +103,7 @@ public class MessageSerializer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object read(ByteBuf buf, Class<?> type, Type genericType) {
+	private Object read(PacketBuffer buf, Class<?> type, Type genericType) {
 		Object value = null;		
 		if(type == Boolean.TYPE || type.equals(Boolean.class)) {
 			value = buf.readBoolean();
@@ -150,28 +159,45 @@ public class MessageSerializer {
 				((Collection<Object>)value).add(memberValue);
 			}
 		}
+		else if(ItemStack.class.isAssignableFrom(type)) {
+			
+			value = buf.readItemStack();
+		}
+		else if(Item.class.isAssignableFrom(type)) {
+			value = buf.readItemStack().getItem();
+		}
 		else {
 			throw new UnsupportedOperationException("Field type " + type + " not supported");
 		}
 		return value;
 	}
+	
+	protected List<Field> getFields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<>();
+		while(clazz != null) {
+			Field[] classFields = clazz.getDeclaredFields();
+			fields.addAll(Arrays.asList(classFields));
+			clazz = clazz.getSuperclass();
+		}
+		return fields;
+		
+	}
 
-	public void write(Object message, ByteBuf buf) {
-		Field[] fields = message.getClass().getDeclaredFields();
-		for(Field field : fields) {
+	public void write(Object message, PacketBuffer buf) {
+		for(Field field : getFields(message.getClass())) {
 			write(message, field, buf);
 		}
 	}
 
-	public <T> T read(Class<T> messageClass, ByteBuf buf) {
+	public <T> T read(Class<T> messageClass, PacketBuffer buf) {
 		T message;
 		try {
 			message = messageClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("Exception creating message instance");
+			throw new RuntimeException("Exception creating message instance", e);
 		}
-		Field[] fields = messageClass.getDeclaredFields();
-		for(Field field : fields) {
+		
+		for(Field field : getFields(messageClass)) {
 			read(message, field, buf);
 		}
 		return message;

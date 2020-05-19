@@ -33,6 +33,10 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 		public EnergyStorageContainerUpdateMessage() {
 		}
 
+		public EnergyStorageContainerUpdateMessage(EnergyStorageTileEntity te) {
+			this(te.getEnergyStored(), te.getMaxEnergyStored(), te.getInput(), te.getOutput());
+		}
+		
 		public EnergyStorageContainerUpdateMessage(double energyStored, double maxEnergyStored, double input,
 				double output) {
 			super();
@@ -131,6 +135,9 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 
 	@Override
 	public void tick() {
+		if(world.isRemote) {
+			return;
+		}
 		input = receivedSinceLastUpdate;
 		output = sentSinceLastUpdate;
 

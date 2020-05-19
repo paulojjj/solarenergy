@@ -4,7 +4,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
@@ -73,7 +72,7 @@ public class PacketManager {
 
 		protected Object message;
 
-		protected ByteBuf data;
+		protected PacketBuffer data;
 
 		public GenericMessage() {
 			
@@ -83,13 +82,13 @@ public class PacketManager {
 			this.message = message;
 		}
 
-		public ByteBuf getData() {
+		public PacketBuffer getData() {
 			return data;
 		}
 
 		@Override
 		public void fromBytes(PacketBuffer buf) {
-			data = buf.copy();
+			data = buf;
 		}
 
 		@Override

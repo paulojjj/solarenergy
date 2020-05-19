@@ -1,19 +1,6 @@
-{   
-	"parent": "block/cube",
-    "textures": {
-        "particle": "#side"
-    },
-    "elements": [
-        {   "from": [ 0, 0, 0 ],
-            "to": [ 16, 16, 16 ],
-            "faces": {
-                "down":  { "texture": "#bottom" },
-                "up":    { "texture": "#top" },
-                "north": { "texture": "#side" },
-                "south": { "texture": "#side" },
-                "west":  { "texture": "#side" },
-                "east":  { "texture": "#side" }
-            }
-        }
-    ]
+{
+	"parent": "block/cube_all",
+	"textures": {
+		"all": "solarenergy:block/energy_assembler"
+	}
 }
