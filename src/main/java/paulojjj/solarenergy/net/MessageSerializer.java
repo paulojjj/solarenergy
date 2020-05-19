@@ -5,11 +5,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import scala.collection.mutable.HashSet;
 
 public class MessageSerializer {
@@ -73,6 +77,12 @@ public class MessageSerializer {
 			for(Object v : collection) {
 				write(buf, collectionClass, v, collectionClass);
 			}
+		}
+		else if(ItemStack.class.isAssignableFrom(type)) {
+			ByteBufUtils.writeItemStack(buf, (ItemStack)value);
+		}
+		else if(Item.class.isAssignableFrom(type)) {
+			ByteBufUtils.writeItemStack(buf, new ItemStack((Item)value));
 		}
 		else {
 			throw new UnsupportedOperationException("Field type " + type + " not supported");
@@ -150,15 +160,31 @@ public class MessageSerializer {
 				((Collection<Object>)value).add(memberValue);
 			}
 		}
+		else if(ItemStack.class.isAssignableFrom(type)) {
+			value = ByteBufUtils.readItemStack(buf);
+		}
+		else if(Item.class.isAssignableFrom(type)) {
+			value = ByteBufUtils.readItemStack(buf).getItem();
+		}
 		else {
 			throw new UnsupportedOperationException("Field type " + type + " not supported");
 		}
 		return value;
 	}
+	
+	protected List<Field> getFields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<>();
+		while(clazz != null) {
+			Field[] classFields = clazz.getDeclaredFields();
+			fields.addAll(Arrays.asList(classFields));
+			clazz = clazz.getSuperclass();
+		}
+		return fields;
+		
+	}
 
 	public void write(Object message, ByteBuf buf) {
-		Field[] fields = message.getClass().getDeclaredFields();
-		for(Field field : fields) {
+		for(Field field : getFields(message.getClass())) {
 			write(message, field, buf);
 		}
 	}
@@ -168,10 +194,10 @@ public class MessageSerializer {
 		try {
 			message = messageClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("Exception creating message instance");
+			throw new RuntimeException("Exception creating message instance", e);
 		}
-		Field[] fields = messageClass.getDeclaredFields();
-		for(Field field : fields) {
+		
+		for(Field field : getFields(messageClass)) {
 			read(message, field, buf);
 		}
 		return message;

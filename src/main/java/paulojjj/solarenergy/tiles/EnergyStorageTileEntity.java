@@ -36,6 +36,10 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 		public EnergyStorageContainerUpdateMessage() {
 		}
 
+		public EnergyStorageContainerUpdateMessage(EnergyStorageTileEntity te) {
+			this(te.getEnergyStored(), te.getMaxEnergyStored(), te.getInput(), te.getOutput());
+		}
+		
 		public EnergyStorageContainerUpdateMessage(double energyStored, double maxEnergyStored, double input,
 				double output) {
 			super();
@@ -142,6 +146,9 @@ public abstract class EnergyStorageTileEntity extends TileEntity implements IUlt
 	
 	@Override
 	public void update() {
+		if(world.isRemote) {
+			return;
+		}
 		input = receivedSinceLastUpdate;
 		output = sentSinceLastUpdate;
 		

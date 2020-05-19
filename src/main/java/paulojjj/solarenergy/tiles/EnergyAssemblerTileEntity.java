@@ -1,5 +1,7 @@
 package paulojjj.solarenergy.tiles;
 
+import java.util.Optional;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,28 +15,58 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import paulojjj.solarenergy.ItemStackHandlerWrapper;
-import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.ItemStackHandlerWrapper.HandlerType;
 import paulojjj.solarenergy.ItemStackHandlerWrapper.SlotType;
-import paulojjj.solarenergy.blocks.EnergyAssembler;
+import paulojjj.solarenergy.NBT;
+import paulojjj.solarenergy.TickHandler;
+import paulojjj.solarenergy.net.IMessageListener;
+import paulojjj.solarenergy.net.PacketManager;
+import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
 import paulojjj.solarenergy.recipes.RecipeHandler;
-import paulojjj.solarenergy.registry.Blocks;
+import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity.EnergyAssemblerTileUpdateMessage;
 
-public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements net.minecraft.util.ITickable {
+public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements net.minecraft.util.ITickable, IMessageListener<EnergyAssemblerTileUpdateMessage> {
+	
+	public static final int UPDATE_TICKS = 10;
 	
 	private Item assemblingItem;
+	private Item resultItem;
 	private ItemStackHandler itemHandler;
 	
 	private IItemHandler playerHandler;
 	private IItemHandler internalHandler;
 	private IItemHandler capabilityHandler;
+	
+	private long lastUpdate = 0;
 
 	public enum Slot {
 		INPUT, OUTPUT
 	}
 	
+	public Item getAssemblingItem() {
+		return assemblingItem;
+	}
+	
+	public Item getResultItem() {
+		return resultItem;
+	}
+	
 	public IItemHandler getPlayerHandler() {
 		return playerHandler;
+	}
+	
+	public static class EnergyAssemblerTileUpdateMessage extends EnergyStorageContainerUpdateMessage {
+		public Item resultItem;
+		
+		public EnergyAssemblerTileUpdateMessage() {
+			super();
+		}
+		
+		public EnergyAssemblerTileUpdateMessage(EnergyAssemblerTileEntity te) {
+			super(te);
+			resultItem = te.resultItem;
+		}
+		
 	}
 	
 	protected void initItemHandlers(SlotType... slotTypes) {
@@ -117,16 +149,20 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		return compound;
 	}
 	
+	protected Optional<EnergyAssemblerRecipe> getRecipe(Item input) {
+		return RecipeHandler.getEnergyAssemblerRecipe(input);
+	}
+	
 	protected boolean canAssemble(Item item) {
-		return RecipeHandler.getEnergyAssemblerRecipe(item).isPresent();
+		return getRecipe(item).isPresent();
 	}
 	
 	protected double getEnergyToAssemble(Item item) {
-		return RecipeHandler.getEnergyAssemblerRecipe(item).get().getEnergyNeeded();
+		return getRecipe(item).get().getEnergyNeeded();
 	}
 	
 	protected ItemStack getOutput(Item input) {
-		return RecipeHandler.getEnergyAssemblerRecipe(input).get().getOutput().copy();	
+		return getRecipe(input).get().getOutput().copy();	
 	}
 	
 	@Override
@@ -134,31 +170,44 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		return (oldState.getBlock() != newSate.getBlock());
 	}
 	
-	public void setBlockActive(boolean active) {
-		world.setBlockState(pos, Blocks.ENERGY_ASSEMBLER.getItemBlock().getBlock().getDefaultState().withProperty(EnergyAssembler.ACTIVE, active));
+	protected void updateClientEntity() {
+		PacketManager.sendToAllTracking(this, new EnergyAssemblerTileUpdateMessage(this));
 	}
 	
 	public void beginAssemble(Item item) {
 		assemblingItem = item;
 		energy = 0;
 		maxEnergy = getEnergyToAssemble(item);
-		setBlockActive(true);
+		resultItem = getOutput(item).getItem();
+		updateClientEntity();
 	}
 
 	public void endAssemble() {
 		assemblingItem = null;
+		resultItem = null;
 		energy = 0;
 		maxEnergy = 0;
-		setBlockActive(false);
+		updateClientEntity();
 	}
 	
 	@Override
 	public void update() {
 		super.update();
+		if(world.isRemote && maxEnergy > 0 && energy < maxEnergy) {
+			//Simulate energy update on client between updates
+			energy += Math.min(input, maxEnergy - energy);
+		}
 		if(world.isRemote) {
 			return;
 		}
 		if(assemblingItem != null && assemblingItem != ItemStack.EMPTY.getItem()) {
+			//Send update packets every UPDATE_TICKS to decrease network usage
+			long tick = TickHandler.getTick();
+			if(tick > lastUpdate + UPDATE_TICKS) {
+				updateClientEntity();
+				lastUpdate = TickHandler.getTick();
+			}
+			
 			//Item ready
 			if(energy >= maxEnergy) {
 				ItemStack stack = getOutput(assemblingItem);
@@ -182,6 +231,15 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onMessage(EnergyAssemblerTileUpdateMessage message) {
+		energy = message.energyStored;
+		maxEnergy = message.maxEnergyStored;
+		resultItem = message.resultItem;
+		input = message.input;
+		output = message.output;
 	}
 
 
