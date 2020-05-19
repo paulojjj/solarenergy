@@ -14,18 +14,23 @@ public class Render {
 	}
 	
 	public static void drawCubeFaces(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, Direction... facings) {
+		drawCubeFaces(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, 0.75f, facings);
+	}
+	
+	public static void drawCubeFaces(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction... facings) {
 		for(Direction facing : facings) {
-			buildSquare(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, facing);
+			buildSquare(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, color, facing);
 		}
 	}
-
 	public static void buildSquare(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, Direction facing) {
+		buildSquare(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, 0.75f, facing);
+	}
+
+	public static void buildSquare(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction facing) {
 		float minU = texture.getMinU();
 		float minV = texture.getMinV();
 		float maxU = texture.getMaxU();
 		float maxV = texture.getMaxV();
-		
-		float color = 0.75f;
 		
 		switch(facing) {
 		case NORTH:

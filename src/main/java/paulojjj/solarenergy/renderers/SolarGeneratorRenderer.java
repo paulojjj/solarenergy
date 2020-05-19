@@ -65,7 +65,7 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTil
 			float maxY = (float)Math.min(1.0, bbNeighbor.maxY + 0.1);
 
 			Matrix4f matrix4f = matrixStack.getLast().getMatrix();
-			Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, 0, height, 0, 1, maxY, 1, facing);
+			Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, 0, height, 0, 1, maxY, 1, 0.3f, facing);
 		}
 
 		matrixStack.pop();	
