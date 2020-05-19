@@ -19,7 +19,7 @@ import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 public class EnergyAssembler extends BaseBlock {
 	
 	public EnergyAssembler() {
-		super(BaseBlock.propertiesBuilder().resistance(3.5f).notSolid());
+		super(BaseBlock.propertiesBuilder().hardness(1.0f).resistance(3.5f).notSolid());
 		configBuilder()
 			.gui(GUI.ENERGY_ASSEMBLER)
 			.renderLayer(RenderType.getCutout())

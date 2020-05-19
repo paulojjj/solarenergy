@@ -82,8 +82,8 @@ public class BaseBlock extends Block {
 	public static class PropertiesBuilderImpl implements PropertiesBuilder {
 		
 		Block.Properties properties;
-		private float hardness = 50.0f;
-		private float resistance = 3.5f;
+		private float hardness = 2.0f;
+		private float resistance = 50f;
 
 		public PropertiesBuilderImpl() {
 			this(Material.ROCK);
@@ -91,7 +91,7 @@ public class BaseBlock extends Block {
 		
 		public PropertiesBuilderImpl(Material material) {
 			properties = Block.Properties.create(material);
-			properties.hardnessAndResistance(50.0f,  3.5f);
+			properties.hardnessAndResistance(hardness,  resistance);
 		}
 
 		@Override
