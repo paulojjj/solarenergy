@@ -1,6 +1,5 @@
 package paulojjj.solarenergy.tiles;
 
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -15,7 +14,7 @@ import paulojjj.solarenergy.blocks.Battery;
 import paulojjj.solarenergy.networks.BatteryNetwork;
 import paulojjj.solarenergy.registry.TileEntities;
 
-public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltraEnergyStorage, ITickable {
+public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltraEnergyStorage {
 
 	private Tier tier;
 
