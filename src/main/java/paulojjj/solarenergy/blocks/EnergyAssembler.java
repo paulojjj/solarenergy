@@ -9,7 +9,9 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import paulojjj.solarenergy.gui.GuiHandler.GUI;
@@ -23,7 +25,7 @@ public class EnergyAssembler extends BaseBlock {
 			.resistance(3.5f)
 			.gui(GUI.ENERGY_ASSEMBLER)
 			.createTileEntity((x) -> new EnergyAssemblerTileEntity())
-			.blockLayer(BlockRenderLayer.CUTOUT)
+			.blockLayer(BlockRenderLayer.CUTOUT_MIPPED)
 			.init();
 	}
 	
@@ -58,13 +60,13 @@ public class EnergyAssembler extends BaseBlock {
 	}
 	
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
 		return false;
 	}
 	
 	@Override
 	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.CUTOUT;
+		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 	
 }

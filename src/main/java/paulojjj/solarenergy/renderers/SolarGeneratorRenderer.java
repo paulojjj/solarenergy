@@ -63,13 +63,14 @@ public class SolarGeneratorRenderer extends TileEntitySpecialRenderer<SolarGener
 			BlockPos neighborPos = pos.offset(facing);
 			IBlockState bs = te.getWorld().getBlockState(neighborPos);
 			AxisAlignedBB bbNeighbor = bs.getBoundingBox(te.getWorld(), neighborPos);
+			
 			if(bs.isFullBlock() || bbNeighbor.maxY <= height) {
 				continue;
 			}
 
 			double maxY = Math.min(1.0, bbNeighbor.maxY + 0.1);
 
-			Render.drawCubeFaces(builder, SIDES_TEXTURE, 0.0, 0.0, 0.0, 1.0, maxY, 1.0, facing);
+			Render.drawCubeFaces(builder, SIDES_TEXTURE, 0.001, 0.0, 0.001, 0.999, maxY, 0.999, facing);
 
 		}
 
