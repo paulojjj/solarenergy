@@ -232,6 +232,14 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 			}
 		}
 	}
+	
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		if(assemblingItem != null && assemblingItem != ItemStack.EMPTY.getItem()) {
+			resultItem = getOutput(assemblingItem).getItem();
+		}
+	}
 
 	@Override
 	public void onMessage(EnergyAssemblerTileUpdateMessage message) {
