@@ -34,7 +34,7 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 		}
 
 		public EnergyStorageContainerUpdateMessage(EnergyStorageTileEntity te) {
-			this(te.getEnergyStored(), te.getMaxEnergyStored(), te.getInput(), te.getOutput());
+			this(te.getUltraEnergyStored(), te.getMaxUltraEnergyStored(), te.getInput(), te.getOutput());
 		}
 		
 		public EnergyStorageContainerUpdateMessage(double energyStored, double maxEnergyStored, double input,

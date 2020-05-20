@@ -3,6 +3,7 @@ package paulojjj.solarenergy.renderers;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Matrix4f;
@@ -57,15 +58,14 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTil
 				continue;
 			}
 			AxisAlignedBB bbNeighbor = shape.getBoundingBox();
-			
-			if(bs.isSolid() || bbNeighbor.maxY <= height) {
+			if(bs.isSolid() ||  bs.isNormalCube(te.getWorld(), neighborPos) || bbNeighbor.maxY <= height) {
 				continue;
 			}
 
 			float maxY = (float)Math.min(1.0, bbNeighbor.maxY + 0.1);
 
 			Matrix4f matrix4f = matrixStack.getLast().getMatrix();
-			Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, 0, height, 0, 1, maxY, 1, 0.3f, facing);
+			Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, 0.001f, height, 0.001f, 0.999f, maxY, 0.999f, 0.3f, facing);
 		}
 
 		matrixStack.pop();	

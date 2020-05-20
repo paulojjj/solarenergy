@@ -54,6 +54,7 @@ public class EnergyAssembler extends BaseBlock {
 				}
 			}
 		}
+
 	}
 	
 }

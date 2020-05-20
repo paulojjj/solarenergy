@@ -37,5 +37,5 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 			ISelectionContext context) {
 		return getShape();
 	}
-	
+		
 }
