@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
@@ -22,7 +21,7 @@ public class EnergyAssembler extends BaseBlock {
 		super(BaseBlock.propertiesBuilder().hardness(1.0f).resistance(3.5f).notSolid());
 		configBuilder()
 			.guiContainer(Containers.ENERGY_ASSEMBLER)
-			.renderLayer(RenderType.getCutout())
+			.renderLayer(RenderLayer.CUTOUT_MIPPED)
 			.createTileEntity((x) -> new EnergyAssemblerTileEntity())
 			.init();
 	}

@@ -4,6 +4,7 @@ import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import paulojjj.solarenergy.blocks.BaseBlock;
+import paulojjj.solarenergy.blocks.BaseBlock.RenderLayer;
 import paulojjj.solarenergy.registry.GUI;
 import paulojjj.solarenergy.registry.Textures;
 import paulojjj.solarenergy.registry.TileEntities;
@@ -30,6 +32,20 @@ public class ClientProxy extends CommonProxy {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerTextures);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 	}
+	
+	protected RenderType getRenderType(RenderLayer renderLayer) {
+		switch(renderLayer) {
+			case CUTOUT:
+				return RenderType.getCutout();
+			case CUTOUT_MIPPED:
+				return RenderType.getCutoutMipped();
+			case TRANSLUCENT:
+				return RenderType.getTranslucent();
+			case SOLID:
+			default:
+				return RenderType.getSolid();
+		}
+	}
 
 	@Override
 	public void registerBlock(BlockItem ib) {
@@ -37,7 +53,8 @@ public class ClientProxy extends CommonProxy {
 		if(ib.getBlock() instanceof BaseBlock) {
 			BaseBlock block = (BaseBlock)ib.getBlock();
 			if(block.getRenderLayer() != null) {
-				RenderTypeLookup.setRenderLayer(block, block.getRenderLayer());
+				RenderType renderType = getRenderType(block.getRenderLayer());
+				RenderTypeLookup.setRenderLayer(block, renderType);
 			}
 		}
 	}

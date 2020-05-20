@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
@@ -33,9 +32,13 @@ public class BaseBlock extends Block {
 	private Function<Void, ? extends TileEntity> createTileEntity;
 	private BiConsumer<List<ItemStack>, TileEntity> getDrops;
 	private BlockRenderType blockRenderType = BlockRenderType.MODEL;
-	private RenderType renderLayer;
+	private RenderLayer renderLayer;
 	
 	private List<IProperty<?>> properties;
+	
+	public enum RenderLayer {
+		SOLID, CUTOUT, CUTOUT_MIPPED, TRANSLUCENT
+	}
 
 	
 	public BaseBlock(Block.Properties properties) {
@@ -46,7 +49,7 @@ public class BaseBlock extends Block {
 		super(builder.build());
 	}
 	
-	public RenderType getRenderLayer() {
+	public RenderLayer getRenderLayer() {
 		return renderLayer;
 	}
 	
@@ -69,7 +72,7 @@ public class BaseBlock extends Block {
 		public <T extends Comparable<T>, V extends T> ConfigBuilder property(IProperty<T> property);
 		
 		public ConfigBuilder renderType(BlockRenderType value);
-		public ConfigBuilder renderLayer(RenderType value);
+		public ConfigBuilder renderLayer(RenderLayer value);
 		
 		public ConfigBuilder guiContainer(Containers value);
 		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value);
@@ -166,7 +169,7 @@ public class BaseBlock extends Block {
 		}
 
 		@Override
-		public ConfigBuilder renderLayer(RenderType value) {
+		public ConfigBuilder renderLayer(RenderLayer value) {
 			block.renderLayer = value;
 			return this;
 		}
