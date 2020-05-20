@@ -25,11 +25,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext.Builder;
 import net.minecraft.world.storage.loot.LootParameters;
 import paulojjj.solarenergy.gui.GuiHandler;
-import paulojjj.solarenergy.registry.GUI;
+import paulojjj.solarenergy.registry.Containers;
 
 public class BaseBlock extends Block {
 	
-	private GUI gui;
+	private Containers guiContainer;
 	private Function<Void, ? extends TileEntity> createTileEntity;
 	private BiConsumer<List<ItemStack>, TileEntity> getDrops;
 	private BlockRenderType blockRenderType = BlockRenderType.MODEL;
@@ -71,7 +71,7 @@ public class BaseBlock extends Block {
 		public ConfigBuilder renderType(BlockRenderType value);
 		public ConfigBuilder renderLayer(RenderType value);
 		
-		public ConfigBuilder gui(GUI value);
+		public ConfigBuilder guiContainer(Containers value);
 		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value);
 		public ConfigBuilder getDrops(BiConsumer<List<ItemStack>, TileEntity> value);
 		
@@ -142,8 +142,8 @@ public class BaseBlock extends Block {
 		}
 
 		@Override
-		public ConfigBuilder gui(GUI value) {
-			block.gui = value;
+		public ConfigBuilder guiContainer(Containers value) {
+			block.guiContainer = value;
 			return this;
 		}
 
@@ -176,10 +176,10 @@ public class BaseBlock extends Block {
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
-		if(worldIn.isRemote || gui == null) {
+		if(worldIn.isRemote || guiContainer == null) {
 			return ActionResultType.SUCCESS;
 		}
-		GuiHandler.openGui(player, worldIn, gui, pos);
+		GuiHandler.openGui(player, worldIn, guiContainer, pos);
 		return ActionResultType.SUCCESS;
 	}
 	

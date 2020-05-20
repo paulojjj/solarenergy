@@ -13,7 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
-import paulojjj.solarenergy.registry.GUI;
+import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 
 public class EnergyAssembler extends BaseBlock {
@@ -21,7 +21,7 @@ public class EnergyAssembler extends BaseBlock {
 	public EnergyAssembler() {
 		super(BaseBlock.propertiesBuilder().hardness(1.0f).resistance(3.5f).notSolid());
 		configBuilder()
-			.gui(GUI.ENERGY_ASSEMBLER)
+			.guiContainer(Containers.ENERGY_ASSEMBLER)
 			.renderLayer(RenderType.getCutout())
 			.createTileEntity((x) -> new EnergyAssemblerTileEntity())
 			.init();

@@ -19,7 +19,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.registry.Blocks;
-import paulojjj.solarenergy.registry.GUI;
+import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
@@ -53,7 +53,7 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	public EnergyCable() {
 		super(propertiesBuilder().resistance(1.0f).hardness(1.0f).notSolid());
 		configBuilder()
-			.gui(GUI.ENERGY_CABLE)
+			.guiContainer(Containers.ENERGY_CABLE)
 			.createTileEntity((x) -> new EnergyCableTileEntity())
 			.renderType(BlockRenderType.INVISIBLE)
 			.init();

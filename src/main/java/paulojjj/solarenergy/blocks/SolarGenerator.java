@@ -7,7 +7,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import paulojjj.solarenergy.Tier;
-import paulojjj.solarenergy.registry.GUI;
+import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity> {
@@ -17,7 +17,7 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 	public SolarGenerator(Tier tier) {
 		super(propertiesBuilder().resistance(1.0f).notSolid());
 		configBuilder()
-		.gui(GUI.SOLAR_GENERATOR)
+		.guiContainer(Containers.SOLAR_GENERATOR)
 		.createTileEntity((x) -> new SolarGeneratorTileEntity(tier))
 		.renderType(BlockRenderType.MODEL)
 		.init();

@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
-import paulojjj.solarenergy.registry.GUI;
+import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 
 
@@ -30,7 +30,7 @@ public class Battery extends EnergyNetworkBlock<BatteryTileEntity> {
 		super(propertiesBuilder());
 		configBuilder()
 		.property(FACING)
-		.gui(GUI.BATTERY)
+		.guiContainer(Containers.BATTERY)
 		.createTileEntity((x) -> new BatteryTileEntity(tier))
 		.getDrops(this::setDropNBT)
 		.init();

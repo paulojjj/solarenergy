@@ -3,17 +3,8 @@ package paulojjj.solarenergy.registry;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.IContainerFactory;
-import paulojjj.solarenergy.containers.BaseContainer;
 import paulojjj.solarenergy.gui.BatteryGui;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
 import paulojjj.solarenergy.gui.EnergyCableGui;
@@ -26,47 +17,12 @@ public enum GUI {
 	ENERGY_CABLE(EnergyCableGui::new, Containers.ENERGY_CABLE);
 
 	private IScreenFactory<?, ?> factory;
-	private INamedContainerProvider containerProvider;
+	private Containers container;
 	private ContainerType<?> containerType;
-	
-	public static class ContainerFactory<T extends BaseContainer<T>> implements INamedContainerProvider, IContainerFactory<T> {
-
-		private Containers container;
-		private BlockPos pos;
-		
-		public ContainerFactory(Containers container) {
-			this.container = container;
-		}
-		
-		@SuppressWarnings("unchecked")
-		@Override
-		public T createMenu(int windowId, PlayerInventory playerInventory,
-				PlayerEntity playerEntity) {
-			T c = (T)container.getType().create(windowId, playerInventory);
-			c.setPos(pos);
-			return c;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public T create(int windowId, PlayerInventory inv, PacketBuffer data) {
-			return (T)container.getType().create(windowId, inv, data);
-		}
-
-		@Override
-		public ITextComponent getDisplayName() {
-			return new StringTextComponent("");
-		}
-		
-	}
-	
-	public <T extends BaseContainer<T>> INamedContainerProvider getProvider(Containers containers) {
-		return new ContainerFactory<T>(containers);
-	}
 	
 	<T extends Container, U extends Screen & IHasContainer<T>> GUI(IScreenFactory<T, U> screenFactory, Containers containers) {
 		this.factory = screenFactory;
-		this.containerProvider = getProvider(containers);
+		this.container = containers;
 		this.containerType = containers.getType();
 	}
 
@@ -77,11 +33,9 @@ public enum GUI {
 	public IScreenFactory<?, ?> getFactory() {
 		return factory;
 	}
-
-	public INamedContainerProvider getContainerProvider(BlockPos pos) {
-		ContainerFactory<?> factory = (ContainerFactory<?>)containerProvider;
-		factory.pos = pos;
-		return containerProvider;
-	}
 	
+	public Containers getContainer() {
+		return container;
+	}
+
 }
