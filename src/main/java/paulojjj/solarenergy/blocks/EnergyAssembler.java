@@ -60,6 +60,16 @@ public class EnergyAssembler extends BaseBlock {
 	}
 	
 	@Override
+	public boolean isFullBlock(IBlockState state) {
+		return true;
+	}
+	
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+	
+	@Override
 	public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
 		return false;
 	}
