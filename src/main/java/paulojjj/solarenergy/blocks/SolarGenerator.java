@@ -31,8 +31,13 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 	}
 	
 	@Override
-	public boolean isOpaqueCube(IBlockState bs) {
+	public boolean isOpaqueCube(IBlockState state) {
 		return false;
+	}
+	
+	@Override
+	public int getLightOpacity(IBlockState state) {
+		return 1;
 	}
 	
 }
