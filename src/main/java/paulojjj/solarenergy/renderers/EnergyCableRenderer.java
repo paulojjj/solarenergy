@@ -38,7 +38,7 @@ public class EnergyCableRenderer extends TileEntityRenderer<EnergyCableTileEntit
 		EnergyCableTileEntity te = (EnergyCableTileEntity)tile;
 		matrixStack.push();
 		
-		IVertexBuilder builder = buffer.getBuffer(RenderType.getTranslucent());
+		IVertexBuilder builder = buffer.getBuffer(RenderType.getCutoutMipped());
 		Matrix4f matrix4f = matrixStack.getLast().getMatrix();
 
 		Render.drawCubeFaces(matrix4f, builder, CENTER_TEXTURE, combinedLight, combinedOverlay, Boxes.CENTER.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN);
