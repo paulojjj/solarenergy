@@ -18,11 +18,10 @@ import paulojjj.solarenergy.proxy.Proxy;
 import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Items;
 
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION)
+@Mod(modid = Main.MODID)
 public class Main {
 	public static final String MODID = "solarenergy";
 	public static final String NAME = "Solar Energy";
-	public static final String VERSION = "0.3.0.0";
 
 	public static SoundEvent sound = null;
 	
