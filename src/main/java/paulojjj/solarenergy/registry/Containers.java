@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.registry;
 
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -26,12 +27,10 @@ public enum Containers {
 	ENERGY_CABLE("energy_cable_container", EnergyCableContainer::new);
 	
 	private ContainerType<?> type;
-	private INamedContainerProvider containerProvider;
 
 	<T extends Container> Containers(String registryName, IContainerFactory<T> supplier) {
 		this.type = IForgeContainerType.<T>create(supplier);
 		this.type.setRegistryName(Main.MODID, registryName);
-		this.containerProvider = getProvider(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,16 +43,22 @@ public enum Containers {
 		private Containers container;
 		private BlockPos pos;
 		
-		public ContainerFactory(Containers container) {
+		public ContainerFactory(Containers container, BlockPos pos) {
 			this.container = container;
+			this.pos = pos;
+		}
+		
+		public ContainerFactory(Containers container) {
+			this(container, null);
 		}
 		
 		@SuppressWarnings("unchecked")
 		@Override
 		public T createMenu(int windowId, PlayerInventory playerInventory,
 				PlayerEntity playerEntity) {
-			T c = (T)container.getType().create(windowId, playerInventory);
-			c.setPos(pos);
+			PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());		
+			buffer.writeBlockPos(pos);
+			T c = (T)container.getType().create(windowId, playerInventory, buffer);
 			return c;
 		}
 
@@ -70,15 +75,8 @@ public enum Containers {
 		
 	}
 	
-	public <T extends BaseContainer<T>> INamedContainerProvider getProvider(Containers containers) {
-		return new ContainerFactory<T>(containers);
-	}
-	
-	
 	public INamedContainerProvider getContainerProvider(BlockPos pos) {
-		ContainerFactory<?> factory = (ContainerFactory<?>)containerProvider;
-		factory.pos = pos;
-		return containerProvider;
+		return new ContainerFactory<>(this, pos);
 	}
 	
 }

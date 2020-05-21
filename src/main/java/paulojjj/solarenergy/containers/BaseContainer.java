@@ -44,7 +44,7 @@ public abstract class BaseContainer<T extends Container> extends Container {
 		}
 	}
 	
-	public void setPos(BlockPos pos) {
+	protected void setPos(BlockPos pos) {
 		World world = playerInventory.player.world;
 		tileEntity = (BaseTileEntity)world.getTileEntity(pos);
 		tileEntity.onContainerOpened(playerInventory.player);
