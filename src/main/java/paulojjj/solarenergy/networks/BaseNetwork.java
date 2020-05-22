@@ -399,8 +399,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 			if(canExtract()) {
 				double sent = sendToConsumers(energyStored, false);
-				double extracted = extractUltraEnergy(sent, false);
-				energyStored -= extracted;
+				extractUltraEnergy(sent, false);
 			}
 			
 			energyOutput = sentSinceLastTick;
