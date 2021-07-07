@@ -13,7 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -21,10 +21,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext.Builder;
-import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraft.loot.LootContext.Builder;
 import paulojjj.solarenergy.gui.GuiHandler;
 import paulojjj.solarenergy.registry.Containers;
+import net.minecraft.loot.LootParameters;
 
 public class BaseBlock extends Block {
 	
@@ -34,7 +34,7 @@ public class BaseBlock extends Block {
 	private BlockRenderType blockRenderType = BlockRenderType.MODEL;
 	private RenderLayer renderLayer;
 	
-	private List<IProperty<?>> properties;
+	private List<Property<?>> properties;
 	
 	public enum RenderLayer {
 		SOLID, CUTOUT, CUTOUT_MIPPED, TRANSLUCENT
@@ -69,7 +69,7 @@ public class BaseBlock extends Block {
 	}
 	
 	public interface ConfigBuilder {
-		public <T extends Comparable<T>, V extends T> ConfigBuilder property(IProperty<T> property);
+		public <T extends Comparable<T>, V extends T> ConfigBuilder property(Property<T> property);
 		
 		public ConfigBuilder renderType(BlockRenderType value);
 		public ConfigBuilder renderLayer(RenderLayer value);
@@ -126,20 +126,20 @@ public class BaseBlock extends Block {
 	public class ConfigBuilderImpl implements ConfigBuilder {
 		
 		private BaseBlock block = BaseBlock.this;
-		private Set<IProperty<?>> properties = new HashSet<>();
+		private Set<Property<?>> properties = new HashSet<>();
 		
 		public ConfigBuilderImpl() {
 		}
 
 		@Override
-		public <T extends Comparable<T>, V extends T> ConfigBuilder property(IProperty<T> property) {
+		public <T extends Comparable<T>, V extends T> ConfigBuilder property(Property<T> property) {
 			properties.add(property);
 			return this;
 		}
 		
 		public void init() {
 			BaseBlock.this.properties = new ArrayList<>();
-			for(IProperty<?> property: properties) {
+			for(Property<?> property: properties) {
 				block.properties.add(property);
 			}
 		}
@@ -223,7 +223,7 @@ public class BaseBlock extends Block {
 	@Override
 	protected void fillStateContainer(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
 		if(properties != null) {
-			for(IProperty<?> p : properties) {
+			for(Property<?> p : properties) {
 				builder.add(p);
 			}
 		}

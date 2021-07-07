@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.tiles;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -92,8 +93,8 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	@Override
-	public void read(CompoundNBT compound) {
-		super.read(compound);
+	public void read(BlockState blockState, CompoundNBT compound) {
+		super.read(blockState, compound);
 		int tierValue = compound.getInt(NBT.TIER);
 		energy = compound.getDouble(NBT.ENERGY);
 		Tier tier =  Tier.values()[tierValue];
@@ -111,7 +112,7 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		super.onDataPacket(net, pkt);
-		handleUpdateTag(pkt.getNbtCompound());
+		handleUpdateTag(getBlockState(), pkt.getNbtCompound());
 	}
 	
 	@Override

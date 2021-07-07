@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.resources.I18n;
@@ -23,7 +24,7 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 	public static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/energy_assembler_gui.png");
 	
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.container;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
@@ -31,7 +32,7 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
         minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
         int marginHorizontal = (width - xSize) / 2;
         int marginVertical = (height - ySize) / 2;
-        blit(marginHorizontal, marginVertical, 0, 0, 
+        blit(matrixStack, marginHorizontal, marginVertical, 0, 0, 
               xSize, ySize);
         
         int GAUGE_WIDTH = 11;
@@ -43,15 +44,13 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
         	double gaugeLevel = message.energyStored / message.maxEnergyStored;
         	int gaugeLevelHeight = (int)(gaugeMarginY + gaugeLevel * GAUGE_HEIGHT);
         	if(gaugeLevel > 0) {
-        		fill(gaugeMarginX, gaugeMarginY, gaugeMarginX + GAUGE_WIDTH, gaugeLevelHeight, 0x7000d0ff);
+        		fill(matrixStack, gaugeMarginX, gaugeMarginY, gaugeMarginX + GAUGE_WIDTH, gaugeLevelHeight, 0x7000d0ff);
         	}
         }
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		
+	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
 		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.container;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
@@ -59,8 +58,8 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 			String text = "";
 			text += EnergyFormatter.format(message.energyStored);
 			text += "/" + EnergyFormatter.format(message.maxEnergyStored);
-			font.drawString(text, 52, 27, 0x202020);
-			font.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
+			font.drawString(matrixStack, text, 52, 27, 0x202020);
+			font.drawString(matrixStack, I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
 		}
 	}
 

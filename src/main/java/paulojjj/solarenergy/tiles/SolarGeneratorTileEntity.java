@@ -3,6 +3,7 @@ package paulojjj.solarenergy.tiles;
 import java.util.Random;
 import java.util.Set;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -149,8 +150,8 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	public void read(CompoundNBT compound) {
-		super.read(compound);
+	public void read(BlockState blockState, CompoundNBT compound) {
+		super.read(blockState, compound);
 		int tierValue = compound.getInt(NBT.TIER);
 		Tier tier =  Tier.values()[tierValue];
 		setTier(tier);
@@ -171,8 +172,8 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	public void handleUpdateTag(CompoundNBT tag) {
-		super.handleUpdateTag(tag);
+	public void handleUpdateTag(BlockState blockState, CompoundNBT tag) {
+		super.handleUpdateTag(blockState, tag);
 		Tier tier =  Tier.values()[tag.getInt(NBT.TIER)];
 		setTier(tier);
 	}

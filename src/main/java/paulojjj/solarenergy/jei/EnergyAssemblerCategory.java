@@ -2,6 +2,8 @@ package paulojjj.solarenergy.jei;
 
 import java.awt.Color;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -55,12 +57,12 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 	
 	@Override
-	public void draw(EnergyAssemblerRecipe recipe, double mouseX, double mouseY) {
-		gauge.draw(7, 24);
+	public void draw(EnergyAssemblerRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+		gauge.draw(matrixStack, 7, 24);
 		
 		String energyNeededString = EnergyFormatter.format(recipe.getEnergyNeeded());
 		Minecraft mc = Minecraft.getInstance(); 
-		mc.fontRenderer.drawString(energyNeededString, 28, 31, Color.gray.getRGB());
+		mc.fontRenderer.drawString(matrixStack, energyNeededString, 28, 31, Color.gray.getRGB());
 	}
 	
 	@Override

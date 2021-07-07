@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.tiles;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -117,10 +118,10 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 	public double getOutput() {
 		return output;
 	}
-
+	
 	@Override
-	public void read(CompoundNBT compound) {
-		super.read(compound);
+	public void read(BlockState blockState, CompoundNBT compound) {
+		super.read(blockState, compound);
 		energy = compound.getDouble(NBT.ENERGY);
 		maxEnergy = compound.getDouble(NBT.MAX_ENERGY);
 	}

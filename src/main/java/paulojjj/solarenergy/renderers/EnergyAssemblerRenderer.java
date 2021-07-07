@@ -4,16 +4,15 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.vector.Vector3f;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 
-@SuppressWarnings("deprecation")
 public class EnergyAssemblerRenderer extends TileEntityRenderer<EnergyAssemblerTileEntity> {
 	
 	public EnergyAssemblerRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {

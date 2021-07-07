@@ -2,6 +2,7 @@ package paulojjj.solarenergy.tiles;
 
 import java.util.Optional;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,8 +24,8 @@ import paulojjj.solarenergy.net.IMessageListener;
 import paulojjj.solarenergy.net.PacketManager;
 import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
 import paulojjj.solarenergy.recipes.RecipeHandler;
-import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity.EnergyAssemblerTileUpdateMessage;
 import paulojjj.solarenergy.registry.TileEntities;
+import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity.EnergyAssemblerTileUpdateMessage;
 
 public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements ITickableTileEntity, IMessageListener<EnergyAssemblerTileUpdateMessage> {
 	
@@ -128,8 +129,8 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 
 	
 	@Override
-	public void read(CompoundNBT compound) {
-		super.read(compound);
+	public void read(BlockState blockState, CompoundNBT compound) {
+		super.read(blockState, compound);
 		ItemStack stack = ItemStack.read((CompoundNBT)compound.get(NBT.ASSEMBLING_ITEM));
 		assemblingItem = stack == ItemStack.EMPTY ? null : stack.getItem();
 		itemHandler.deserializeNBT((CompoundNBT)compound.get(NBT.INVENTORY));

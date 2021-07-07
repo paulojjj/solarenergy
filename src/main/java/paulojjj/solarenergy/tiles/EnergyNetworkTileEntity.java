@@ -238,8 +238,8 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	}
 
 	@Override
-	public void handleUpdateTag(CompoundNBT tag) {
-		super.handleUpdateTag(tag);
+	public void handleUpdateTag(BlockState blockState, CompoundNBT tag) {
+		super.handleUpdateTag(blockState, tag);
 		byte[] storages = tag.getByteArray("storages");
 		synchronized(this) {
 			neighborStorages.clear();
@@ -252,7 +252,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		super.onDataPacket(net, pkt);
-		handleUpdateTag(pkt.getNbtCompound());
+		handleUpdateTag(getBlockState(), pkt.getNbtCompound());
 	}
 
 	@Override

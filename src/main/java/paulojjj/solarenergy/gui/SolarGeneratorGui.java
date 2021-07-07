@@ -1,5 +1,6 @@
 package paulojjj.solarenergy.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.resources.I18n;
@@ -24,26 +25,25 @@ public class SolarGeneratorGui extends BaseGui<SolarGeneratorContainer> {
 
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
 		int marginHorizontal = (width - xSize) / 2;
 		int marginVertical = (height - TEXTURE_HEIGHT) / 2;
-		blit(marginHorizontal, marginVertical, 0, 0, xSize, TEXTURE_HEIGHT);
+		blit(matrixStack, marginHorizontal, marginVertical, 0, 0, xSize, TEXTURE_HEIGHT);
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		minecraft.getTextureManager().bindTexture(SUN_RESOURCE);
-		blit(marginHorizontal + 65, marginVertical + 3, 0, 0, 50, 50);
+		blit(matrixStack, marginHorizontal + 65, marginVertical + 3, 0, 0, 50, 50);
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
 		SolarGeneratorContainer container = (SolarGeneratorContainer)this.container;
-		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
-		font.drawString(I18n.format("solarenergy.producing") + ": " + EnergyFormatter.format(container.getActiveProduction()) + "/t", 15, 92, 0x202020);
-		font.drawString(I18n.format("solarenergy.output") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 15, 107, 0x202020);
+		font.drawString(matrixStack, I18n.format("solarenergy.producing") + ": " + EnergyFormatter.format(container.getActiveProduction()) + "/t", 15, 92, 0x202020);
+		font.drawString(matrixStack, I18n.format("solarenergy.output") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 15, 107, 0x202020);
 	}
 }
