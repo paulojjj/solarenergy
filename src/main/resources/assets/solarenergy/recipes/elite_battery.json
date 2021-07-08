@@ -4,7 +4,7 @@
     [
         "bab",
         "aca",
-        "bab"
+        "bdb"
     ],
     "key":
     {
@@ -19,6 +19,10 @@
         "c":
         {
         	"item": "solarenergy:elite_energy_core"
+        },
+        "d":
+        {
+        	"item": "solarenergy:advanced_battery"
         }
     },
     "result":
