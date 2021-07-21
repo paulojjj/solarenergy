@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.IEnergyStorage;
+import paulojjj.solarenergy.Config;
 import paulojjj.solarenergy.IEnergyProducer;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.TickHandler;
@@ -39,7 +40,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 
 	protected void setTier(Tier tier) {
 		this.tier = tier;
-		maxProduction = Math.pow(10, tier.ordinal());
+		maxProduction = Math.pow(10, tier.ordinal()) * Config.getInstance().getSolarGeneratorMultiplier(tier);
 		markDirty();
 	}
 
@@ -123,12 +124,34 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 			return false;
 		}
 		
+		if(!Config.getInstance().getProduceWhileRaining() && world.isRaining()) {
+			return false;
+		}
+		
 		if(tick >= nextSkyCheck) {
 			nextSkyCheck = nextSkyCheck + random.nextInt(100) + 1;
-			canSeeSky = world.canSeeSky(getPos().offset(EnumFacing.UP)); 
+			canSeeSky = world.canSeeSky(getPos().offset(EnumFacing.UP));
 		}
 		
 		return canSeeSky;
+	}
+	
+	public double productionByTick(long tick, double maxProduction) {
+		if(maxProduction == 0) {
+			return 0;
+		}
+
+		double hour = ((tick + 6000)%24000)/1000.0;
+		//Quadractic function with points: (4,0), (12,1), (20,0)
+		//double multiplier = -0.015625 * Math.pow(hour, 2) + 0.375 * hour - 1.25;
+		//Quadractic function with points: (5.5,0), (12,1), (18.5,0)
+		double multiplier = (-4 * Math.pow(hour, 2) + 96 * hour - 407)/169;
+		
+		if(multiplier <= 0) {
+			return 0;
+		}
+		
+		return multiplier * maxProduction;
 	}
 
 	@Override
@@ -139,6 +162,10 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 		}
 		
 		activeProduction = isSunActive() ? maxProduction : 0;
+		
+		if(Config.getInstance().getRealisticGeneration()) {
+			activeProduction = productionByTick(world.getWorldTime(), activeProduction);
+		}
 
 		if(activeProduction > 0 && energy < getMaxUltraEnergyStored()) {
 			energy += Math.min(activeProduction, getMaxUltraEnergyStored() - energy);

@@ -68,6 +68,7 @@ item.advanced_dense_battery_cell.name=Advanced Dense Battery Cell
 item.elite_dense_battery_cell.name=Elite Dense Battery Cell
 item.ultimate_dense_battery_cell.name=Ultimate Dense Battery Cell
 
-
+config.comment.realisticGeneration=Enables realistic energy generation (which varies with available sunlight)
+config.comment.generatesWhileRaining=Keeps generating energy when it's raining
 
 

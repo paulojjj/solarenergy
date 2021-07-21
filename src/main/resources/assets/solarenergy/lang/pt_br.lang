@@ -68,6 +68,7 @@ item.advanced_dense_battery_cell.name=Célula de Bateria Densa Avançada
 item.elite_dense_battery_cell.name=Célula de Bateria Densa Elite
 item.ultimate_dense_battery_cell.name=Célula de Bateria Densa Ultimate
 
-
+config.comment.realisticGeneration=Habilita a geração realista de energia (variando de acordo com a quantidade de luz solar)
+config.comment.generatesWhileRaining=Gera energia enquanto estiver chovendo
 
 
