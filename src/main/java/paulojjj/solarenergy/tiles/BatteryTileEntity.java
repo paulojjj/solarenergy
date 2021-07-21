@@ -7,6 +7,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import paulojjj.solarenergy.Config;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
@@ -30,7 +31,7 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	protected void setTier(Tier tier) {
 		this.tier = tier;
 		int tierInt = tier.ordinal();
-		setMaxUltraEnergyStored(Math.pow(10, tierInt < Tier.BASIC_DENSE.ordinal() ? tierInt : tierInt + 2) * 10000);
+		setMaxUltraEnergyStored(Math.pow(10, tierInt < Tier.BASIC_DENSE.ordinal() ? tierInt : tierInt + 2) * 10000 * Config.getInstance().getBatteryMultiplier(tier));
 		markDirty();
 	}
 

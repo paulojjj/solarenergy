@@ -4,7 +4,7 @@
     [
         "aaa",
         "cbc",
-        "cbc"
+        "cdc"
     ],
     "key":
     {
@@ -20,6 +20,10 @@
         {
             "item": "minecraft:stone",
 			"data": 0            
+        },
+        "d":
+        {
+        	"item": "solarenergy:elite_solar_generator"
         }
     },
     "result":
