@@ -17,7 +17,13 @@ public class EnergyFormatter {
 	public static String format(double energy) {
 		String unit = "FE";
 		
-		double exp = energy == 0 ? 0 : log1000(energy);
+		double absEnergy = Math.abs(energy);
+		double exp = energy == 0 ? 0 : log1000(absEnergy);
+		
+		if(absEnergy < 1) {
+			return format.format(energy);
+		}
+		
 		String suffix = "";
 		
 		int expInt = (int)Math.floor(exp);
