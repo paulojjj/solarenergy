@@ -91,7 +91,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 			if(te == null) {
 				return null;
 			}
-			storage = te.getCapability(CapabilityEnergy.ENERGY, facing).orElse(null);
+			storage = te.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite()).orElse(null);
 		}
 		return storage;
 	}

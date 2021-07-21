@@ -8,6 +8,8 @@ import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class SolarGeneratorNetwork extends BaseNetwork<SolarGeneratorTileEntity> {
 	
+	private static Direction[] POSSIBLE_NEIGHBORS = new Direction[] { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.DOWN };
+	
 	public SolarGeneratorNetwork() {
 	}
 
@@ -17,7 +19,7 @@ public class SolarGeneratorNetwork extends BaseNetwork<SolarGeneratorTileEntity>
 	}
 	
 	public Direction[] getPossibleNeighborsPositions(SolarGeneratorTileEntity tile) {
-		return new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
+		return POSSIBLE_NEIGHBORS;
 	}
 	
 	@Override
