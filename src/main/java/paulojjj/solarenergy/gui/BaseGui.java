@@ -16,7 +16,7 @@ public abstract class BaseGui<T extends Container> extends ContainerScreen<T> im
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		this.renderBackground();
 		super.render(mouseX, mouseY, partialTicks);
-		this.renderHoveredToolTip(mouseX, mouseY);
+		this.renderTooltip(mouseX, mouseY);
 	}
 
 }

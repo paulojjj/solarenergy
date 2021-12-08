@@ -58,7 +58,7 @@ public enum Items {
 	}
 
 	Items(String name, String registryName, ItemType type) {
-		Item item = new Item(new Item.Properties().group(ModCreativeTab.getInstance()));
+		Item item = new Item(new Item.Properties().tab(ModCreativeTab.getInstance()));
 		item.setRegistryName(Main.MODID, registryName);
 		this.item = item;
 		this.type = type;

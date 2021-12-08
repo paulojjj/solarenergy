@@ -19,15 +19,15 @@ import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 public class SolarGeneratorItemBlock extends BlockItem {
 	
 	public SolarGeneratorItemBlock(Tier tier) {
-		super(new SolarGenerator(tier), new Item.Properties().group(ModCreativeTab.getInstance()));
+		super(new SolarGenerator(tier), new Item.Properties().tab(ModCreativeTab.getInstance()));
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-		super.addInformation(stack, worldIn, tooltip, flagIn);
-		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)this.getBlock().createTileEntity(this.getBlock().getDefaultState(), worldIn);
+	public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+		super.appendHoverText(stack, worldIn, tooltip, flagIn);
+		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)this.getBlock().createTileEntity(this.getBlock().defaultBlockState(), worldIn);
 		double production = te.getMaxProduction();
-		String str = String.format("%s: %s/t", I18n.format(Main.MODID + ".produces"), EnergyFormatter.format(production));
+		String str = String.format("%s: %s/t", I18n.get(Main.MODID + ".produces"), EnergyFormatter.format(production));
 		tooltip.add(new StringTextComponent(str));
 	}
 

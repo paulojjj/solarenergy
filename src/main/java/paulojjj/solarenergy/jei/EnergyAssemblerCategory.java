@@ -36,7 +36,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	
 	@Override
 	public String getTitle() {
-		return I18n.format("block.solarenergy.energy_assembler");
+		return I18n.get("block.solarenergy.energy_assembler");
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 		
 		String energyNeededString = EnergyFormatter.format(recipe.getEnergyNeeded());
 		Minecraft mc = Minecraft.getInstance(); 
-		mc.fontRenderer.drawString(energyNeededString, 28, 31, Color.gray.getRGB());
+		mc.font.draw(energyNeededString, 28, 31, Color.gray.getRGB());
 	}
 	
 	@Override

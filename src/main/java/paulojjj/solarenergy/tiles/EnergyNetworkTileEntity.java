@@ -58,7 +58,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setNetwork(INetwork<?> network) {
-		if(world.isRemote) {
+		if(level.isClientSide) {
 			return;
 		}
 		this.network = (INetwork<EnergyNetworkTileEntity>)network;
@@ -69,7 +69,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
 		if(capability == CapabilityEnergy.ENERGY) {
-			return LazyOptional.of(() -> world.isRemote ? (T) this : (T) delegate);
+			return LazyOptional.of(() -> level.isClientSide ? (T) this : (T) delegate);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -78,16 +78,16 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	//World.getTileEntity in unloaded chunks triggers TileEntity.onLoad
 	public void onLoad() {
 		super.onLoad();
-		if(!world.isRemote) {
+		if(!level.isClientSide) {
 			loaded = false;
 		}
 	}
 
 	protected IEnergyStorage getNeighborStorage(Direction facing) {
-		BlockPos neighbosPos = pos.offset(facing);
+		BlockPos neighbosPos = worldPosition.relative(facing);
 		IEnergyStorage storage = null;
-		if(world.isAreaLoaded(neighbosPos, 0)) {
-			TileEntity te = world.getTileEntity(neighbosPos);
+		if(level.isAreaLoaded(neighbosPos, 0)) {
+			TileEntity te = level.getBlockEntity(neighbosPos);
 			if(te == null) {
 				return null;
 			}
@@ -99,7 +99,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@Override
 	public void invalidateCaps() {
 		super.invalidateCaps();
-		if(!world.isRemote) {
+		if(!level.isClientSide) {
 			if(unloaded) {
 				Log.warn("Invalidating unloaded TileEntity: " + this);
 			}
@@ -112,11 +112,11 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@Override
 	public void onChunkUnloaded() {
 		super.onChunkUnloaded();
-		if(!world.isRemote) {
+		if(!level.isClientSide) {
 			if(!unloaded) {
 				unloaded = true;
 				if(network != null) {
-					network.onChunkUnload(pos);
+					network.onChunkUnload(worldPosition);
 				}
 			}
 		}
@@ -124,11 +124,11 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 
 	protected Direction getNeighborFacing(BlockPos neighbor) {
 		for(Direction facing : Direction.values()) {
-			if(pos.offset(facing).equals(neighbor)) {
+			if(worldPosition.relative(facing).equals(neighbor)) {
 				return facing;
 			}
 		}
-		throw new RuntimeException("Invalid neighbor " + neighbor + " from " + pos);
+		throw new RuntimeException("Invalid neighbor " + neighbor + " from " + worldPosition);
 	}
 
 	protected void updateClientTileEntity() {
@@ -145,11 +145,11 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	}
 
 	public void onNeighborChanged(BlockPos neighborPos) {
-		if(!world.isRemote) {
-			if(neighborPos.equals(pos)) {
+		if(!level.isClientSide) {
+			if(neighborPos.equals(worldPosition)) {
 				return;
 			}
-			Log.info(pos + " neighbor changed: " + neighborPos);
+			Log.info(worldPosition + " neighbor changed: " + neighborPos);
 			Direction facing = getNeighborFacing(neighborPos);
 			IEnergyStorage storage = getNeighborStorage(facing);
 			synchronized(this) {
@@ -178,7 +178,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@Override
 	public void tick() {
 		super.tick();
-		if(world.isRemote || !world.isAreaLoaded(pos, 0)) {
+		if(level.isClientSide || !level.isAreaLoaded(worldPosition, 0)) {
 			return;
 		}
 		if(!loaded) {
@@ -195,21 +195,21 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 				}
 				
 				//Calls onNeighborChanged so neighbors that are still not loaded can be detected after loaded (on neighborChanged is not called by default when world loads)
-				BlockPos neighborPos = pos.offset(facing);
-				if(world.isAreaLoaded(neighborPos, 0)) {
-					TileEntity te = world.getTileEntity(neighborPos);
+				BlockPos neighborPos = worldPosition.relative(facing);
+				if(level.isAreaLoaded(neighborPos, 0)) {
+					TileEntity te = level.getBlockEntity(neighborPos);
 					if(te instanceof EnergyNetworkTileEntity) {
 						EnergyNetworkTileEntity ente = (EnergyNetworkTileEntity)te;
 						if(ente.network != null) {
-							ente.onNeighborChanged(pos);
+							ente.onNeighborChanged(worldPosition);
 						}
 					}
 				}
 			}
-			BlockState bs = world.getBlockState(pos);
+			BlockState bs = level.getBlockState(worldPosition);
 			int flags = SEND_TO_CLIENT;
 			updateClientTileEntity();
-			world.notifyBlockUpdate(pos, bs, bs, flags);			
+			level.sendBlockUpdated(worldPosition, bs, bs, flags);			
 		}
 		
 		if(network != null) {
@@ -244,7 +244,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		synchronized(this) {
 			neighborStorages.clear();
 			for(int i=0; i<storages.length; i++) {
-				neighborStorages.add(Direction.byIndex(storages[i]));
+				neighborStorages.add(Direction.from3DDataValue(storages[i]));
 			}
 		}
 	}
@@ -252,14 +252,14 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		super.onDataPacket(net, pkt);
-		handleUpdateTag(pkt.getNbtCompound());
+		handleUpdateTag(pkt.getTag());
 	}
 
 	@Override
 	public synchronized void onMessage(EnergyNetworkUpdateMessage message) {
 		neighborStorages.clear();
 		for(Byte f : message.getNeighborStorages()) {
-			neighborStorages.add(Direction.byIndex(f));
+			neighborStorages.add(Direction.from3DDataValue(f));
 		}
 	}
 

@@ -88,12 +88,12 @@ public class BaseBlock extends Block {
 		private float resistance = 50f;
 
 		public PropertiesBuilderImpl() {
-			this(Material.ROCK);
+			this(Material.STONE);
 		}
 		
 		public PropertiesBuilderImpl(Material material) {
-			properties = Block.Properties.create(material);
-			properties.hardnessAndResistance(hardness,  resistance);
+			properties = Block.Properties.of(material);
+			properties.strength(hardness,  resistance);
 		}
 
 		@Override
@@ -110,13 +110,13 @@ public class BaseBlock extends Block {
 		
 		@Override
 		public Properties build() {
-			properties.hardnessAndResistance(hardness, resistance);
+			properties.strength(hardness, resistance);
 			return properties;
 		}
 
 		@Override
 		public PropertiesBuilder notSolid() {
-			properties.notSolid();
+			properties.noOcclusion();
 			return this;
 		}
 		
@@ -177,15 +177,15 @@ public class BaseBlock extends Block {
 	}
 	
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-			Hand handIn, BlockRayTraceResult hit) {
-		if(worldIn.isRemote || guiContainer == null) {
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos,
+			PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+		if(worldIn.isClientSide || guiContainer == null) {
 			return ActionResultType.SUCCESS;
 		}
 		GuiHandler.openGui(player, worldIn, guiContainer, pos);
 		return ActionResultType.SUCCESS;
 	}
-	
+		
 	@Override
 	public boolean hasTileEntity(BlockState state) {
 		return createTileEntity != null;
@@ -209,19 +209,19 @@ public class BaseBlock extends Block {
 			stacks.add(new ItemStack(this));
 		}
 		if(getDrops != null) {
-			TileEntity te = builder.get(LootParameters.BLOCK_ENTITY);
+			TileEntity te = builder.getOptionalParameter(LootParameters.BLOCK_ENTITY);
 			getDrops.accept(stacks, te);
 		}
 		return stacks;
 	}
 	
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	public BlockRenderType getRenderShape(BlockState state) {
 		return blockRenderType;
 	}
 	
 	@Override
-	protected void fillStateContainer(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
 		if(properties != null) {
 			for(IProperty<?> p : properties) {
 				builder.add(p);

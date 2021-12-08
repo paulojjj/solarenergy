@@ -23,34 +23,34 @@ public class BatteryGui extends BaseGui<BatteryContainer> {
 	private static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/battery_gui.png");
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+	protected void renderLabels(int mouseX, int mouseY) {
+		super.renderLabels(mouseX, mouseY);
 		
 		String text = "";
-		text += EnergyFormatter.format(container.getEnergy());
-		text += "/" + EnergyFormatter.format(container.getMaxEnergy());
-        font.drawString(text, 50, 60, 0x202020);
-        font.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(container.getInput()) + "/t", 50, 80, 0x202020);
-        font.drawString(I18n.format("solarenergy.out") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 50, 90, 0x202020);
+		text += EnergyFormatter.format(menu.getEnergy());
+		text += "/" + EnergyFormatter.format(menu.getMaxEnergy());
+        font.draw(text, 50, 60, 0x202020);
+        font.draw(I18n.get("solarenergy.in") + ": " + EnergyFormatter.format(menu.getInput()) + "/t", 50, 80, 0x202020);
+        font.draw(I18n.get("solarenergy.out") + ": " + EnergyFormatter.format(menu.getOutput()) + "/t", 50, 90, 0x202020);
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
 		
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
-        int marginHorizontal = (width - xSize) / 2;
+		minecraft.getTextureManager().bind(ASSET_RESOURCE);
+        int marginHorizontal = (width - imageWidth) / 2;
         int marginVertical = (height - TEXTURE_HEIGHT) / 2;
         blit(marginHorizontal, marginVertical, 0, 0, 
-              xSize, TEXTURE_HEIGHT);
+        		imageWidth, TEXTURE_HEIGHT);
         
         int GAUGE_WIDTH = 32;
         int GAUGE_HEIGHT = 58;
         int gaugeMarginX = marginHorizontal + 7;
         int gaugeMarginY = marginVertical + 14;
         
-        double gaugeLevel = container.getEnergy() / container.getMaxEnergy();
+        double gaugeLevel = menu.getEnergy() / menu.getMaxEnergy();
         int gaugeRectTop = (int)(gaugeMarginY + (1 - gaugeLevel) * GAUGE_HEIGHT);
         if(gaugeLevel > 0) {
         	fill(gaugeMarginX, gaugeRectTop, gaugeMarginX + GAUGE_WIDTH, gaugeMarginY + GAUGE_HEIGHT, 0x7000d0ff);

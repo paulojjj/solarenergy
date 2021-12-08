@@ -32,7 +32,7 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 		this.tier = tier;
 		int tierInt = tier.ordinal();
 		setMaxUltraEnergyStored(Math.pow(10, tierInt < Tier.BASIC_DENSE.ordinal() ? tierInt : tierInt + 2) * 10000 * Config.getInstance().getBatteryMultiplier(tier));
-		markDirty();
+		setChanged();
 	}
 
 	public class OutputEnergyStorage implements IUltraEnergyStorage {
@@ -89,12 +89,12 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	public Direction getOuputFacing() {
-		return world.getBlockState(pos).get(Battery.FACING);
+		return level.getBlockState(worldPosition).getValue(Battery.FACING);
 	}
 
 	@Override
-	public void read(CompoundNBT compound) {
-		super.read(compound);
+	public void load(CompoundNBT compound) {
+		super.load(compound);
 		int tierValue = compound.getInt(NBT.TIER);
 		energy = compound.getDouble(NBT.ENERGY);
 		Tier tier =  Tier.values()[tierValue];
@@ -102,8 +102,8 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
-		compound = super.write(compound);
+	public CompoundNBT save(CompoundNBT compound) {
+		compound = super.save(compound);
 		compound.putInt(NBT.TIER, tier.ordinal());
 		compound.putDouble(NBT.ENERGY, energy);
 		return compound;
@@ -112,7 +112,7 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		super.onDataPacket(net, pkt);
-		handleUpdateTag(pkt.getNbtCompound());
+		handleUpdateTag(pkt.getTag());
 	}
 	
 	@Override

@@ -43,13 +43,13 @@ public class EnergyAssembler extends BaseBlock {
 	}
 
 	@Override
-	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-		super.onBlockHarvested(worldIn, pos, state, player);
-		if(!worldIn.isRemote) {
-			EnergyAssemblerTileEntity te = (EnergyAssemblerTileEntity) worldIn.getTileEntity(pos);
+	public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.playerWillDestroy(worldIn, pos, state, player);
+		if(!worldIn.isClientSide) {
+			EnergyAssemblerTileEntity te = (EnergyAssemblerTileEntity) worldIn.getBlockEntity(pos);
 			for(ItemStack stack : getItemsDropped(te)) {
 				if(stack != ItemStack.EMPTY) {
-					InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
+					InventoryHelper.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
 				}
 			}
 		}

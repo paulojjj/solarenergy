@@ -45,40 +45,40 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 	}
 	
 	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
+	public boolean stillValid(PlayerEntity playerIn) {
 		return true;
 	}
 
 	@Override
 	//Shift + Right Click
-	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
 		ItemStack previous = ItemStack.EMPTY;
-		Slot slot = (Slot) this.inventorySlots.get(index);
+		Slot slot = (Slot) this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
-			ItemStack current = slot.getStack();
+		if (slot != null && slot.hasItem()) {
+			ItemStack current = slot.getItem();
 			previous = current.copy();
 
 			if (index < firstPlayerIndex) {
 				// From TE Inventory to Player Inventory
-				if (!this.mergeItemStack(current, firstPlayerIndex, lastPlayerIndex + 1, true))
+				if (!this.moveItemStackTo(current, firstPlayerIndex, lastPlayerIndex + 1, true))
 					return ItemStack.EMPTY;
 			} else {
 				// From Player Inventory to TE Inventory
-				if (!this.mergeItemStack(current, 0, firstPlayerIndex, false))
+				if (!this.moveItemStackTo(current, 0, firstPlayerIndex, false))
 					return ItemStack.EMPTY;
 			}			
 
 			if (current.getCount() == 0)
-				slot.putStack((ItemStack) ItemStack.EMPTY);
+				slot.set((ItemStack) ItemStack.EMPTY);
 			else
-				slot.onSlotChanged();
+				slot.setChanged();
 
 			if (current.getCount() == previous.getCount())
 				return ItemStack.EMPTY;
 			slot.onTake(getPlayerInventory().player, current);
 		}
-		detectAndSendChanges();
+		broadcastChanges();
 		return previous;
 	}
 	
@@ -100,9 +100,9 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 0, 26, 10));
 		this.addSlot(new SlotItemHandler(tileEntity.getPlayerHandler(), 1, 26, 59));
 		
-		firstPlayerIndex = inventorySlots.size();
+		firstPlayerIndex = slots.size();
 		addPlayerSlots(getPlayerInventory());
-		lastPlayerIndex = inventorySlots.size() - 1;
+		lastPlayerIndex = slots.size() - 1;
 	}
 
 

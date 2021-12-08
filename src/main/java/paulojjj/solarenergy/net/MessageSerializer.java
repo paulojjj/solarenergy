@@ -78,10 +78,10 @@ public class MessageSerializer {
 			}
 		}
 		else if(ItemStack.class.isAssignableFrom(type)) {
-			buf.writeItemStack((ItemStack)value);
+			buf.writeItem((ItemStack)value);
 		}
 		else if(Item.class.isAssignableFrom(type)) {
-			buf.writeItemStack(new ItemStack((Item)value));
+			buf.writeItem(new ItemStack((Item)value));
 		}
 		else {
 			throw new UnsupportedOperationException("Field type " + type + " not supported");
@@ -161,10 +161,10 @@ public class MessageSerializer {
 		}
 		else if(ItemStack.class.isAssignableFrom(type)) {
 			
-			value = buf.readItemStack();
+			value = buf.readItem();
 		}
 		else if(Item.class.isAssignableFrom(type)) {
-			value = buf.readItemStack().getItem();
+			value = buf.readItem().getItem();
 		}
 		else {
 			throw new UnsupportedOperationException("Field type " + type + " not supported");

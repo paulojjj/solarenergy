@@ -121,26 +121,26 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		
 		@Override
 		protected void onContentsChanged(int slot) {
-			tileEntity.markDirty();
+			tileEntity.setChanged();
 		}
 	}
 	
 
 	
 	@Override
-	public void read(CompoundNBT compound) {
-		super.read(compound);
-		ItemStack stack = ItemStack.read((CompoundNBT)compound.get(NBT.ASSEMBLING_ITEM));
+	public void load(CompoundNBT compound) {
+		super.load(compound);
+		ItemStack stack = ItemStack.of((CompoundNBT)compound.get(NBT.ASSEMBLING_ITEM));
 		assemblingItem = stack == ItemStack.EMPTY ? null : stack.getItem();
 		itemHandler.deserializeNBT((CompoundNBT)compound.get(NBT.INVENTORY));
 	}
 	
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
-		compound = super.write(compound);
+	public CompoundNBT save(CompoundNBT compound) {
+		compound = super.save(compound);
 		CompoundNBT itemCompound = new CompoundNBT();
 		ItemStack stack = assemblingItem == null ? ItemStack.EMPTY : new ItemStack(assemblingItem, 1);
-		stack.write(itemCompound);
+		stack.save(itemCompound);
 		compound.put(NBT.ASSEMBLING_ITEM, itemCompound);
 		compound.put(NBT.INVENTORY, itemHandler.serializeNBT());
 		return compound;
@@ -185,11 +185,11 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	@Override
 	public void tick() {
 		super.tick();
-		if(world.isRemote && maxEnergy > 0 && energy < maxEnergy) {
+		if(level.isClientSide && maxEnergy > 0 && energy < maxEnergy) {
 			//Simulate energy update on client between updates
 			energy += Math.min(input, maxEnergy - energy);
 		}
-		if(world.isRemote) {
+		if(level.isClientSide) {
 			return;
 		}
 		if(assemblingItem != null && assemblingItem != ItemStack.EMPTY.getItem()) {

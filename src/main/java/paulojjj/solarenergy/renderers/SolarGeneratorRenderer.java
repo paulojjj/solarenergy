@@ -37,11 +37,11 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTil
 			SIDES_TEXTURE = Textures.SOLAR_GENERATOR_SIDE.getSprite();
 		}
 		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)tile;
-		matrixStack.push();
+		matrixStack.pushPose();
 		
-		IVertexBuilder builder = buffer.getBuffer(RenderType.getLeash());
+		IVertexBuilder builder = buffer.getBuffer(RenderType.leash());
 		
-		BlockPos pos = tile.getPos();
+		BlockPos pos = tile.getBlockPos();
 		AxisAlignedBB bb = te.getRenderBoundingBox();
 		float height = (float)(bb.maxY - bb.minY);
 		
@@ -50,24 +50,24 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTil
 				continue;
 			}
 
-			BlockPos neighborPos = pos.offset(facing);
-			BlockState bs = te.getWorld().getBlockState(neighborPos);
-			VoxelShape shape = bs.getShape(te.getWorld(), neighborPos);
+			BlockPos neighborPos = pos.relative(facing);
+			BlockState bs = te.getLevel().getBlockState(neighborPos);
+			VoxelShape shape = bs.getShape(te.getLevel(), neighborPos);
 			if(shape.isEmpty()) {
 				continue;
 			}
-			AxisAlignedBB bbNeighbor = shape.getBoundingBox();
-			if(bs.isSolid() ||  bs.isNormalCube(te.getWorld(), neighborPos) || bbNeighbor.maxY <= height) {
+			AxisAlignedBB bbNeighbor = shape.bounds();
+			if(bs.canOcclude() ||  bs.isRedstoneConductor(te.getLevel(), neighborPos) || bbNeighbor.maxY <= height) {
 				continue;
 			}
 
 			float maxY = (float)Math.min(1.0, bbNeighbor.maxY + 0.1);
 
-			Matrix4f matrix4f = matrixStack.getLast().getMatrix();
+			Matrix4f matrix4f = matrixStack.last().pose();
 			Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, 0.001f, height, 0.001f, 0.999f, maxY, 0.999f, 0.3f, facing);
 		}
 
-		matrixStack.pop();	
+		matrixStack.popPose();	
 	}
 
 }

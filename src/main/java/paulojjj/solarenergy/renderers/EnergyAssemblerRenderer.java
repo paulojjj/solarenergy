@@ -27,7 +27,7 @@ public class EnergyAssemblerRenderer extends TileEntityRenderer<EnergyAssemblerT
 			return;
 		}
 		
-		matrixStack.push();
+		matrixStack.pushPose();
 
 		matrixStack.translate(0.5, 0.5, 0.5);
 		
@@ -37,12 +37,12 @@ public class EnergyAssemblerRenderer extends TileEntityRenderer<EnergyAssemblerT
 		if(tile.getMaxUltraEnergyStored() > 0) {
 			float progress = (float)(tile.getUltraEnergyStored() / tile.getMaxUltraEnergyStored());
 			float angle = (progress * 360 * 50) % 360;
-			matrixStack.rotate(Vector3f.YP.rotationDegrees(-angle));
+			matrixStack.mulPose(Vector3f.YP.rotationDegrees(-angle));
 		}
 		
-		Minecraft.getInstance().getItemRenderer().renderItem(new ItemStack(item), TransformType.NONE, combinedLight, combinedOverlay, matrixStack, buffer);
+		Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), TransformType.NONE, combinedLight, combinedOverlay, matrixStack, buffer);
 		
-		matrixStack.pop();
+		matrixStack.popPose();
 	}
 
 }

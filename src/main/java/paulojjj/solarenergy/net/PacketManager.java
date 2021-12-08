@@ -137,7 +137,7 @@ public class PacketManager {
 
 		@Override
 		public void toBytes(PacketBuffer buf) {
-			BlockPos pos = tileEntity.getPos();
+			BlockPos pos = tileEntity.getBlockPos();
 
 			buf.writeInt(pos.getX());
 			buf.writeInt(pos.getY());
@@ -183,7 +183,7 @@ public class PacketManager {
 			c = ctx.get();
 			c.enqueueWork(() -> {
 				PlayerEntity player = getPlayer(c);
-				TileEntity tileEntity = player.getEntityWorld().getTileEntity(message.getPos());
+				TileEntity tileEntity = player.getCommandSenderWorld().getBlockEntity(message.getPos());
 				if(tileEntity instanceof IMessageListener<?>)  {
 					Object tileMessage = PacketManager.readMessage((IMessageListener<?>)tileEntity, message);
 					((IMessageListener<Object>)tileEntity).onMessage(tileMessage);
@@ -206,7 +206,7 @@ public class PacketManager {
 			c = ctx.get();
 			c.enqueueWork(() -> {
 				PlayerEntity player = getPlayer(c);
-				Container container = player.openContainer;
+				Container container = player.containerMenu;
 				if(container instanceof IMessageListener<?>)  {
 					Object tileMessage = PacketManager.readMessage((IMessageListener<?>)container, message);
 					((IMessageListener<Object>)container).onMessage(tileMessage);
@@ -218,12 +218,12 @@ public class PacketManager {
 	}
 
 	public static void sendToAllTracking(TileEntity tileEntity, Object message) {
-		BlockPos pos = tileEntity.getPos();
-		World world = tileEntity.getWorld();
+		BlockPos pos = tileEntity.getBlockPos();
+		World world = tileEntity.getLevel();
 		if(!world.isAreaLoaded(pos, 0)) {
 			return;
 		}
-		Chunk chunk = tileEntity.getWorld().getChunkAt(pos);
+		Chunk chunk = tileEntity.getLevel().getChunkAt(pos);
 		wrapper.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new TileEntityUpdateMessage(tileEntity, message));
 	}
 

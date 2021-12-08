@@ -18,7 +18,7 @@ public class RecipeHandler {
 
 		@Override
 		public int compare(Item o1, Item o2) {
-			return Item.getIdFromItem(o1) - Item.getIdFromItem(o2);
+			return Item.getId(o1) - Item.getId(o2);
 		}
 		
 	}
@@ -32,7 +32,7 @@ public class RecipeHandler {
 	}
 	
 	public static void addEnergyAssemblerRecipe(Block input, ItemStack output, double energyNeeded) {
-		addEnergyAssemblerRecipe(Item.BLOCK_TO_ITEM.getOrDefault(input, Items.AIR), output, energyNeeded);
+		addEnergyAssemblerRecipe(Item.BY_BLOCK.getOrDefault(input, Items.AIR), output, energyNeeded);
 	}
 	
 	public static Map<Item, EnergyAssemblerRecipe> getEnergyAssemblerRecipes() {

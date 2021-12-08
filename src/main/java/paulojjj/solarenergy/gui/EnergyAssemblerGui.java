@@ -23,16 +23,16 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 	public static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/energy_assembler_gui.png");
 	
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.container;
+	protected void renderBg(float partialTicks, int mouseX, int mouseY) {
+		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.menu;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
-        int marginHorizontal = (width - xSize) / 2;
-        int marginVertical = (height - ySize) / 2;
+        minecraft.getTextureManager().bind(ASSET_RESOURCE);
+        int marginHorizontal = (width - imageWidth) / 2;
+        int marginVertical = (height - imageHeight) / 2;
         blit(marginHorizontal, marginVertical, 0, 0, 
-              xSize, ySize);
+        		imageWidth, imageHeight);
         
         int GAUGE_WIDTH = 11;
         int GAUGE_HEIGHT = 23;
@@ -49,18 +49,18 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+	protected void renderLabels(int mouseX, int mouseY) {
+		super.renderLabels(mouseX, mouseY);
 		
-		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.container;
+		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.menu;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
 		if(message != null && message.maxEnergyStored > 0) {
 			String text = "";
 			text += EnergyFormatter.format(message.energyStored);
 			text += "/" + EnergyFormatter.format(message.maxEnergyStored);
-			font.drawString(text, 52, 27, 0x202020);
-			font.drawString(I18n.format("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
+			font.draw(text, 52, 27, 0x202020);
+			font.draw(I18n.get("solarenergy.in") + ": " + EnergyFormatter.format(message.input) + "/t", 52, 47, 0x202020);
 		}
 	}
 

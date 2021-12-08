@@ -28,7 +28,7 @@ public enum TileEntities {
 			validBlocks.add(block.getItemBlock().getBlock());
 		}
 		
-		this.type = TileEntityType.Builder.<TileEntity>create(supplier, validBlocks.toArray(new Block[0])).build(null);
+		this.type = TileEntityType.Builder.<TileEntity>of(supplier, validBlocks.toArray(new Block[0])).build(null);
 		this.type.setRegistryName(Main.MODID, registryName);
 	}
 

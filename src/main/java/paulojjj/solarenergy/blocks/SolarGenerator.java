@@ -12,7 +12,7 @@ import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity> {
 	
-	public static final VoxelShape SHAPE = makeCuboidShape(0, 0, 0, 16, 4, 16);
+	public static final VoxelShape SHAPE = box(0, 0, 0, 16, 4, 16);
 
 	public SolarGenerator(Tier tier) {
 		super(propertiesBuilder().resistance(1.0f).notSolid());

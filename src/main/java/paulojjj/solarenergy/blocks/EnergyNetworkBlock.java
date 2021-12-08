@@ -19,9 +19,9 @@ public class EnergyNetworkBlock<T extends EnergyNetworkTileEntity> extends BaseB
 	@Override
 	public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
 			boolean isMoving) {
-		if(!worldIn.isRemote) {
+		if(!worldIn.isClientSide) {
 			@SuppressWarnings("unchecked")
-			T tileEntity = (T)worldIn.getTileEntity(pos);
+			T tileEntity = (T)worldIn.getBlockEntity(pos);
 			tileEntity.onNeighborChanged(fromPos);
 		}
 	}

@@ -24,7 +24,7 @@ public class EnergyStorageContainer<T extends Container> extends BaseContainer<T
 	}
 	
 	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
+	public boolean stillValid(PlayerEntity playerIn) {
 		return true;
 	}
 

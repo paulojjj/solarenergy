@@ -37,16 +37,16 @@ public abstract class BaseContainer<T extends Container> extends Container {
 	}
 
 	@Override
-	public void onContainerClosed(PlayerEntity playerIn) {
-		super.onContainerClosed(playerIn);
+	public void removed(PlayerEntity playerIn) {
+		super.removed(playerIn);
 		if(tileEntity != null) {
 			tileEntity.onContainerClosed(playerIn);
 		}
 	}
 	
 	protected void setPos(BlockPos pos) {
-		World world = playerInventory.player.world;
-		tileEntity = (BaseTileEntity)world.getTileEntity(pos);
+		World world = playerInventory.player.level;
+		tileEntity = (BaseTileEntity)world.getBlockEntity(pos);
 		tileEntity.onContainerOpened(playerInventory.player);
 	}
 
