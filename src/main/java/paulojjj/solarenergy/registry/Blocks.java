@@ -37,7 +37,7 @@ public enum Blocks {
 	private BlockItem itemBlock;
 	
 	Blocks(String name, Block block) {
-		this(name, new BlockItem(block, new Item.Properties().group(ModCreativeTab.getInstance())));
+		this(name, new BlockItem(block, new Item.Properties().tab(ModCreativeTab.getInstance())));
 	}
 
 	Blocks(String name, BlockItem itemBlock) {

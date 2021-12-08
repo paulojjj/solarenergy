@@ -45,7 +45,7 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	protected void setTier(Tier tier) {
 		this.tier = tier;
 		maxProduction = Math.pow(10, tier.ordinal()) * Config.getInstance().getSolarGeneratorMultiplier(tier);
-		markDirty();
+		setChanged();
 	}
 
 	public static class SolarGeneratorContainerUpdateMessage {
@@ -124,17 +124,17 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	protected boolean isSunActive() {
 		long tick = TickHandler.getTick();
 		
-		if(!world.isDaytime()) {
+		if(!level.isDay()) {
 			return false;
 		}
 		
-		if(!Config.getInstance().getProduceWhileRaining() && world.isRaining()) {
+		if(!Config.getInstance().getProduceWhileRaining() && level.isRaining()) {
 			return false;
 		}
 		
 		if(tick >= nextSkyCheck) {
 			nextSkyCheck = nextSkyCheck + random.nextInt(100) + 1;
-			canSeeSky = world.canSeeSky(getPos().offset(Direction.UP)); 
+			canSeeSky = level.canSeeSky(getBlockPos().relative(Direction.UP)); 
 		}
 		
 		return canSeeSky;
@@ -161,14 +161,14 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	@Override
 	public void tick() {
 		super.tick();
-		if(world.isRemote || !world.isAreaLoaded(pos, 0)) {
+		if(level.isClientSide || !level.isAreaLoaded(worldPosition, 0)) {
 			return;
 		}
 		
 		activeProduction = isSunActive() ? maxProduction : 0;
 		
 		if(Config.getInstance().getRealisticGeneration()) {
-			activeProduction = productionByTick(world.getDayTime(), activeProduction);
+			activeProduction = productionByTick(level.getDayTime(), activeProduction);
 		}
 
 		if(activeProduction > 0 && energy < getMaxUltraEnergyStored()) {
@@ -177,16 +177,16 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	public void read(BlockState blockState, CompoundNBT compound) {
-		super.read(blockState, compound);
+	public void load(BlockState blockState, CompoundNBT compound) {
+		super.load(blockState, compound);
 		int tierValue = compound.getInt(NBT.TIER);
 		Tier tier =  Tier.values()[tierValue];
 		setTier(tier);
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
-		compound = super.write(compound);
+	public CompoundNBT save(CompoundNBT compound) {
+		compound = super.save(compound);
 		compound.putInt(NBT.TIER, tier.ordinal());
 		return compound;
 	}

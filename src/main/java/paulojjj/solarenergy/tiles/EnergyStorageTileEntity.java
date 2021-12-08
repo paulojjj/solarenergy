@@ -74,7 +74,7 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 		if(!simulate && sent > 0) {
 			energy -= sent;
 			sentSinceLastUpdate += sent;
-			markDirty();			
+			setChanged();			
 		}
 		return sent;
 	}
@@ -88,7 +88,7 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 		if(!simulate && received > 0) {
 			energy += received;
 			receivedSinceLastUpdate += received;
-			markDirty();
+			setChanged();
 		}
 		return received;
 	}
@@ -120,15 +120,15 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 	}
 	
 	@Override
-	public void read(BlockState blockState, CompoundNBT compound) {
-		super.read(blockState, compound);
+	public void load(BlockState blockState, CompoundNBT compound) {
+		super.load(blockState, compound);
 		energy = compound.getDouble(NBT.ENERGY);
 		maxEnergy = compound.getDouble(NBT.MAX_ENERGY);
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
-		compound = super.write(compound);
+	public CompoundNBT save(CompoundNBT compound) {
+		compound = super.save(compound);
 		compound.putDouble(NBT.ENERGY, energy);
 		compound.putDouble(NBT.MAX_ENERGY, maxEnergy);
 		return compound;
@@ -136,7 +136,7 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 
 	@Override
 	public void tick() {
-		if(world.isRemote) {
+		if(level.isClientSide) {
 			return;
 		}
 		input = receivedSinceLastUpdate;
@@ -150,7 +150,7 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 
 	@Override
 	public String toString() {
-		return super.toString() + " [position=" + pos + "]";
+		return super.toString() + " [position=" + worldPosition + "]";
 	}
 
 }

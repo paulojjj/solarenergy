@@ -25,25 +25,25 @@ public class SolarGeneratorGui extends BaseGui<SolarGeneratorContainer> {
 
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
-		int marginHorizontal = (width - xSize) / 2;
+		minecraft.getTextureManager().bind(ASSET_RESOURCE);
+		int marginHorizontal = (width - imageWidth) / 2;
 		int marginVertical = (height - TEXTURE_HEIGHT) / 2;
-		blit(matrixStack, marginHorizontal, marginVertical, 0, 0, xSize, TEXTURE_HEIGHT);
+		blit(matrixStack, marginHorizontal, marginVertical, 0, 0, imageWidth, TEXTURE_HEIGHT);
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bindTexture(SUN_RESOURCE);
+		minecraft.getTextureManager().bind(SUN_RESOURCE);
 		blit(matrixStack, marginHorizontal + 65, marginVertical + 3, 0, 0, 50, 50);
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-		SolarGeneratorContainer container = (SolarGeneratorContainer)this.container;
+	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+		SolarGeneratorContainer container = (SolarGeneratorContainer)this.menu;
 
-		font.drawString(matrixStack, I18n.format("solarenergy.producing") + ": " + EnergyFormatter.format(container.getActiveProduction()) + "/t", 15, 92, 0x202020);
-		font.drawString(matrixStack, I18n.format("solarenergy.output") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 15, 107, 0x202020);
+		font.draw(matrixStack, I18n.get("solarenergy.producing") + ": " + EnergyFormatter.format(container.getActiveProduction()) + "/t", 15, 92, 0x202020);
+		font.draw(matrixStack, I18n.get("solarenergy.output") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 15, 107, 0x202020);
 	}
 }

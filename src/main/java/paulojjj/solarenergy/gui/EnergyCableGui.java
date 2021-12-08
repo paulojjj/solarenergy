@@ -25,19 +25,19 @@ public class EnergyCableGui extends BaseGui<EnergyCableContainer> {
 
 	
 	@Override
-	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
 		
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.getTextureManager().bindTexture(ASSET_RESOURCE);
-        int marginHorizontal = (width - xSize) / 2;
+        minecraft.getTextureManager().bind(ASSET_RESOURCE);
+        int marginHorizontal = (width - imageWidth) / 2;
         int marginVertical = (height - TEXTURE_HEIGHT) / 2;
         blit(matrixStack, marginHorizontal, marginVertical, 0, 0, 
-              xSize, TEXTURE_HEIGHT);
+              imageWidth, TEXTURE_HEIGHT);
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        font.drawString(matrixStack, I18n.format("solarenergy.throughput") + ": " + EnergyFormatter.format(container.getOutput()) + "/t", 35, 78, 0x202020);
+	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+        font.draw(matrixStack, I18n.get("solarenergy.throughput") + ": " + EnergyFormatter.format(menu.getOutput()) + "/t", 35, 78, 0x202020);
 	}
 }

@@ -21,12 +21,12 @@ import paulojjj.solarenergy.tiles.BatteryTileEntity;
 public class BatteryItemBlock extends BlockItem {
 	
 	public BatteryItemBlock(Tier tier) {
-		super(new Battery(tier), new Item.Properties().group(ModCreativeTab.getInstance()));
+		super(new Battery(tier), new Item.Properties().tab(ModCreativeTab.getInstance()));
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-		super.addInformation(stack, worldIn, tooltip, flagIn);
+	public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+		super.appendHoverText(stack, worldIn, tooltip, flagIn);
 		double energy = 0;
 		double capacity = 0;
 		CompoundNBT nbt = stack.getTag();
@@ -35,12 +35,12 @@ public class BatteryItemBlock extends BlockItem {
 			capacity = nbt.getDouble(NBT.MAX_ENERGY);
 		}
 		else {
-			BatteryTileEntity te = (BatteryTileEntity)this.getBlock().createTileEntity(this.getBlock().getDefaultState(), worldIn);
+			BatteryTileEntity te = (BatteryTileEntity)this.getBlock().createTileEntity(this.getBlock().defaultBlockState(), worldIn);
 			energy = te.getUltraEnergyStored();
 			capacity = te.getMaxUltraEnergyStored();
 		}
-		String strEnergy = String.format("%s: %s", I18n.format(Main.MODID + ".stored_energy"), EnergyFormatter.format(energy)); 
-		String strCapacity = String.format("%s: %s", I18n.format(Main.MODID + ".capacity"), EnergyFormatter.format(capacity)); 
+		String strEnergy = String.format("%s: %s", I18n.get(Main.MODID + ".stored_energy"), EnergyFormatter.format(energy)); 
+		String strCapacity = String.format("%s: %s", I18n.get(Main.MODID + ".capacity"), EnergyFormatter.format(capacity)); 
 		tooltip.add(new StringTextComponent(strEnergy));
 		tooltip.add(new StringTextComponent(strCapacity));
 	}

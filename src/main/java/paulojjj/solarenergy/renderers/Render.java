@@ -27,47 +27,47 @@ public class Render {
 	}
 
 	public static void buildSquare(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction facing) {
-		float minU = texture.getMinU();
-		float minV = texture.getMinV();
-		float maxU = texture.getMaxU();
-		float maxV = texture.getMaxV();
+		float minU = texture.getU0();
+		float minV = texture.getV0();
+		float maxU = texture.getU1();
+		float maxV = texture.getV1();
 		
 		switch(facing) {
 		case NORTH:
-			builder.pos(matrix4f, startX, startY, startZ).color(color, color, color, 1f).tex(minU, maxV).overlay(overlay).lightmap(light).normal(0, 0, -1).endVertex(); //Bottom left
-			builder.pos(matrix4f, startX, endY, startZ).color(color, color, color, 1f).tex(minU, minV).overlay(overlay).lightmap(light).normal(0, 0, -1).endVertex(); //Top left
-			builder.pos(matrix4f, endX, endY, startZ).color(color, color, color, 1f).tex(maxU, minV).overlay(overlay).lightmap(light).normal(0, 0, -1).endVertex(); //Top right
-			builder.pos(matrix4f, endX, startY, startZ).color(color, color, color, 1f).tex(maxU, maxV).overlay(overlay).lightmap(light).normal(0, 0, -1).endVertex(); //Bottom right
+			builder.vertex(matrix4f, startX, startY, startZ).color(color, color, color, 1f).uv(minU, maxV).overlayCoords(overlay).uv2(light).normal(0, 0, -1).endVertex(); //Bottom left
+			builder.vertex(matrix4f, startX, endY, startZ).color(color, color, color, 1f).uv(minU, minV).overlayCoords(overlay).uv2(light).normal(0, 0, -1).endVertex(); //Top left
+			builder.vertex(matrix4f, endX, endY, startZ).color(color, color, color, 1f).uv(maxU, minV).overlayCoords(overlay).uv2(light).normal(0, 0, -1).endVertex(); //Top right
+			builder.vertex(matrix4f, endX, startY, startZ).color(color, color, color, 1f).uv(maxU, maxV).overlayCoords(overlay).uv2(light).normal(0, 0, -1).endVertex(); //Bottom right
 			break;
 		case SOUTH:
-			builder.pos(matrix4f, startX, startY, endZ).color(color, color, color, 1f).tex(minU, maxV).overlay(overlay).lightmap(light).normal(0, 0, 1).endVertex(); //Bottom left
-			builder.pos(matrix4f, endX, startY, endZ).color(color, color, color, 1f).tex(maxU, maxV).overlay(overlay).lightmap(light).normal(0, 0, 1).endVertex(); //Bottom right
-			builder.pos(matrix4f, endX, endY, endZ).color(color, color, color, 1f).tex(maxU, minV).overlay(overlay).lightmap(light).normal(0, 0, 1).endVertex(); //Top right
-			builder.pos(matrix4f, startX, endY, endZ).color(color, color, color, 1f).tex(minU, minV).overlay(overlay).lightmap(light).normal(0, 0, 1).endVertex(); //Top left
+			builder.vertex(matrix4f, startX, startY, endZ).color(color, color, color, 1f).uv(minU, maxV).overlayCoords(overlay).uv2(light).normal(0, 0, 1).endVertex(); //Bottom left
+			builder.vertex(matrix4f, endX, startY, endZ).color(color, color, color, 1f).uv(maxU, maxV).overlayCoords(overlay).uv2(light).normal(0, 0, 1).endVertex(); //Bottom right
+			builder.vertex(matrix4f, endX, endY, endZ).color(color, color, color, 1f).uv(maxU, minV).overlayCoords(overlay).uv2(light).normal(0, 0, 1).endVertex(); //Top right
+			builder.vertex(matrix4f, startX, endY, endZ).color(color, color, color, 1f).uv(minU, minV).overlayCoords(overlay).uv2(light).normal(0, 0, 1).endVertex(); //Top left
 			break;
 		case EAST:
-			builder.pos(matrix4f, endX, startY, startZ).color(color, color, color, 1f).tex(minU, maxV).overlay(overlay).lightmap(light).normal(1, 0, 0).endVertex(); //Bottom left
-			builder.pos(matrix4f, endX, endY, startZ).color(color, color, color, 1f).tex(minU, minV).overlay(overlay).lightmap(light).normal(1, 0, 0).endVertex(); //Top left
-			builder.pos(matrix4f, endX, endY, endZ).color(color, color, color, 1f).tex(maxU, minV).overlay(overlay).lightmap(light).normal(1, 0, 0).endVertex(); //Top right
-			builder.pos(matrix4f, endX, startY, endZ).color(color, color, color, 1f).tex(maxU, maxV).overlay(overlay).lightmap(light).normal(1, 0, 0).endVertex(); //Bottom right
+			builder.vertex(matrix4f, endX, startY, startZ).color(color, color, color, 1f).uv(minU, maxV).overlayCoords(overlay).uv2(light).normal(1, 0, 0).endVertex(); //Bottom left
+			builder.vertex(matrix4f, endX, endY, startZ).color(color, color, color, 1f).uv(minU, minV).overlayCoords(overlay).uv2(light).normal(1, 0, 0).endVertex(); //Top left
+			builder.vertex(matrix4f, endX, endY, endZ).color(color, color, color, 1f).uv(maxU, minV).overlayCoords(overlay).uv2(light).normal(1, 0, 0).endVertex(); //Top right
+			builder.vertex(matrix4f, endX, startY, endZ).color(color, color, color, 1f).uv(maxU, maxV).overlayCoords(overlay).uv2(light).normal(1, 0, 0).endVertex(); //Bottom right
 			break;
 		case WEST:
-			builder.pos(matrix4f, startX, startY, startZ).color(color, color, color, 1f).tex(minU, maxV).overlay(overlay).lightmap(light).normal(-1, 0, 0).endVertex(); //Bottom left
-			builder.pos(matrix4f, startX, startY, endZ).color(color, color, color, 1f).tex(maxU, maxV).overlay(overlay).lightmap(light).normal(-1, 0, 0).endVertex(); //Bottom right
-			builder.pos(matrix4f, startX, endY, endZ).color(color, color, color, 1f).tex(maxU, minV).overlay(overlay).lightmap(light).normal(-1, 0, 0).endVertex(); //Top right
-			builder.pos(matrix4f, startX, endY, startZ).color(color, color, color, 1f).tex(minU, minV).overlay(overlay).lightmap(light).normal(-1, 0, 0).endVertex(); //Top left
+			builder.vertex(matrix4f, startX, startY, startZ).color(color, color, color, 1f).uv(minU, maxV).overlayCoords(overlay).uv2(light).normal(-1, 0, 0).endVertex(); //Bottom left
+			builder.vertex(matrix4f, startX, startY, endZ).color(color, color, color, 1f).uv(maxU, maxV).overlayCoords(overlay).uv2(light).normal(-1, 0, 0).endVertex(); //Bottom right
+			builder.vertex(matrix4f, startX, endY, endZ).color(color, color, color, 1f).uv(maxU, minV).overlayCoords(overlay).uv2(light).normal(-1, 0, 0).endVertex(); //Top right
+			builder.vertex(matrix4f, startX, endY, startZ).color(color, color, color, 1f).uv(minU, minV).overlayCoords(overlay).uv2(light).normal(-1, 0, 0).endVertex(); //Top left
 			break;
 		case UP:
-			builder.pos(matrix4f, startX, endY, endZ).color(color, color, color, 1f).tex(minU, maxV).overlay(overlay).lightmap(light).normal(0, 1, 0).endVertex(); //Bottom left
-			builder.pos(matrix4f, endX, endY, endZ).color(color, color, color, 1f).tex(maxU, maxV).overlay(overlay).lightmap(light).normal(0, 1, 0).endVertex(); //Bottom right
-			builder.pos(matrix4f, endX , endY, startZ).color(color, color, color, 1f).tex(maxU, minV).overlay(overlay).lightmap(light).normal(0, 1, 0).endVertex(); //Top right
-			builder.pos(matrix4f, startX, endY, startZ).color(color, color, color, 1f).tex(minU, minV).overlay(overlay).lightmap(light).normal(0, 1, 0).endVertex(); //Top left
+			builder.vertex(matrix4f, startX, endY, endZ).color(color, color, color, 1f).uv(minU, maxV).overlayCoords(overlay).uv2(light).normal(0, 1, 0).endVertex(); //Bottom left
+			builder.vertex(matrix4f, endX, endY, endZ).color(color, color, color, 1f).uv(maxU, maxV).overlayCoords(overlay).uv2(light).normal(0, 1, 0).endVertex(); //Bottom right
+			builder.vertex(matrix4f, endX , endY, startZ).color(color, color, color, 1f).uv(maxU, minV).overlayCoords(overlay).uv2(light).normal(0, 1, 0).endVertex(); //Top right
+			builder.vertex(matrix4f, startX, endY, startZ).color(color, color, color, 1f).uv(minU, minV).overlayCoords(overlay).uv2(light).normal(0, 1, 0).endVertex(); //Top left
 			break;
 		case DOWN:
-			builder.pos(matrix4f, startX, startY, endZ).color(color, color, color, 1f).tex(minU, maxV).overlay(overlay).lightmap(light).normal(0, -1, 0).endVertex(); //Bottom left
-			builder.pos(matrix4f, startX, startY, startZ).color(color, color, color, 1f).tex(minU, minV).overlay(overlay).lightmap(light).normal(0, -1, 0).endVertex(); //Top left
-			builder.pos(matrix4f, endX , startY, startZ).color(color, color, color, 1f).tex(maxU, minV).overlay(overlay).lightmap(light).normal(0, -1, 0).endVertex(); //Top right
-			builder.pos(matrix4f, endX, startY, endZ).color(color, color, color, 1f).tex(maxU, maxV).overlay(overlay).lightmap(light).normal(0, -1, 0).endVertex(); //Bottom right
+			builder.vertex(matrix4f, startX, startY, endZ).color(color, color, color, 1f).uv(minU, maxV).overlayCoords(overlay).uv2(light).normal(0, -1, 0).endVertex(); //Bottom left
+			builder.vertex(matrix4f, startX, startY, startZ).color(color, color, color, 1f).uv(minU, minV).overlayCoords(overlay).uv2(light).normal(0, -1, 0).endVertex(); //Top left
+			builder.vertex(matrix4f, endX , startY, startZ).color(color, color, color, 1f).uv(maxU, minV).overlayCoords(overlay).uv2(light).normal(0, -1, 0).endVertex(); //Top right
+			builder.vertex(matrix4f, endX, startY, endZ).color(color, color, color, 1f).uv(maxU, maxV).overlayCoords(overlay).uv2(light).normal(0, -1, 0).endVertex(); //Bottom right
 			break;
 		}
 	}

@@ -63,14 +63,14 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 		VoxelShape shape = boxShapes.get(box);
 		if(shape == null) {
 			AxisAlignedBB bb = box.getBoundingBox();
-			shape = makeCuboidShape(bb.minX * 16, bb.minY * 16, bb.minZ * 16, bb.maxX * 16, bb.maxY * 16, bb.maxZ * 16);
+			shape = box(bb.minX * 16, bb.minY * 16, bb.minZ * 16, bb.maxX * 16, bb.maxY * 16, bb.maxZ * 16);
 			boxShapes.put(box, shape);
 		}
 		return shape;
 	}
 	
 	public VoxelShape getShape(IBlockReader world, BlockPos pos) {
-		EnergyCableTileEntity te = (EnergyCableTileEntity)world.getTileEntity(pos);
+		EnergyCableTileEntity te = (EnergyCableTileEntity)world.getBlockEntity(pos);
 		
 		if(te == null) {
 			return VoxelShapes.empty();
@@ -81,7 +81,7 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 			if(te.hasStorage(facing)) {
 				Boxes box = Boxes.getBox(facing);
 				VoxelShape boxShape = getVoxelShape(box);
-				shape = VoxelShapes.combine(shape, boxShape, IBooleanFunction.OR);
+				shape = VoxelShapes.joinUnoptimized(shape, boxShape, IBooleanFunction.OR);
 			}
 		}
 		return shape;
@@ -99,12 +99,12 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	}
 	
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
-		if(player.getHeldItemMainhand().getItem() == Blocks.ENERGY_CABLE.getItemBlock()) {
+		if(player.getMainHandItem().getItem() == Blocks.ENERGY_CABLE.getItemBlock()) {
 			return ActionResultType.PASS;
 		}
-		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 	
 }

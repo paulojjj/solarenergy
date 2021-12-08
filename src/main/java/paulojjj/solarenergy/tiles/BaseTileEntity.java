@@ -19,13 +19,13 @@ public abstract class BaseTileEntity extends TileEntity implements ITickableTile
 	private Set<PlayerEntity> playersUsing = new HashSet<>();
 
 	public void onContainerOpened(PlayerEntity player) {
-		if(!world.isRemote) {
+		if(!level.isClientSide) {
 			playersUsing.add(player);
 		}
 	}
 
 	public void onContainerClosed(PlayerEntity player) {
-		if(!world.isRemote) {
+		if(!level.isClientSide) {
 			playersUsing.remove(player);
 		}
 	}

@@ -37,8 +37,8 @@ public class Battery extends EnergyNetworkBlock<BatteryTileEntity> {
 	}
 
 	@Override
-	protected void fillStateContainer(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
-		super.fillStateContainer(builder);
+	protected void createBlockStateDefinition(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
+		super.createBlockStateDefinition(builder);
 		builder.add(FACING);
 	}
 
@@ -52,36 +52,36 @@ public class Battery extends EnergyNetworkBlock<BatteryTileEntity> {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer,
+	public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer,
 			ItemStack stack) {
-		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+		super.setPlacedBy(worldIn, pos, state, placer, stack);
 		CompoundNBT nbt = stack.getTag();
 		if(nbt != null) {
 			double energy = nbt.getDouble(NBT.ENERGY);
 			double maxEnergy = nbt.getDouble(NBT.MAX_ENERGY);
-			BatteryTileEntity te = (BatteryTileEntity)worldIn.getTileEntity(pos);
+			BatteryTileEntity te = (BatteryTileEntity)worldIn.getBlockEntity(pos);
 			te.setUltraEnergyStored(energy);
 			te.setMaxUltraEnergyStored(maxEnergy);
 		}
 
-		Direction facing = placer.getHorizontalFacing().getOpposite();
-		int height = Math.round(placer.rotationPitch);
+		Direction facing = placer.getDirection().getOpposite();
+		int height = Math.round(placer.xRot);
 		if (height >= 65) {
 			facing = Direction.UP;
 		} else if (height <= -30) {
 			facing = Direction.DOWN;
 		}
-		worldIn.setBlockState(pos, state.with(FACING, facing));
+		worldIn.setBlockAndUpdate(pos, state.setValue(FACING, facing));
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
 		if(player.isCrouching()) {
-			worldIn.setBlockState(pos, state.with(FACING, hit.getFace()));
+			worldIn.setBlockAndUpdate(pos, state.setValue(FACING, hit.getDirection()));
 			return ActionResultType.SUCCESS;
 		}
-		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 	
 }

@@ -36,14 +36,14 @@ public class ClientProxy extends CommonProxy {
 	protected RenderType getRenderType(RenderLayer renderLayer) {
 		switch(renderLayer) {
 			case CUTOUT:
-				return RenderType.getCutout();
+				return RenderType.cutout();
 			case CUTOUT_MIPPED:
-				return RenderType.getCutoutMipped();
+				return RenderType.cutoutMipped();
 			case TRANSLUCENT:
-				return RenderType.getTranslucent();
+				return RenderType.translucent();
 			case SOLID:
 			default:
-				return RenderType.getSolid();
+				return RenderType.solid();
 		}
 	}
 
@@ -67,7 +67,7 @@ public class ClientProxy extends CommonProxy {
 	@SuppressWarnings("unchecked")
 	protected <M extends Container, U extends Screen & IHasContainer<M>> void registerScreen(ContainerType<?> type,
 			ScreenManager.IScreenFactory<?, ?> factory) {
-		ScreenManager.registerFactory((ContainerType<M>) type, (IScreenFactory<M, U>) factory);
+		ScreenManager.register((ContainerType<M>) type, (IScreenFactory<M, U>) factory);
 	}
 
 	public void registerScreen(GUI screen) {
@@ -75,7 +75,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	private void registerTextures(TextureStitchEvent.Pre evt) {
-		if (!evt.getMap().getTextureLocation().equals(PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
+		if (!evt.getMap().location().equals(PlayerContainer.BLOCK_ATLAS)) {
 			return;
 		}
 

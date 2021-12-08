@@ -27,6 +27,6 @@ public enum Textures {
 	}
 	
 	public TextureAtlasSprite getSprite() {
-		return Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(resourceLocation);
+		return Minecraft.getInstance().getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(resourceLocation);
 	}
 }

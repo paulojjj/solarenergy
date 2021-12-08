@@ -10,7 +10,7 @@ import paulojjj.solarenergy.registry.Containers;
 public class GuiHandler {
 	
 	public static boolean openGui(PlayerEntity player, World world, Containers guiContainer, BlockPos pos) {
-		if(world.isRemote) {
+		if(world.isClientSide) {
 			return true;
 		}
         NetworkHooks.openGui((ServerPlayerEntity) player, guiContainer.getContainerProvider(pos), pos);

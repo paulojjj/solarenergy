@@ -50,7 +50,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 
 
 	protected boolean canAdd(T tileEntity) {
-		return tileEntity != null && !tileEntity.isRemoved() && getTileClass().isInstance(tileEntity) && tileEntity.hasWorld() && world.isAreaLoaded(tileEntity.getPos(), 0);
+		return tileEntity != null && !tileEntity.isRemoved() && getTileClass().isInstance(tileEntity) && tileEntity.hasLevel() && world.isAreaLoaded(tileEntity.getBlockPos(), 0);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(initialTile == null) {
 			return this;
 		}
-		world = initialTile.getWorld();
+		world = initialTile.getLevel();
 
 		//Check if initialTile can be added to existing network
 		Set<T> neighbors = getNeighbors(initialTile);
@@ -83,7 +83,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected INetwork<T> init(Set<T> tiles, Map<T, Map<Direction, IEnergyStorage>> storages) {
-		world = tiles.iterator().next().getWorld();
+		world = tiles.iterator().next().getLevel();
 		this.tiles.addAll(tiles);
 		this.storages.putAll(storages);
 		for(T tile : tiles) {
@@ -153,14 +153,14 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(!world.isAreaLoaded(pos, 0)) {
 			return null;
 		}
-		return world.getTileEntity(pos);
+		return world.getBlockEntity(pos);
 	}
 	
 	protected Map<Direction, IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, Direction,  Boolean> canAdd) {
-		BlockPos pos = tileEntity.getPos();
+		BlockPos pos = tileEntity.getBlockPos();
 		Map<Direction, IEnergyStorage> storages = new HashMap<>();
 		for(Direction facing : Direction.values()) {
-			TileEntity tile = getTileEntity(pos.offset(facing));
+			TileEntity tile = getTileEntity(pos.relative(facing));
 			if(tile != null && !tile.getClass().equals(tileEntity.getClass())) {
 				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite()).orElse(null);
 				if(energyStorage != null && canAdd.apply(energyStorage, facing)) {
@@ -197,7 +197,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
 		}
-		Log.info("Adding tile at " + tile.getPos() + " to network " + this);
+		Log.info("Adding tile at " + tile.getBlockPos() + " to network " + this);
 		tile.setNetwork(this);
 		tiles.add(tile);
 		
@@ -251,7 +251,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		
 		Set<T> tilesInChunk = new HashSet<>();
 		for(T tile : getTiles()) {
-			BlockPos pos = tile.getPos();
+			BlockPos pos = tile.getBlockPos();
 			int tileChunkX = pos.getX() >> 4; 
 			int tileChunkZ = pos.getZ() >> 4; 
 			if(tileChunkX == chunkX && tileChunkZ == chunkZ) {
@@ -310,7 +310,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	protected Set<T> scanConnected(T initialTile) {
-		Log.info("Scanning connected tiles for " + initialTile.getPos());
+		Log.info("Scanning connected tiles for " + initialTile.getBlockPos());
 		long start = System.nanoTime();
 		Set<T> scanned = new HashSet<>();
 		Set<T> connected = new HashSet<>();
@@ -348,7 +348,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	Set<T> getNeighbors(T tile) {
 		Set<T> neighbors = new HashSet<>();
 		for(Direction facing : getPossibleNeighborsPositions(tile)) {
-			BlockPos neighborPos = tile.getPos().offset(facing);
+			BlockPos neighborPos = tile.getBlockPos().relative(facing);
 			T neighbor = as(getTileClass(), getTileEntity(neighborPos));
 			if(neighbor != null && canAdd(tile)) {
 				neighbors.add(neighbor);
@@ -386,7 +386,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 
 	public void update() {
-		if(world.isRemote) {
+		if(world.isClientSide) {
 			return;
 		}
 		if(TickHandler.getTick() == lastUpdatedTick) {

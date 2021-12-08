@@ -20,7 +20,7 @@ public class ModCreativeTab extends ItemGroup {
 		}
 		
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return new ItemStack(Blocks.BASIC_SOLAR_GENERATOR.getItemBlock(), 1);
 		}
 }
