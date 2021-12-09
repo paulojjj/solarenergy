@@ -29,13 +29,13 @@ public class SolarGeneratorGui extends BaseGui<SolarGeneratorContainer> {
 		int TEXTURE_HEIGHT = 85;
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bindForSetup(ASSET_RESOURCE);
+		RenderSystem.setShaderTexture(0, ASSET_RESOURCE);
 		int marginHorizontal = (width - imageWidth) / 2;
 		int marginVertical = (height - TEXTURE_HEIGHT) / 2;
 		blit(matrixStack, marginHorizontal, marginVertical, 0, 0, imageWidth, TEXTURE_HEIGHT);
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bindForSetup(ASSET_RESOURCE);
+		RenderSystem.setShaderTexture(0, SUN_RESOURCE);
 		blit(matrixStack, marginHorizontal + 65, marginVertical + 3, 0, 0, 50, 50);
 	}
 

@@ -29,7 +29,7 @@ public class EnergyCableGui extends BaseGui<EnergyCableContainer> {
 		int TEXTURE_HEIGHT = 85;
 		
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.getTextureManager().bindForSetup(ASSET_RESOURCE);
+		RenderSystem.setShaderTexture(0, ASSET_RESOURCE);
         int marginHorizontal = (width - imageWidth) / 2;
         int marginVertical = (height - TEXTURE_HEIGHT) / 2;
         blit(matrixStack, marginHorizontal, marginVertical, 0, 0, 
