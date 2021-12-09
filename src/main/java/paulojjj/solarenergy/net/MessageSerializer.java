@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class MessageSerializer {
 
@@ -27,8 +27,8 @@ public class MessageSerializer {
 		throw new RuntimeException("Could not get generic class");
 	}
 
-	protected void write(Object object, Field field, PacketBuffer buf) {
-		if(!field.isAccessible()) {
+	protected void write(Object object, Field field, FriendlyByteBuf buf) {
+		if(!field.canAccess(object)) {
 			field.setAccessible(true);
 		}
 		Class<?> type = field.getType();
@@ -41,7 +41,7 @@ public class MessageSerializer {
 		write(buf, type, value, field.getGenericType());
 	}
 
-	private void write(PacketBuffer buf, Class<?> type, Object value, Type genericType) {
+	private void write(FriendlyByteBuf buf, Class<?> type, Object value, Type genericType) {
 		if(type == Boolean.TYPE || type.equals(Boolean.class)) {
 			buf.writeBoolean((boolean)value);
 		}
@@ -88,8 +88,8 @@ public class MessageSerializer {
 		}
 	}
 
-	protected void read(Object object, Field field, PacketBuffer buf) {
-		if(!field.isAccessible()) {
+	protected void read(Object object, Field field, FriendlyByteBuf buf) {
+		if(!field.canAccess(object)) {
 			field.setAccessible(true);
 		}
 		Class<?> type = field.getType();
@@ -103,7 +103,7 @@ public class MessageSerializer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object read(PacketBuffer buf, Class<?> type, Type genericType) {
+	private Object read(FriendlyByteBuf buf, Class<?> type, Type genericType) {
 		Object value = null;		
 		if(type == Boolean.TYPE || type.equals(Boolean.class)) {
 			value = buf.readBoolean();
@@ -183,13 +183,13 @@ public class MessageSerializer {
 		
 	}
 
-	public void write(Object message, PacketBuffer buf) {
+	public void write(Object message, FriendlyByteBuf buf) {
 		for(Field field : getFields(message.getClass())) {
 			write(message, field, buf);
 		}
 	}
 
-	public <T> T read(Class<T> messageClass, PacketBuffer buf) {
+	public <T> T read(Class<T> messageClass, FriendlyByteBuf buf) {
 		T message;
 		try {
 			message = messageClass.newInstance();

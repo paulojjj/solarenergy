@@ -1,17 +1,17 @@
 package paulojjj.solarenergy.registry;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fml.network.IContainerFactory;
+import net.minecraftforge.fmllegacy.network.IContainerFactory;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.containers.BaseContainer;
 import paulojjj.solarenergy.containers.BatteryContainer;
@@ -26,19 +26,19 @@ public enum Containers {
 	BATTERY("battery_container", BatteryContainer::new),
 	ENERGY_CABLE("energy_cable_container", EnergyCableContainer::new);
 	
-	private ContainerType<?> type;
+	private MenuType<?> type;
 
-	<T extends Container> Containers(String registryName, IContainerFactory<T> supplier) {
+	<T extends AbstractContainerMenu> Containers(String registryName, IContainerFactory<T> supplier) {
 		this.type = IForgeContainerType.<T>create(supplier);
 		this.type.setRegistryName(Main.MODID, registryName);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Container> ContainerType<T> getType() {
-		return (ContainerType<T>)type;
+	public <T extends AbstractContainerMenu> MenuType<T> getType() {
+		return (MenuType<T>)type;
 	}
 	
-	public static class ContainerFactory<T extends BaseContainer<T>> implements INamedContainerProvider, IContainerFactory<T> {
+	public static class ContainerFactory<T extends BaseContainer<T>> implements MenuProvider, IContainerFactory<T> {
 
 		private Containers container;
 		private BlockPos pos;
@@ -54,9 +54,9 @@ public enum Containers {
 		
 		@SuppressWarnings("unchecked")
 		@Override
-		public T createMenu(int windowId, PlayerInventory playerInventory,
-				PlayerEntity playerEntity) {
-			PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());		
+		public T createMenu(int windowId, Inventory playerInventory,
+				Player playerEntity) {
+			FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());		
 			buffer.writeBlockPos(pos);
 			T c = (T)container.getType().create(windowId, playerInventory, buffer);
 			return c;
@@ -64,18 +64,18 @@ public enum Containers {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public T create(int windowId, PlayerInventory inv, PacketBuffer data) {
+		public T create(int windowId, Inventory inv, FriendlyByteBuf data) {
 			return (T)container.getType().create(windowId, inv, data);
 		}
 
 		@Override
-		public ITextComponent getDisplayName() {
-			return new StringTextComponent("");
+		public Component getDisplayName() {
+			return new TextComponent("");
 		}
 		
 	}
 	
-	public INamedContainerProvider getContainerProvider(BlockPos pos) {
+	public MenuProvider getContainerProvider(BlockPos pos) {
 		return new ContainerFactory<>(this, pos);
 	}
 	

@@ -1,10 +1,10 @@
 package paulojjj.solarenergy;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import paulojjj.solarenergy.registry.Blocks;
 
-public class ModCreativeTab extends ItemGroup {
+public class ModCreativeTab extends CreativeModeTab {
 
 		private static ModCreativeTab instance;
 

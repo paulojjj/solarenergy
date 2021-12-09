@@ -1,10 +1,10 @@
 package paulojjj.solarenergy.registry;
 
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.ScreenManager.IScreenFactory;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import paulojjj.solarenergy.gui.BatteryGui;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
 import paulojjj.solarenergy.gui.EnergyCableGui;
@@ -16,21 +16,21 @@ public enum GUI {
 	ENERGY_ASSEMBLER(EnergyAssemblerGui::new, Containers.ENERGY_ASSEMBLER),
 	ENERGY_CABLE(EnergyCableGui::new, Containers.ENERGY_CABLE);
 
-	private IScreenFactory<?, ?> factory;
+	private ScreenConstructor<?, ?> factory;
 	private Containers container;
-	private ContainerType<?> containerType;
+	private MenuType<?> containerType;
 	
-	<T extends Container, U extends Screen & IHasContainer<T>> GUI(IScreenFactory<T, U> screenFactory, Containers containers) {
+	<T extends AbstractContainerMenu, U extends Screen & MenuAccess<T>> GUI(ScreenConstructor<T, U> screenFactory, Containers containers) {
 		this.factory = screenFactory;
 		this.container = containers;
 		this.containerType = containers.getType();
 	}
 
-	public ContainerType<?> getContainerType() {
+	public MenuType<?> getContainerType() {
 		return containerType;
 	}
 
-	public IScreenFactory<?, ?> getFactory() {
+	public ScreenConstructor<?, ?> getFactory() {
 		return factory;
 	}
 	

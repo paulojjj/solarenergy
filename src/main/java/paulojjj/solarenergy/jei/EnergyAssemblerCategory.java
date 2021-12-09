@@ -2,7 +2,7 @@ package paulojjj.solarenergy.jei;
 
 import java.awt.Color;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -15,9 +15,11 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
 import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
@@ -37,8 +39,8 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 	
 	@Override
-	public String getTitle() {
-		return I18n.get("block.solarenergy.energy_assembler");
+	public Component getTitle() {
+		return new TextComponent(I18n.get("block.solarenergy.energy_assembler"));
 	}
 
 	@Override
@@ -57,7 +59,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 	}
 	
 	@Override
-	public void draw(EnergyAssemblerRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	public void draw(EnergyAssemblerRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
 		gauge.draw(matrixStack, 7, 24);
 		
 		String energyNeededString = EnergyFormatter.format(recipe.getEnergyNeeded());

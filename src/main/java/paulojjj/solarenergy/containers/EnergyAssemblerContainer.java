@@ -1,12 +1,12 @@
 package paulojjj.solarenergy.containers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 import paulojjj.solarenergy.net.IMessageListener;
 import paulojjj.solarenergy.registry.Containers;
@@ -20,15 +20,15 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 	
 	private EnergyStorageContainerUpdateMessage statusMessage;
 
-	public EnergyAssemblerContainer(int windowId, PlayerInventory playerInventory, PacketBuffer additionalData) {
+	public EnergyAssemblerContainer(int windowId, Inventory playerInventory, FriendlyByteBuf additionalData) {
 		super(Containers.ENERGY_ASSEMBLER.getType(), windowId, playerInventory, additionalData);
 	}
 	
-	public EnergyAssemblerContainer(int windowId, PlayerInventory playerInventory) {
+	public EnergyAssemblerContainer(int windowId, Inventory playerInventory) {
 		this(windowId, playerInventory, null);
 	}
 	
-	private void addPlayerSlots(IInventory playerInventory) {
+	private void addPlayerSlots(Container playerInventory) {
 		for (int i = 0; i < 3; ++i)
 		{
 			for (int j = 0; j < 9; ++j)
@@ -45,13 +45,13 @@ public class EnergyAssemblerContainer extends BaseContainer<EnergyAssemblerConta
 	}
 	
 	@Override
-	public boolean stillValid(PlayerEntity playerIn) {
+	public boolean stillValid(Player playerIn) {
 		return true;
 	}
 
 	@Override
 	//Shift + Right Click
-	public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(Player playerIn, int index) {
 		ItemStack previous = ItemStack.EMPTY;
 		Slot slot = (Slot) this.slots.get(index);
 

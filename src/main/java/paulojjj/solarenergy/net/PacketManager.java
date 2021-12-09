@@ -4,20 +4,23 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import paulojjj.solarenergy.Main;
+import paulojjj.solarenergy.net.PacketManager.ContainerUpdateMessage;
+import paulojjj.solarenergy.net.PacketManager.DefaultEncoder;
+import paulojjj.solarenergy.net.PacketManager.TileEntityUpdateMessage;
 
 public class PacketManager {
 
@@ -45,16 +48,16 @@ public class PacketManager {
 	}
 	
 	public static interface IMessage {
-		void fromBytes(PacketBuffer buf);
-		void toBytes(PacketBuffer buf);
+		void fromBytes(FriendlyByteBuf buf);
+		void toBytes(FriendlyByteBuf buf);
 	}
 	
 	public static class DefaultEncoder {
-		public static <T extends IMessage> void encode(T message, PacketBuffer buffer) {
+		public static <T extends IMessage> void encode(T message, FriendlyByteBuf buffer) {
 			message.toBytes(buffer);
 		}
 
-		public static <T extends IMessage> T decode(PacketBuffer buffer, Class<T> clazz) {
+		public static <T extends IMessage> T decode(FriendlyByteBuf buffer, Class<T> clazz) {
 			T message;
 			try {
 				message = clazz.newInstance();
@@ -72,7 +75,7 @@ public class PacketManager {
 
 		protected Object message;
 
-		protected PacketBuffer data;
+		protected FriendlyByteBuf data;
 
 		public GenericMessage() {
 			
@@ -82,17 +85,17 @@ public class PacketManager {
 			this.message = message;
 		}
 
-		public PacketBuffer getData() {
+		public FriendlyByteBuf getData() {
 			return data;
 		}
 
 		@Override
-		public void fromBytes(PacketBuffer buf) {
+		public void fromBytes(FriendlyByteBuf buf) {
 			data = buf;
 		}
 
 		@Override
-		public void toBytes(PacketBuffer buf) {
+		public void toBytes(FriendlyByteBuf buf) {
 			serializer.write(message, buf);
 		}
 
@@ -108,7 +111,7 @@ public class PacketManager {
 
 	public static class TileEntityUpdateMessage extends GenericMessage {
 
-		private TileEntity tileEntity;
+		private BlockEntity tileEntity;
 
 		private BlockPos pos;
 
@@ -116,7 +119,7 @@ public class PacketManager {
 			super();
 		}
 
-		public TileEntityUpdateMessage(TileEntity tileEntity, Object message) {
+		public TileEntityUpdateMessage(BlockEntity tileEntity, Object message) {
 			super(message);
 			this.tileEntity = tileEntity;
 		}
@@ -126,7 +129,7 @@ public class PacketManager {
 		}
 
 		@Override
-		public void fromBytes(PacketBuffer buf) {
+		public void fromBytes(FriendlyByteBuf buf) {
 			int x = buf.readInt();
 			int y = buf.readInt();
 			int z = buf.readInt();
@@ -136,7 +139,7 @@ public class PacketManager {
 		}
 
 		@Override
-		public void toBytes(PacketBuffer buf) {
+		public void toBytes(FriendlyByteBuf buf) {
 			BlockPos pos = tileEntity.getBlockPos();
 
 			buf.writeInt(pos.getX());
@@ -173,7 +176,7 @@ public class PacketManager {
 
 	public static class TileEntityMessageHandler {
 
-		private static PlayerEntity getPlayer(NetworkEvent.Context ctx) {
+		private static Player getPlayer(NetworkEvent.Context ctx) {
 			return Main.getProxy().getFactory().getPlayerProvider().getPlayer(ctx);
 		}
 
@@ -182,8 +185,8 @@ public class PacketManager {
 			final NetworkEvent.Context c;
 			c = ctx.get();
 			c.enqueueWork(() -> {
-				PlayerEntity player = getPlayer(c);
-				TileEntity tileEntity = player.getCommandSenderWorld().getBlockEntity(message.getPos());
+				Player player = getPlayer(c);
+				BlockEntity tileEntity = player.getCommandSenderWorld().getBlockEntity(message.getPos());
 				if(tileEntity instanceof IMessageListener<?>)  {
 					Object tileMessage = PacketManager.readMessage((IMessageListener<?>)tileEntity, message);
 					((IMessageListener<Object>)tileEntity).onMessage(tileMessage);
@@ -196,7 +199,7 @@ public class PacketManager {
 
 	public static class ContainerMessageHandler {
 
-		private static PlayerEntity getPlayer(NetworkEvent.Context ctx) {
+		private static Player getPlayer(NetworkEvent.Context ctx) {
 			return Main.getProxy().getFactory().getPlayerProvider().getPlayer(ctx);
 		}
 
@@ -205,8 +208,8 @@ public class PacketManager {
 			final NetworkEvent.Context c;
 			c = ctx.get();
 			c.enqueueWork(() -> {
-				PlayerEntity player = getPlayer(c);
-				Container container = player.containerMenu;
+				Player player = getPlayer(c);
+				AbstractContainerMenu container = player.containerMenu;
 				if(container instanceof IMessageListener<?>)  {
 					Object tileMessage = PacketManager.readMessage((IMessageListener<?>)container, message);
 					((IMessageListener<Object>)container).onMessage(tileMessage);
@@ -217,21 +220,21 @@ public class PacketManager {
 
 	}
 
-	public static void sendToAllTracking(TileEntity tileEntity, Object message) {
+	public static void sendToAllTracking(BlockEntity tileEntity, Object message) {
 		BlockPos pos = tileEntity.getBlockPos();
-		World world = tileEntity.getLevel();
+		Level world = tileEntity.getLevel();
 		if(!world.isAreaLoaded(pos, 0)) {
 			return;
 		}
-		Chunk chunk = tileEntity.getLevel().getChunkAt(pos);
+		LevelChunk chunk = tileEntity.getLevel().getChunkAt(pos);
 		wrapper.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new TileEntityUpdateMessage(tileEntity, message));
 	}
 
-	public static void sendTileEntityMessage(TileEntity tileEntity, ServerPlayerEntity player, Object message) {
+	public static void sendTileEntityMessage(BlockEntity tileEntity, ServerPlayer player, Object message) {
 		wrapper.send(PacketDistributor.PLAYER.with(() -> player), new TileEntityUpdateMessage(tileEntity, message));
 	}
 
-	public static void sendContainerUpdateMessage(ServerPlayerEntity player, Object message) {
+	public static void sendContainerUpdateMessage(ServerPlayer player, Object message) {
 		wrapper.send(PacketDistributor.PLAYER.with(() -> player), new ContainerUpdateMessage(message));
 	}
 

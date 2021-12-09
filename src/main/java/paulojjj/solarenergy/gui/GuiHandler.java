@@ -1,19 +1,19 @@
 package paulojjj.solarenergy.gui;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import paulojjj.solarenergy.registry.Containers;
 
 public class GuiHandler {
 	
-	public static boolean openGui(PlayerEntity player, World world, Containers guiContainer, BlockPos pos) {
+	public static boolean openGui(Player player, Level world, Containers guiContainer, BlockPos pos) {
 		if(world.isClientSide) {
 			return true;
 		}
-        NetworkHooks.openGui((ServerPlayerEntity) player, guiContainer.getContainerProvider(pos), pos);
+        NetworkHooks.openGui((ServerPlayer) player, guiContainer.getContainerProvider(pos), pos);
 		return true;
 	}
 

@@ -1,15 +1,15 @@
 package paulojjj.solarenergy.renderers;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.core.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.blocks.EnergyCable.Boxes;
@@ -17,10 +17,9 @@ import paulojjj.solarenergy.registry.Textures;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 @OnlyIn(Dist.CLIENT)
-public class EnergyCableRenderer extends TileEntityRenderer<EnergyCableTileEntity> {
+public class EnergyCableRenderer implements BlockEntityRenderer<EnergyCableTileEntity> {
 
-	public EnergyCableRenderer(TileEntityRendererDispatcher dispatcher) {
-		super(dispatcher);
+	public EnergyCableRenderer(BlockEntityRendererProvider.Context context) {
 	}
 
 	private static TextureAtlasSprite CENTER_TEXTURE;
@@ -28,7 +27,7 @@ public class EnergyCableRenderer extends TileEntityRenderer<EnergyCableTileEntit
 	private static TextureAtlasSprite SIDES_TEXTURE_VERTICAL;
 
 	@Override
-	public void render(EnergyCableTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+	public void render(EnergyCableTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
 		if(CENTER_TEXTURE == null) {
 			CENTER_TEXTURE = Textures.ENERGY_CABLE_CENTER.getSprite();
 			SIDES_TEXTURE_HORIZONTAL = Textures.ENERGY_CABLE_HORIZONTAL.getSprite();
@@ -38,7 +37,7 @@ public class EnergyCableRenderer extends TileEntityRenderer<EnergyCableTileEntit
 		EnergyCableTileEntity te = (EnergyCableTileEntity)tile;
 		matrixStack.pushPose();
 		
-		IVertexBuilder builder = buffer.getBuffer(RenderType.cutoutMipped());
+		VertexConsumer builder = buffer.getBuffer(RenderType.cutoutMipped());
 		Matrix4f matrix4f = matrixStack.last().pose();
 
 		Render.drawCubeFaces(matrix4f, builder, CENTER_TEXTURE, combinedLight, combinedOverlay, Boxes.CENTER.getBoundingBox(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN);

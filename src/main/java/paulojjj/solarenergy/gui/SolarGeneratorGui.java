@@ -1,12 +1,12 @@
 package paulojjj.solarenergy.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.EnergyFormatter;
@@ -16,7 +16,7 @@ import paulojjj.solarenergy.containers.SolarGeneratorContainer;
 @OnlyIn(Dist.CLIENT)
 public class SolarGeneratorGui extends BaseGui<SolarGeneratorContainer> {
 
-	public SolarGeneratorGui(SolarGeneratorContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+	public SolarGeneratorGui(SolarGeneratorContainer screenContainer, Inventory inv, Component titleIn) {
 		super(screenContainer, inv, titleIn);
 	}
 
@@ -25,22 +25,22 @@ public class SolarGeneratorGui extends BaseGui<SolarGeneratorContainer> {
 
 
 	@Override
-	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		int TEXTURE_HEIGHT = 85;
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bind(ASSET_RESOURCE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		minecraft.getTextureManager().bindForSetup(ASSET_RESOURCE);
 		int marginHorizontal = (width - imageWidth) / 2;
 		int marginVertical = (height - TEXTURE_HEIGHT) / 2;
 		blit(matrixStack, marginHorizontal, marginVertical, 0, 0, imageWidth, TEXTURE_HEIGHT);
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		minecraft.getTextureManager().bind(SUN_RESOURCE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		minecraft.getTextureManager().bindForSetup(ASSET_RESOURCE);
 		blit(matrixStack, marginHorizontal + 65, marginVertical + 3, 0, 0, 50, 50);
 	}
 
 	@Override
-	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
 		SolarGeneratorContainer container = (SolarGeneratorContainer)this.menu;
 
 		font.draw(matrixStack, I18n.get("solarenergy.producing") + ": " + EnergyFormatter.format(container.getActiveProduction()) + "/t", 15, 92, 0x202020);

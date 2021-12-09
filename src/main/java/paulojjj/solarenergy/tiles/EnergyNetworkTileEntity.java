@@ -8,15 +8,14 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -28,10 +27,10 @@ import paulojjj.solarenergy.networks.CapabilityDelegate;
 import paulojjj.solarenergy.networks.INetwork;
 import paulojjj.solarenergy.networks.INetworkMember;
 
-public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity implements INetworkMember, ITickableTileEntity, IMessageListener<EnergyNetworkUpdateMessage> {
+public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity implements INetworkMember, IMessageListener<EnergyNetworkUpdateMessage> {
 
-	public EnergyNetworkTileEntity(TileEntityType<?> tileEntityTypeIn) {
-		super(tileEntityTypeIn);
+	public EnergyNetworkTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+		super(tileEntityTypeIn, pos, state);
 	}
 
 	public static final int BLOCK_UPDATE = 2;
@@ -87,7 +86,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		BlockPos neighbosPos = worldPosition.relative(facing);
 		IEnergyStorage storage = null;
 		if(level.isAreaLoaded(neighbosPos, 0)) {
-			TileEntity te = level.getBlockEntity(neighbosPos);
+			BlockEntity te = level.getBlockEntity(neighbosPos);
 			if(te == null) {
 				return null;
 			}
@@ -197,7 +196,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 				//Calls onNeighborChanged so neighbors that are still not loaded can be detected after loaded (on neighborChanged is not called by default when world loads)
 				BlockPos neighborPos = worldPosition.relative(facing);
 				if(level.isAreaLoaded(neighborPos, 0)) {
-					TileEntity te = level.getBlockEntity(neighborPos);
+					BlockEntity te = level.getBlockEntity(neighborPos);
 					if(te instanceof EnergyNetworkTileEntity) {
 						EnergyNetworkTileEntity ente = (EnergyNetworkTileEntity)te;
 						if(ente.network != null) {
@@ -222,8 +221,8 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	}
 
 	@Override
-	public CompoundNBT getUpdateTag() {
-		CompoundNBT nbt = super.getUpdateTag();
+	public CompoundTag getUpdateTag() {
+		CompoundTag nbt = super.getUpdateTag();
 
 		synchronized(this) {
 			int size = neighborStorages.size();
@@ -238,8 +237,8 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	}
 
 	@Override
-	public void handleUpdateTag(BlockState blockState, CompoundNBT tag) {
-		super.handleUpdateTag(blockState, tag);
+	public void handleUpdateTag(CompoundTag tag) {
+		super.handleUpdateTag(tag);
 		byte[] storages = tag.getByteArray("storages");
 		synchronized(this) {
 			neighborStorages.clear();
@@ -250,9 +249,9 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
 		super.onDataPacket(net, pkt);
-		handleUpdateTag(getBlockState(), pkt.getTag());
+		handleUpdateTag(pkt.getTag());
 	}
 
 	@Override

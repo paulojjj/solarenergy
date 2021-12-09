@@ -1,12 +1,12 @@
 package paulojjj.solarenergy.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.EnergyFormatter;
@@ -17,19 +17,19 @@ import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainer
 @OnlyIn(Dist.CLIENT)
 public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 	
-	public EnergyAssemblerGui(EnergyAssemblerContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+	public EnergyAssemblerGui(EnergyAssemblerContainer screenContainer, Inventory inv, Component titleIn) {
 		super(screenContainer, inv, titleIn);
 	}
 	
 	public static final ResourceLocation ASSET_RESOURCE = new ResourceLocation(Main.MODID, "gui/energy_assembler_gui.png");
 	
 	@Override
-	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.menu;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        minecraft.getTextureManager().bind(ASSET_RESOURCE);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        minecraft.getTextureManager().bindForSetup(ASSET_RESOURCE);
         int marginHorizontal = (width - imageWidth) / 2;
         int marginVertical = (height - imageHeight) / 2;
         blit(matrixStack, marginHorizontal, marginVertical, 0, 0, 
@@ -50,7 +50,7 @@ public class EnergyAssemblerGui extends BaseGui<EnergyAssemblerContainer> {
 	}
 	
 	@Override
-	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
 		EnergyAssemblerContainer container = (EnergyAssemblerContainer)this.menu;
 		EnergyStorageContainerUpdateMessage message = container.getStatusMessage();
 		

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class ItemStackHandlerWrapper extends ItemStackHandler {
@@ -133,11 +133,11 @@ public class ItemStackHandlerWrapper extends ItemStackHandler {
 		return delegate.isItemValid(slot, stack);
 	}
 
-	public CompoundNBT serializeNBT() {
+	public CompoundTag serializeNBT() {
 		return delegate.serializeNBT();
 	}
 
-	public void deserializeNBT(CompoundNBT nbt) {
+	public void deserializeNBT(CompoundTag nbt) {
 		delegate.deserializeNBT(nbt);
 	}
 

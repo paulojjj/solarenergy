@@ -2,14 +2,14 @@ package paulojjj.solarenergy.tiles;
 
 import java.util.Optional;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -27,7 +27,7 @@ import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.TileEntities;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity.EnergyAssemblerTileUpdateMessage;
 
-public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements ITickableTileEntity, IMessageListener<EnergyAssemblerTileUpdateMessage> {
+public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implements IMessageListener<EnergyAssemblerTileUpdateMessage> {
 	
 	public static final int UPDATE_TICKS = 10;
 	
@@ -78,12 +78,12 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		capabilityHandler = new ItemStackHandlerWrapper(itemHandler, HandlerType.CAPABILITY, slotTypes);
 	}
 
-	public EnergyAssemblerTileEntity() {
-		this(TileEntities.ENERGY_ASSEMBLER.getType());
+	public EnergyAssemblerTileEntity(BlockPos pos, BlockState state) {
+		this(TileEntities.ENERGY_ASSEMBLER.getType(), pos, state);
 	}
 	
-	public EnergyAssemblerTileEntity(TileEntityType<?> tileEntityTypeIn) {
-		super(tileEntityTypeIn);
+	public EnergyAssemblerTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+		super(tileEntityTypeIn, pos, state);
 		initItemHandlers(SlotType.INPUT, SlotType.OUTPUT);
 	}
 
@@ -108,9 +108,9 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	
 	public static class EnergyAssemblerItemHandler extends ItemStackHandler {
 		
-		private TileEntity tileEntity;
+		private BlockEntity tileEntity;
 		
-		public EnergyAssemblerItemHandler(TileEntity tileEntity, int slots) {
+		public EnergyAssemblerItemHandler(BlockEntity tileEntity, int slots) {
 			super(slots);
 			this.tileEntity = tileEntity;
 		}
@@ -129,17 +129,17 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 
 	
 	@Override
-	public void load(BlockState blockState, CompoundNBT compound) {
-		super.load(blockState, compound);
-		ItemStack stack = ItemStack.of((CompoundNBT)compound.get(NBT.ASSEMBLING_ITEM));
+	public void load(CompoundTag compound) {
+		super.load(compound);
+		ItemStack stack = ItemStack.of((CompoundTag)compound.get(NBT.ASSEMBLING_ITEM));
 		assemblingItem = stack == ItemStack.EMPTY ? null : stack.getItem();
-		itemHandler.deserializeNBT((CompoundNBT)compound.get(NBT.INVENTORY));
+		itemHandler.deserializeNBT((CompoundTag)compound.get(NBT.INVENTORY));
 	}
 	
 	@Override
-	public CompoundNBT save(CompoundNBT compound) {
+	public CompoundTag save(CompoundTag compound) {
 		compound = super.save(compound);
-		CompoundNBT itemCompound = new CompoundNBT();
+		CompoundTag itemCompound = new CompoundTag();
 		ItemStack stack = assemblingItem == null ? ItemStack.EMPTY : new ItemStack(assemblingItem, 1);
 		stack.save(itemCompound);
 		compound.put(NBT.ASSEMBLING_ITEM, itemCompound);

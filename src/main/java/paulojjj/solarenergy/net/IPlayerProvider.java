@@ -1,10 +1,10 @@
 package paulojjj.solarenergy.net;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public interface IPlayerProvider {
 
-	PlayerEntity getPlayer(NetworkEvent.Context ctx);
+	Player getPlayer(NetworkEvent.Context ctx);
 	
 }

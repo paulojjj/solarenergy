@@ -1,7 +1,7 @@
 package paulojjj.solarenergy.proxy;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
 import paulojjj.solarenergy.TickHandler;
@@ -44,7 +44,7 @@ public class CommonProxy implements Proxy {
 	}
 
 	public void registerTileEntity(TileEntities tile) {
-		ForgeRegistries.TILE_ENTITIES.register(tile.getType());
+		ForgeRegistries.BLOCK_ENTITIES.register(tile.getType());
 	}
 	
 	public void registerContainer(Containers container) {

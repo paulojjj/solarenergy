@@ -1,30 +1,30 @@
 package paulojjj.solarenergy.containers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.network.FriendlyByteBuf;
 import paulojjj.solarenergy.net.IMessageListener;
 import paulojjj.solarenergy.tiles.EnergyStorageTileEntity.EnergyStorageContainerUpdateMessage;
 
-public class EnergyStorageContainer<T extends Container> extends BaseContainer<T> implements IMessageListener<EnergyStorageContainerUpdateMessage> {
+public class EnergyStorageContainer<T extends AbstractContainerMenu> extends BaseContainer<T> implements IMessageListener<EnergyStorageContainerUpdateMessage> {
 	
 	private double energy;
 	private double maxEnergy;
 	private double input;
 	private double output;
 	
-	public EnergyStorageContainer(ContainerType<?> type, int windowId, PlayerInventory playerInventory, PacketBuffer additionalData) {
+	public EnergyStorageContainer(MenuType<?> type, int windowId, Inventory playerInventory, FriendlyByteBuf additionalData) {
 		super(type, windowId, playerInventory, additionalData);
 	}
 	
-	public EnergyStorageContainer(ContainerType<?> type, int windowId, PlayerInventory playerInventory) {
+	public EnergyStorageContainer(MenuType<?> type, int windowId, Inventory playerInventory) {
 		this(type, windowId, playerInventory, null);
 	}
 	
 	@Override
-	public boolean stillValid(PlayerEntity playerIn) {
+	public boolean stillValid(Player playerIn) {
 		return true;
 	}
 

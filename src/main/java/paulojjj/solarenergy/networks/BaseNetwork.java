@@ -13,25 +13,25 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 import paulojjj.solarenergy.Log;
 import paulojjj.solarenergy.TickHandler;
 
-public abstract class BaseNetwork<T extends TileEntity & INetworkMember> implements INetwork<T> {
+public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implements INetwork<T> {
 
 	protected boolean valid = true;
 
 	protected Set<T> tiles = new HashSet<>();
 	protected Map<T, Map<Direction, IEnergyStorage>> storages = new HashMap<>();
 
-	protected World world;
+	protected Level world;
 
 	protected double energyStored = 0;
 	protected double maxEnergyStored = 0;
@@ -149,18 +149,18 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	}
 	
 	//World.getTileEntity in unloaded chunks triggers TileEntity.onLoad
-	protected TileEntity getTileEntity(BlockPos pos) {
+	protected BlockEntity getTileEntity(BlockPos pos) {
 		if(!world.isAreaLoaded(pos, 0)) {
 			return null;
 		}
 		return world.getBlockEntity(pos);
 	}
 	
-	protected Map<Direction, IEnergyStorage> getNeighborStorages(TileEntity tileEntity, BiFunction<IEnergyStorage, Direction,  Boolean> canAdd) {
+	protected Map<Direction, IEnergyStorage> getNeighborStorages(BlockEntity tileEntity, BiFunction<IEnergyStorage, Direction,  Boolean> canAdd) {
 		BlockPos pos = tileEntity.getBlockPos();
 		Map<Direction, IEnergyStorage> storages = new HashMap<>();
 		for(Direction facing : Direction.values()) {
-			TileEntity tile = getTileEntity(pos.relative(facing));
+			BlockEntity tile = getTileEntity(pos.relative(facing));
 			if(tile != null && !tile.getClass().equals(tileEntity.getClass())) {
 				IEnergyStorage energyStorage = tile.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite()).orElse(null);
 				if(energyStorage != null && canAdd.apply(energyStorage, facing)) {
@@ -171,7 +171,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		return storages;
 	}
 	
-	protected Map<Direction, IEnergyStorage> getStorages(TileEntity tileEntity) {
+	protected Map<Direction, IEnergyStorage> getStorages(BlockEntity tileEntity) {
 		return getNeighborStorages(tileEntity, (s, f) -> true);
 	}
 
@@ -302,7 +302,7 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 	}
 
-	protected static <TE extends TileEntity> TE as(Class<TE> tileClass, Object obj) {
+	protected static <TE extends BlockEntity> TE as(Class<TE> tileClass, Object obj) {
 		if(tileClass.isInstance(obj)) {
 			return tileClass.cast(obj);
 		}

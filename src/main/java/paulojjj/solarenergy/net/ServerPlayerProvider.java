@@ -1,12 +1,12 @@
 package paulojjj.solarenergy.net;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class ServerPlayerProvider implements IPlayerProvider {
 
 	@Override
-	public PlayerEntity getPlayer(NetworkEvent.Context ctx) {
+	public Player getPlayer(NetworkEvent.Context ctx) {
         return ctx.getSender();
 	}
 	

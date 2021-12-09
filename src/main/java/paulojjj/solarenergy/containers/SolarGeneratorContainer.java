@@ -1,8 +1,8 @@
 package paulojjj.solarenergy.containers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
 import paulojjj.solarenergy.net.IMessageListener;
 import paulojjj.solarenergy.registry.Containers;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity.SolarGeneratorContainerUpdateMessage;
@@ -13,16 +13,16 @@ public class SolarGeneratorContainer extends BaseContainer<SolarGeneratorContain
 	private double activeProduction = 0;
 	private double output = 0;
 	
-	public SolarGeneratorContainer(int windowId, PlayerInventory playerInventory, PacketBuffer additionalData) {
+	public SolarGeneratorContainer(int windowId, Inventory playerInventory, FriendlyByteBuf additionalData) {
 		super(Containers.SOLAR_GENERATOR.getType(), windowId, playerInventory, additionalData);
 	}
 	
-	public SolarGeneratorContainer(int windowId, PlayerInventory playerInventory) {
+	public SolarGeneratorContainer(int windowId, Inventory playerInventory) {
 		this(windowId, playerInventory, null);
 	}
 	
 	@Override
-	public boolean stillValid(PlayerEntity playerIn) {
+	public boolean stillValid(Player playerIn) {
 		return true;
 	}
 	

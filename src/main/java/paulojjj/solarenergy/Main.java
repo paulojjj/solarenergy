@@ -1,7 +1,7 @@
 package paulojjj.solarenergy;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import paulojjj.solarenergy.net.PacketManager;
@@ -19,7 +19,7 @@ public class Main {
 	
 	public static Main instance;
 	
-	private static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+	private static CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 	
 	public Main() {
 		instance = this;
@@ -45,7 +45,7 @@ public class Main {
 		RecipeHandler.addEnergyAssemblerRecipe(Items.INTERMEDIATE_ENERGY_CORE.getItem(), new ItemStack(Items.ADVANCED_ENERGY_CORE.getItem(), 1), 10000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ADVANCED_ENERGY_CORE.getItem(), new ItemStack(Items.ELITE_ENERGY_CORE.getItem(), 1), 100000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ELITE_ENERGY_CORE.getItem(), new ItemStack(Items.ULTIMATE_ENERGY_CORE.getItem(), 1), 1000000000d);
-		RecipeHandler.addEnergyAssemblerRecipe(net.minecraft.item.Items.IRON_INGOT, new ItemStack(Items.LEAD_INGOT.getItem(), 1), 1000000);
+		RecipeHandler.addEnergyAssemblerRecipe(net.minecraft.world.item.Items.IRON_INGOT, new ItemStack(Items.LEAD_INGOT.getItem(), 1), 1000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ULTIMATE_ENERGY_CORE.getItem(), new ItemStack(Items.BASIC_DENSE_ENERGY_CORE.getItem(), 1), 10000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.BASIC_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), 1), 100000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.INTERMEDIATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000d);

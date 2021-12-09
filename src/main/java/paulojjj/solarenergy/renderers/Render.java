@@ -1,32 +1,32 @@
 package paulojjj.solarenergy.renderers;
 
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import com.mojang.math.Matrix4f;
 
 public class Render {
 	
-	public static void drawCubeFaces(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, AxisAlignedBB bb, Direction... facings) {
+	public static void drawCubeFaces(Matrix4f matrix4f, VertexConsumer builder, TextureAtlasSprite texture, int light, int overlay, AABB bb, Direction... facings) {
 		drawCubeFaces(matrix4f, builder, texture, light, overlay, (float)bb.minX, (float)bb.minY, (float)bb.minZ, (float)bb.maxX, (float)bb.maxY, (float)bb.maxZ, facings);		
 	}
 	
-	public static void drawCubeFaces(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, Direction... facings) {
+	public static void drawCubeFaces(Matrix4f matrix4f, VertexConsumer builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, Direction... facings) {
 		drawCubeFaces(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, 0.75f, facings);
 	}
 	
-	public static void drawCubeFaces(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction... facings) {
+	public static void drawCubeFaces(Matrix4f matrix4f, VertexConsumer builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction... facings) {
 		for(Direction facing : facings) {
 			buildSquare(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, color, facing);
 		}
 	}
-	public static void buildSquare(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, Direction facing) {
+	public static void buildSquare(Matrix4f matrix4f, VertexConsumer builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, Direction facing) {
 		buildSquare(matrix4f, builder, texture, light, overlay, startX, startY, startZ, endX, endY, endZ, 0.75f, facing);
 	}
 
-	public static void buildSquare(Matrix4f matrix4f, IVertexBuilder builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction facing) {
+	public static void buildSquare(Matrix4f matrix4f, VertexConsumer builder, TextureAtlasSprite texture, int light, int overlay, float startX, float startY, float startZ, float endX, float endY, float endZ, float color, Direction facing) {
 		float minU = texture.getU0();
 		float minV = texture.getV0();
 		float maxU = texture.getU1();

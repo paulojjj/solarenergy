@@ -3,15 +3,15 @@ package paulojjj.solarenergy.networks;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.IUltraEnergyStorage;
 
-public interface INetwork<T extends TileEntity & INetworkMember> extends IUltraEnergyStorage {
+public interface INetwork<T extends BlockEntity & INetworkMember> extends IUltraEnergyStorage {
 	
-	static <N extends INetwork<TE>, TE extends TileEntity & INetworkMember> N newInstance(Class<N> networkClass, TE initialTile) {
+	static <N extends INetwork<TE>, TE extends BlockEntity & INetworkMember> N newInstance(Class<N> networkClass, TE initialTile) {
 		try {
 			N network = networkClass.newInstance();
 			network.init(initialTile);

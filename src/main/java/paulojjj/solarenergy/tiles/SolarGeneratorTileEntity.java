@@ -3,9 +3,10 @@ package paulojjj.solarenergy.tiles;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -29,12 +30,12 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	private long nextSkyCheck;
 	private static Random random = new Random();
 
-	public SolarGeneratorTileEntity() {
-		this(Tier.BASIC);
+	public SolarGeneratorTileEntity(BlockPos pos, BlockState state) {
+		this(Tier.BASIC, pos, state);
 	}
 
-	public SolarGeneratorTileEntity(Tier tier) {
-		super(TileEntities.SOLAR_GENERATOR.getType());
+	public SolarGeneratorTileEntity(Tier tier, BlockPos pos, BlockState state) {
+		super(TileEntities.SOLAR_GENERATOR.getType(), pos, state);
 		setTier(tier);
 	}
 	
@@ -177,30 +178,30 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 	
 	@Override
-	public void load(BlockState blockState, CompoundNBT compound) {
-		super.load(blockState, compound);
+	public void load(CompoundTag compound) {
+		super.load(compound);
 		int tierValue = compound.getInt(NBT.TIER);
 		Tier tier =  Tier.values()[tierValue];
 		setTier(tier);
 	}
 
 	@Override
-	public CompoundNBT save(CompoundNBT compound) {
+	public CompoundTag save(CompoundTag compound) {
 		compound = super.save(compound);
 		compound.putInt(NBT.TIER, tier.ordinal());
 		return compound;
 	}
 	
 	@Override
-	public CompoundNBT getUpdateTag() {
-		CompoundNBT nbt =  super.getUpdateTag();
+	public CompoundTag getUpdateTag() {
+		CompoundTag nbt =  super.getUpdateTag();
 		nbt.putInt(NBT.TIER, tier.ordinal());
 		return nbt;
 	}
 	
 	@Override
-	public void handleUpdateTag(BlockState blockState, CompoundNBT tag) {
-		super.handleUpdateTag(blockState, tag);
+	public void handleUpdateTag(CompoundTag tag) {
+		super.handleUpdateTag(tag);
 		Tier tier =  Tier.values()[tag.getInt(NBT.TIER)];
 		setTier(tier);
 	}

@@ -2,7 +2,7 @@ package paulojjj.solarenergy.networks;
 
 import java.util.Set;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraftforge.energy.IEnergyStorage;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 

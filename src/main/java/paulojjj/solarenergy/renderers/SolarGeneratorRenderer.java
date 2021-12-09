@@ -1,48 +1,47 @@
 package paulojjj.solarenergy.renderers;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.registry.Textures;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 @OnlyIn(Dist.CLIENT)
-public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTileEntity> {
+public class SolarGeneratorRenderer implements BlockEntityRenderer<SolarGeneratorTileEntity> {
 	
 	public static final Direction[] HORIZONTALS = new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
 
-	public SolarGeneratorRenderer(TileEntityRendererDispatcher dispatcher) {
-		super(dispatcher);
+	public SolarGeneratorRenderer(BlockEntityRendererProvider.Context context) {
 	}
 
 	private static TextureAtlasSprite SIDES_TEXTURE;
 	
 	@Override
-	public void render(SolarGeneratorTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+	public void render(SolarGeneratorTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
 		if(SIDES_TEXTURE == null) {
 			SIDES_TEXTURE = Textures.SOLAR_GENERATOR_SIDE.getSprite();
 		}
 		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)tile;
 		matrixStack.pushPose();
 		
-		IVertexBuilder builder = buffer.getBuffer(RenderType.leash());
+		VertexConsumer builder = buffer.getBuffer(RenderType.leash());
 		
 		BlockPos pos = tile.getBlockPos();
-		AxisAlignedBB bb = te.getRenderBoundingBox();
+		AABB bb = te.getRenderBoundingBox();
 		float height = (float)(bb.maxY - bb.minY);
 		
 		for(Direction facing : HORIZONTALS) {
@@ -56,7 +55,7 @@ public class SolarGeneratorRenderer extends TileEntityRenderer<SolarGeneratorTil
 			if(shape.isEmpty()) {
 				continue;
 			}
-			AxisAlignedBB bbNeighbor = shape.bounds();
+			AABB bbNeighbor = shape.bounds();
 			if(bs.canOcclude() ||  bs.isRedstoneConductor(te.getLevel(), neighborPos) || bbNeighbor.maxY <= height) {
 				continue;
 			}

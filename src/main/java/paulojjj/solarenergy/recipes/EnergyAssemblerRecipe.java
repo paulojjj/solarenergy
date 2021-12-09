@@ -1,7 +1,7 @@
 package paulojjj.solarenergy.recipes;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class EnergyAssemblerRecipe {
 	

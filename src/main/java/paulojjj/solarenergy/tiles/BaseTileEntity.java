@@ -3,37 +3,43 @@ package paulojjj.solarenergy.tiles;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import paulojjj.solarenergy.net.PacketManager;
 
-public abstract class BaseTileEntity extends TileEntity implements ITickableTileEntity {
+public abstract class BaseTileEntity extends BlockEntity {
 	
-	public BaseTileEntity(TileEntityType<?> tileEntityTypeIn) {
-		super(tileEntityTypeIn);
+	public BaseTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+		super(tileEntityTypeIn, pos, state);
 	}
 
-	private Set<PlayerEntity> playersUsing = new HashSet<>();
+	private Set<Player> playersUsing = new HashSet<>();
 
-	public void onContainerOpened(PlayerEntity player) {
+	public void onContainerOpened(Player player) {
 		if(!level.isClientSide) {
 			playersUsing.add(player);
 		}
 	}
 
-	public void onContainerClosed(PlayerEntity player) {
+	public void onContainerClosed(Player player) {
 		if(!level.isClientSide) {
 			playersUsing.remove(player);
 		}
 	}
 	
-	@Override
+	public static void tick(Level level, BlockPos pos, BlockState state, BlockEntity tileEntity) {
+		BaseTileEntity te = (BaseTileEntity)tileEntity;
+		te.tick();
+	}
+	
 	public void tick() {
-		for(PlayerEntity player : playersUsing) {
-			PacketManager.sendContainerUpdateMessage((ServerPlayerEntity)player, getContainerUpdateMessage());
+		for(Player player : playersUsing) {
+			PacketManager.sendContainerUpdateMessage((ServerPlayer)player, getContainerUpdateMessage());
 		}
 	}
 	

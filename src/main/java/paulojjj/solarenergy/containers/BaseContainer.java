@@ -1,20 +1,20 @@
 package paulojjj.solarenergy.containers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import paulojjj.solarenergy.tiles.BaseTileEntity;
 
-public abstract class BaseContainer<T extends Container> extends Container {
+public abstract class BaseContainer<T extends AbstractContainerMenu> extends AbstractContainerMenu {
 	
-	private PlayerInventory playerInventory;
+	private Inventory playerInventory;
 	private BaseTileEntity tileEntity;
 	
-	public BaseContainer(ContainerType<?> type, int id, PlayerInventory inventory, PacketBuffer data) {
+	public BaseContainer(MenuType<?> type, int id, Inventory inventory, FriendlyByteBuf data) {
 		super(type, id);
 		this.playerInventory = inventory;
 		if(data != null) {
@@ -23,12 +23,12 @@ public abstract class BaseContainer<T extends Container> extends Container {
 		}
 	}
 	
-	public BaseContainer(ContainerType<?> type, int id, PlayerInventory inventory) {
+	public BaseContainer(MenuType<?> type, int id, Inventory inventory) {
 		this(type, id, inventory, null);
 	}
 	
 	
-	public PlayerInventory getPlayerInventory() {
+	public Inventory getPlayerInventory() {
 		return playerInventory;
 	}
 	
@@ -37,7 +37,7 @@ public abstract class BaseContainer<T extends Container> extends Container {
 	}
 
 	@Override
-	public void removed(PlayerEntity playerIn) {
+	public void removed(Player playerIn) {
 		super.removed(playerIn);
 		if(tileEntity != null) {
 			tileEntity.onContainerClosed(playerIn);
@@ -45,7 +45,7 @@ public abstract class BaseContainer<T extends Container> extends Container {
 	}
 	
 	protected void setPos(BlockPos pos) {
-		World world = playerInventory.player.level;
+		Level world = playerInventory.player.level;
 		tileEntity = (BaseTileEntity)world.getBlockEntity(pos);
 		tileEntity.onContainerOpened(playerInventory.player);
 	}

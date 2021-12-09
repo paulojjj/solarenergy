@@ -1,10 +1,11 @@
 package paulojjj.solarenergy.tiles;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -20,12 +21,12 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 
 	private Tier tier;
 
-	public BatteryTileEntity() {
-		this(Tier.BASIC);
+	public BatteryTileEntity(BlockPos pos, BlockState state) {
+		this(Tier.BASIC, pos, state);
 	}
 
-	public BatteryTileEntity(Tier tier) {
-		super(TileEntities.BATTERY.getType());
+	public BatteryTileEntity(Tier tier, BlockPos pos, BlockState state) {
+		super(TileEntities.BATTERY.getType(), pos, state);
 		setTier(tier);
 	}
 
@@ -94,8 +95,8 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	@Override
-	public void load(BlockState blockState, CompoundNBT compound) {
-		super.load(blockState, compound);
+	public void load(CompoundTag compound) {
+		super.load(compound);
 		int tierValue = compound.getInt(NBT.TIER);
 		energy = compound.getDouble(NBT.ENERGY);
 		Tier tier =  Tier.values()[tierValue];
@@ -103,7 +104,7 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	@Override
-	public CompoundNBT save(CompoundNBT compound) {
+	public CompoundTag save(CompoundTag compound) {
 		compound = super.save(compound);
 		compound.putInt(NBT.TIER, tier.ordinal());
 		compound.putDouble(NBT.ENERGY, energy);
@@ -111,9 +112,9 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
 		super.onDataPacket(net, pkt);
-		handleUpdateTag(getBlockState(), pkt.getTag());
+		handleUpdateTag(pkt.getTag());
 	}
 	
 	@Override

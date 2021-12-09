@@ -1,26 +1,25 @@
 package paulojjj.solarenergy.renderers;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
 
-public class EnergyAssemblerRenderer extends TileEntityRenderer<EnergyAssemblerTileEntity> {
+public class EnergyAssemblerRenderer implements BlockEntityRenderer<EnergyAssemblerTileEntity> {
 	
-	public EnergyAssemblerRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-		super(rendererDispatcherIn);
+	public EnergyAssemblerRenderer(BlockEntityRendererProvider.Context context) {
 	}
 
 	@Override
-	public void render(EnergyAssemblerTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+	public void render(EnergyAssemblerTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
 		Item item = tile.getResultItem();
 		if(item == null || item == Items.AIR) {
 			return;
@@ -39,7 +38,7 @@ public class EnergyAssemblerRenderer extends TileEntityRenderer<EnergyAssemblerT
 			matrixStack.mulPose(Vector3f.YP.rotationDegrees(-angle));
 		}
 		
-		Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), TransformType.NONE, combinedLight, combinedOverlay, matrixStack, buffer);
+		Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), TransformType.NONE, combinedLight, combinedOverlay, matrixStack, buffer, 0);
 		
 		matrixStack.popPose();
 	}

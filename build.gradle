@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "${project.fgversion}", changing: true
     }
 }
 
@@ -26,7 +26,7 @@ version = "${version}"
 group = "paulojjj.solarenergy"
 archivesBaseName = "solarenergy-${project.mcversion}"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -83,7 +83,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'solarenergy', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 solarenergy {
@@ -93,6 +93,8 @@ minecraft {
         }
     }
 }
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
@@ -164,7 +166,8 @@ publishing {
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
-
+	duplicatesStrategy = 'warn'
+	//duplicatesStrategy = 'include'
     // replace stuff in mods.toml, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'META-INF/mods.toml'

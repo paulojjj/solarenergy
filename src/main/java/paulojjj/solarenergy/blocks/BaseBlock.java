@@ -5,33 +5,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.loot.LootContext.Builder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootContext.Builder;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
 import paulojjj.solarenergy.gui.GuiHandler;
 import paulojjj.solarenergy.registry.Containers;
-import net.minecraft.loot.LootParameters;
+import paulojjj.solarenergy.tiles.BaseTileEntity;
 
-public class BaseBlock extends Block {
+public class BaseBlock extends Block implements EntityBlock {
 	
 	private Containers guiContainer;
-	private Function<Void, ? extends TileEntity> createTileEntity;
-	private BiConsumer<List<ItemStack>, TileEntity> getDrops;
-	private BlockRenderType blockRenderType = BlockRenderType.MODEL;
+	private BiFunction<BlockPos, BlockState, ? extends BlockEntity> createTileEntity;
+	private BiConsumer<List<ItemStack>, BlockEntity> getDrops;
+	private RenderShape blockRenderType = RenderShape.MODEL;
 	private RenderLayer renderLayer;
 	
 	private List<Property<?>> properties;
@@ -71,12 +75,12 @@ public class BaseBlock extends Block {
 	public interface ConfigBuilder {
 		public <T extends Comparable<T>, V extends T> ConfigBuilder property(Property<T> property);
 		
-		public ConfigBuilder renderType(BlockRenderType value);
+		public ConfigBuilder renderType(RenderShape value);
 		public ConfigBuilder renderLayer(RenderLayer value);
 		
 		public ConfigBuilder guiContainer(Containers value);
-		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value);
-		public ConfigBuilder getDrops(BiConsumer<List<ItemStack>, TileEntity> value);
+		public ConfigBuilder createTileEntity(BiFunction<BlockPos, BlockState, ? extends BlockEntity> value);
+		public ConfigBuilder getDrops(BiConsumer<List<ItemStack>, BlockEntity> value);
 		
 		public void init();
 	}
@@ -151,19 +155,19 @@ public class BaseBlock extends Block {
 		}
 
 		@Override
-		public ConfigBuilder createTileEntity(Function<Void, ? extends TileEntity> value) {
+		public ConfigBuilder createTileEntity(BiFunction<BlockPos, BlockState, ? extends BlockEntity> value) {
 		block.createTileEntity = value;
 			return this;
 		}
 
 		@Override
-		public ConfigBuilder getDrops(BiConsumer<List<ItemStack>, TileEntity> value) {
+		public ConfigBuilder getDrops(BiConsumer<List<ItemStack>, BlockEntity> value) {
 			block.getDrops = value;
 			return this;
 		}
 
 		@Override
-		public ConfigBuilder renderType(BlockRenderType value) {
+		public ConfigBuilder renderType(RenderShape value) {
 			block.blockRenderType = value;
 			return this;
 		}
@@ -177,29 +181,15 @@ public class BaseBlock extends Block {
 	}
 	
 	@Override
-	public ActionResultType use(BlockState state, World worldIn, BlockPos pos,
-			PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos,
+			Player player, InteractionHand handIn, BlockHitResult hit) {
 		if(worldIn.isClientSide || guiContainer == null) {
-			return ActionResultType.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 		GuiHandler.openGui(player, worldIn, guiContainer, pos);
-		return ActionResultType.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 		
-	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return createTileEntity != null;
-	}
-	
-	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		if(createTileEntity != null) {
-			TileEntity te = createTileEntity.apply(null); 
-			return te;
-		}
-		return super.createTileEntity(state, world);
-	}
-	
 	@Override
 	@Deprecated
 	public List<ItemStack> getDrops(BlockState state, Builder builder) {
@@ -209,24 +199,35 @@ public class BaseBlock extends Block {
 			stacks.add(new ItemStack(this));
 		}
 		if(getDrops != null) {
-			TileEntity te = builder.getOptionalParameter(LootParameters.BLOCK_ENTITY);
+			BlockEntity te = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 			getDrops.accept(stacks, te);
 		}
 		return stacks;
 	}
 	
 	@Override
-	public BlockRenderType getRenderShape(BlockState state) {
+	public RenderShape getRenderShape(BlockState state) {
 		return blockRenderType;
 	}
 	
 	@Override
-	protected void createBlockStateDefinition(net.minecraft.state.StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
 		if(properties != null) {
 			for(Property<?> p : properties) {
 				builder.add(p);
 			}
 		}
+	}
+
+	@Override
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+			return createTileEntity.apply(pos, state);
+	}
+	
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+			BlockEntityType<T> type) {
+		return BaseTileEntity::tick;
 	}
 	
 }

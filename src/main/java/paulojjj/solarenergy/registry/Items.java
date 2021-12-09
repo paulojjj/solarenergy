@@ -1,6 +1,6 @@
 package paulojjj.solarenergy.registry;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.ModCreativeTab;
 

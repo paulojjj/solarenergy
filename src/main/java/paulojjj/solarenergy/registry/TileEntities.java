@@ -2,11 +2,10 @@ package paulojjj.solarenergy.registry;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-import net.minecraft.block.Block;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
 import paulojjj.solarenergy.tiles.EnergyAssemblerTileEntity;
@@ -19,22 +18,22 @@ public enum TileEntities {
 	ENERGY_ASSEMBLER("energy_assembler_tile_entity", EnergyAssemblerTileEntity::new, Blocks.ENERGY_ASSEMBLER),
 	ENERGY_CABLE("energy_cable_tile_entity", EnergyCableTileEntity::new, Blocks.ENERGY_CABLE);
 	
-	private TileEntityType<?> type;
+	private BlockEntityType<?> type;
 	
-	TileEntities(String registryName, Supplier<TileEntity> supplier, Blocks... blocks) {
+	TileEntities(String registryName, BlockEntityType.BlockEntitySupplier<BlockEntity> supplier, Blocks... blocks) {
 		
 		List<Block> validBlocks = new ArrayList<>();
 		for(Blocks block : blocks) {
 			validBlocks.add(block.getItemBlock().getBlock());
 		}
 		
-		this.type = TileEntityType.Builder.<TileEntity>of(supplier, validBlocks.toArray(new Block[0])).build(null);
+		this.type = BlockEntityType.Builder.<BlockEntity>of(supplier, validBlocks.toArray(new Block[0])).build(null);
 		this.type.setRegistryName(Main.MODID, registryName);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends TileEntity> TileEntityType<T> getType() {
-		return (TileEntityType<T>)type;
+	public <T extends BlockEntity> BlockEntityType<T> getType() {
+		return (BlockEntityType<T>)type;
 	}
 	
 }

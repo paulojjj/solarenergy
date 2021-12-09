@@ -1,8 +1,8 @@
 package paulojjj.solarenergy.registry;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.blocks.BatteryItemBlock;
