@@ -23,12 +23,38 @@ import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 public class SolarGeneratorRenderer implements BlockEntityRenderer<SolarGeneratorTileEntity> {
 	
 	public static final Direction[] HORIZONTALS = new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
+	public static final Direction[] ALL = new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN};
 
 
 	public SolarGeneratorRenderer(BlockEntityRendererProvider.Context context) {
 	}
 
 	private static TextureAtlasSprite SIDES_TEXTURE;
+	
+	//Cube depth
+	private static final float DEPTH = 0.05f;
+	
+	public enum ConnectorBoxes {
+		
+		NORTH(new AABB(0, 0, 0, 1, 1, DEPTH)),
+		SOUTH(new AABB(0, 0, 1-DEPTH, 1, 1, 1)),
+		WEST(new AABB(0, 0, 0, DEPTH, 1, 1)),
+		EAST(new AABB(1-DEPTH, 0, 0, 1, 1, 1));
+
+		private AABB bb;
+
+		private ConnectorBoxes(AABB bb) {
+			this.bb = bb;
+		}
+
+		public AABB getBoundingBox() {
+			return bb;
+		}
+
+		public static ConnectorBoxes getBox(Direction facing) {
+			return ConnectorBoxes.values()[facing.ordinal()];
+		}
+	}
 	
 	@Override
 	public void render(SolarGeneratorTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
@@ -38,7 +64,7 @@ public class SolarGeneratorRenderer implements BlockEntityRenderer<SolarGenerato
 		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)tile;
 		matrixStack.pushPose();
 		
-		VertexConsumer builder = buffer.getBuffer(RenderType.leash());
+		VertexConsumer builder = buffer.getBuffer(RenderType.cutout());
 		
 		BlockPos pos = tile.getBlockPos();
 		AABB bb = te.getRenderBoundingBox();
@@ -60,10 +86,26 @@ public class SolarGeneratorRenderer implements BlockEntityRenderer<SolarGenerato
 				continue;
 			}
 
-			float maxY = (float)Math.min(1.0, bbNeighbor.maxY + 0.1);
+			AABB connectorBox = null;
+			
+			if(facing == Direction.NORTH) {
+				connectorBox = ConnectorBoxes.NORTH.bb;
+			}
+			else if(facing == Direction.SOUTH) {
+				connectorBox = ConnectorBoxes.SOUTH.bb;
+			}
+			else if(facing == Direction.EAST) {
+				connectorBox = ConnectorBoxes.EAST.bb;
+			}
+			else if(facing == Direction.WEST) {
+				connectorBox = ConnectorBoxes.WEST.bb;
+			}
 
-			Matrix4f matrix4f = matrixStack.last().pose();
-			Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, 0.001f, height, 0.001f, 0.999f, maxY, 0.999f, 0.3f, facing);
+			if(connectorBox != null) {
+				Matrix4f matrix4f = matrixStack.last().pose();
+				float maxY = (float)Math.min(1.0, bbNeighbor.maxY + 0.1);
+				Render.drawCubeFaces(matrix4f, builder, SIDES_TEXTURE, combinedLight, combinedOverlay, (float)connectorBox.minX, height, (float)connectorBox.minZ, (float)connectorBox.maxX, maxY, (float)connectorBox.maxZ, 0.5f, ALL);
+			}
 		}
 
 		matrixStack.popPose();	
