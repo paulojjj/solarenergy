@@ -21,7 +21,4 @@
 /run
 /crash-reports
 /servers.dat
-/gradle
 /gradle.bat
-/gradlew.bat
-/gradlew
