@@ -104,11 +104,10 @@ public class BatteryTileEntity extends EnergyNetworkTileEntity implements IUltra
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
-		compound = super.save(compound);
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		compound.putInt(NBT.TIER, tier.ordinal());
 		compound.putDouble(NBT.ENERGY, energy);
-		return compound;
 	}
 
 	@Override

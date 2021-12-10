@@ -127,11 +127,10 @@ public abstract class EnergyStorageTileEntity extends BaseTileEntity implements 
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
-		compound = super.save(compound);
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		compound.putDouble(NBT.ENERGY, energy);
 		compound.putDouble(NBT.MAX_ENERGY, maxEnergy);
-		return compound;
 	}
 
 	@Override

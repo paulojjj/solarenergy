@@ -137,14 +137,13 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 	}
 	
 	@Override
-	public CompoundTag save(CompoundTag compound) {
-		compound = super.save(compound);
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		CompoundTag itemCompound = new CompoundTag();
 		ItemStack stack = assemblingItem == null ? ItemStack.EMPTY : new ItemStack(assemblingItem, 1);
 		stack.save(itemCompound);
 		compound.put(NBT.ASSEMBLING_ITEM, itemCompound);
 		compound.put(NBT.INVENTORY, itemHandler.serializeNBT());
-		return compound;
 	}
 	
 	protected Optional<EnergyAssemblerRecipe> getRecipe(Item input) {

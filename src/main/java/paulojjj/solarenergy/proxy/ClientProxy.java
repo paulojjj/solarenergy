@@ -70,7 +70,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	private void registerTextures(TextureStitchEvent.Pre evt) {
-		if (!evt.getMap().location().equals(InventoryMenu.BLOCK_ATLAS)) {
+		if (!evt.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
 			return;
 		}
 

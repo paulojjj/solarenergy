@@ -186,10 +186,9 @@ public class SolarGeneratorTileEntity extends EnergyNetworkTileEntity implements
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
-		compound = super.save(compound);
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		compound.putInt(NBT.TIER, tier.ordinal());
-		return compound;
 	}
 	
 	@Override

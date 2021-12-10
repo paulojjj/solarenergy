@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fmllegacy.network.IContainerFactory;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.network.IContainerFactory;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.containers.BaseContainer;
 import paulojjj.solarenergy.containers.BatteryContainer;
@@ -29,7 +29,7 @@ public enum Containers {
 	private MenuType<?> type;
 
 	<T extends AbstractContainerMenu> Containers(String registryName, IContainerFactory<T> supplier) {
-		this.type = IForgeContainerType.<T>create(supplier);
+		this.type = IForgeMenuType.<T>create(supplier);
 		this.type.setRegistryName(Main.MODID, registryName);
 	}
 

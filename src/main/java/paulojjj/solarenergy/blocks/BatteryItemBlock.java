@@ -4,13 +4,14 @@ import java.util.List;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
@@ -18,10 +19,9 @@ import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.NBT;
 import paulojjj.solarenergy.Tier;
 import paulojjj.solarenergy.tiles.BatteryTileEntity;
-import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class BatteryItemBlock extends BlockItem {
-	
+
 	public BatteryItemBlock(Tier tier) {
 		super(new Battery(tier), new Item.Properties().tab(ModCreativeTab.getInstance()));
 	}
@@ -47,21 +47,32 @@ public class BatteryItemBlock extends BlockItem {
 		tooltip.add(new TextComponent(strEnergy));
 		tooltip.add(new TextComponent(strCapacity));
 	}
-	
+
 	@Override
-	public boolean showDurabilityBar(ItemStack stack) {
+	public boolean isBarVisible(ItemStack stack) {
 		return stack.getTag() != null;
 	}
 	
-	@Override
-	public double getDurabilityForDisplay(ItemStack stack) {
+	protected float getChargePercent(ItemStack stack) {
 		CompoundTag nbt = stack.getTag();
-		if(nbt != null) {
-			double energy = nbt.getDouble(NBT.ENERGY);
-			double capacity = nbt.getDouble(NBT.MAX_ENERGY);
-			return 1 - (energy/capacity);
+		if(nbt == null) {
+			return 0;
 		}
-		return super.getDurabilityForDisplay(stack);
-	}	
-	
+		
+		double energy = nbt.getDouble(NBT.ENERGY);
+		double capacity = nbt.getDouble(NBT.MAX_ENERGY);
+		return (float)(energy/capacity);
+	}
+
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		int pixels = Math.round(13*getChargePercent(stack));
+		return pixels;
+	}
+
+	public int getBarColor(ItemStack stack) {
+		return Mth.hsvToRgb(getChargePercent(stack) / 3.0F, 1.0F, 1.0F);
+	}
+
+
 }
