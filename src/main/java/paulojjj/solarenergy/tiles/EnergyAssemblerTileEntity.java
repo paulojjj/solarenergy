@@ -132,7 +132,10 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		super.load(compound);
 		ItemStack stack = ItemStack.of((CompoundNBT)compound.get(NBT.ASSEMBLING_ITEM));
 		assemblingItem = stack == ItemStack.EMPTY ? null : stack.getItem();
-		itemHandler.deserializeNBT((CompoundNBT)compound.get(NBT.INVENTORY));
+		CompoundNBT inventory = (CompoundNBT)compound.get(NBT.INVENTORY);
+		if(inventory != null) {
+			itemHandler.deserializeNBT(inventory);
+		}
 	}
 	
 	@Override
