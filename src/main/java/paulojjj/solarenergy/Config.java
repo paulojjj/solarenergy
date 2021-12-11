@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 
 import com.google.common.base.CaseFormat;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -78,11 +77,11 @@ public class Config {
 	}
 
 	private Property getProduceWhileRainingProperty() {
-		return configuration.get(SOLAR_GENERATOR_CATEGORY, "generatesWhileRaining", true, I18n.format("config.comment.generatesWhileRaining"));
+		return configuration.get(SOLAR_GENERATOR_CATEGORY, "generatesWhileRaining", true, "Keeps generating energy when it's raining");
 	}
 	
 	private Property getRealisticGenerationProperty() {
-		return configuration.get(SOLAR_GENERATOR_CATEGORY, "realisticGeneration", false, I18n.format("config.comment.realisticGeneration"));
+		return configuration.get(SOLAR_GENERATOR_CATEGORY, "realisticGeneration", false, "Enables realistic energy generation (which varies with available sunlight)");
 	}
 	
 	private String getSolarGeneratorMultiplierPropertyKey(Tier tier) {
