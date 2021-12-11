@@ -135,7 +135,10 @@ public class EnergyAssemblerTileEntity extends EnergyStorageTileEntity implement
 		super.readFromNBT(compound);
 		ItemStack stack = new ItemStack(compound.getCompoundTag(NBT.ASSEMBLING_ITEM));
 		assemblingItem = stack == ItemStack.EMPTY ? null : stack.getItem();
-		itemHandler.deserializeNBT(compound.getCompoundTag(NBT.INVENTORY));
+		NBTTagCompound inventory = (NBTTagCompound)compound.getCompoundTag(NBT.INVENTORY);
+		if(inventory != null) {
+			itemHandler.deserializeNBT(inventory);
+		}
 	}
 	
 	@Override
