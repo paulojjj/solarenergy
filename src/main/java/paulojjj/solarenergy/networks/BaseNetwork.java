@@ -45,6 +45,8 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 	protected double energyOutput = 0;
 	
 	protected long lastUpdatedTick = 0;
+	
+	protected boolean sending = false;
 
 	ReentrantLock lock = new ReentrantLock();
 
@@ -415,12 +417,24 @@ public abstract class BaseNetwork<T extends TileEntity & INetworkMember> impleme
 		}
 		
 		int maxEnergyInt = (int)Math.min(Integer.MAX_VALUE, maxEnergy);
+		
+		if(sending) {
+			return 0;
+		}
+		sending = true;
 		int sent = consumer.receiveEnergy(maxEnergyInt, simulate);
+		sending = false;
+		
 		return sent;
 	}
 
 	double sendEnergy(IUltraEnergyStorage consumer, double maxEnergy, boolean simulate) {
+		if(sending) {
+			return 0;
+		}
+		sending = true;
 		double sent = consumer.receiveUltraEnergy(maxEnergy, simulate);
+		sending = false;
 		if(sent == 0) {
 			return 0;
 		}
