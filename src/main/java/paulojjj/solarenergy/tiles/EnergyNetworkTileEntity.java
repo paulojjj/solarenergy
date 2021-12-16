@@ -161,7 +161,9 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 			}
 			updateClientTileEntity();			
 
-			network.onNeighborChanged(this, neighborPos);
+			if(network != null) {
+				network.onNeighborChanged(this, neighborPos);
+			}
 		}
 	}
 
