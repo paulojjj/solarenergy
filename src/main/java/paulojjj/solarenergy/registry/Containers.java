@@ -12,12 +12,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.network.IContainerFactory;
-import paulojjj.solarenergy.Main;
+import net.minecraftforge.registries.RegistryObject;
 import paulojjj.solarenergy.containers.BaseContainer;
 import paulojjj.solarenergy.containers.BatteryContainer;
 import paulojjj.solarenergy.containers.EnergyAssemblerContainer;
 import paulojjj.solarenergy.containers.EnergyCableContainer;
 import paulojjj.solarenergy.containers.SolarGeneratorContainer;
+import paulojjj.solarenergy.proxy.CommonProxy;
 
 public enum Containers {
 	
@@ -26,16 +27,15 @@ public enum Containers {
 	BATTERY("battery_container", BatteryContainer::new),
 	ENERGY_CABLE("energy_cable_container", EnergyCableContainer::new);
 	
-	private MenuType<?> type;
+	private RegistryObject<MenuType<?>> type;
 
 	<T extends AbstractContainerMenu> Containers(String registryName, IContainerFactory<T> supplier) {
-		this.type = IForgeMenuType.<T>create(supplier);
-		this.type.setRegistryName(Main.MODID, registryName);
+		this.type = CommonProxy.CONTAINERS.register(registryName, () -> IForgeMenuType.<T>create(supplier));
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractContainerMenu> MenuType<T> getType() {
-		return (MenuType<T>)type;
+		return (MenuType<T>)type.get();
 	}
 	
 	public static class ContainerFactory<T extends BaseContainer<T>> implements MenuProvider, IContainerFactory<T> {

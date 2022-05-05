@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.gui.EnergyAssemblerGui;
 import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
-import paulojjj.solarenergy.registry.Blocks;
+import paulojjj.solarenergy.registry.Items;
 
 public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerRecipe> {
 
@@ -35,7 +35,7 @@ public class EnergyAssemblerCategory implements IRecipeCategory<EnergyAssemblerR
 		this.guiHelper = guiHelper;
 		IDrawableStatic gauge = guiHelper.createDrawable(EnergyAssemblerGui.ASSET_RESOURCE, 176, 0, 11, 23);
 		this.gauge = guiHelper.createAnimatedDrawable(gauge, 40, StartDirection.TOP, false);
-		this.icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.BASIC_SOLAR_GENERATOR.getItemBlock()));
+		this.icon = guiHelper.createDrawableIngredient(new ItemStack(Items.BASIC_SOLAR_GENERATOR.getItem()));
 	}
 	
 	@Override

@@ -1,9 +1,14 @@
 package paulojjj.solarenergy.proxy;
 
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.TickHandler;
 import paulojjj.solarenergy.registry.Blocks;
 import paulojjj.solarenergy.registry.Containers;
@@ -12,43 +17,26 @@ import paulojjj.solarenergy.registry.TileEntities;
 
 public class CommonProxy implements Proxy {
 	
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Main.MODID);
+	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Main.MODID);
+	public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Main.MODID);
+	public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Main.MODID);
+	
 	public void init() {
 		
 	}
 	
 	@Override
 	public void registerAssets() {
-		for(Blocks blocks : Blocks.values()) {
-			registerBlock(blocks.getItemBlock());
-		}
-		for(Items item : Items.values()) {
-			registerItem(item);
-		}
-		for(TileEntities tile : TileEntities.values()) {
-			registerTileEntity(tile);
-		}
-		for(Containers container : Containers.values()) {
-			registerContainer(container);
-		}
-	}
-	
-	public void registerBlock(BlockItem ib) {
-		Block block = ib.getBlock();
+		ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		TILE_ENTITY_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
-		ForgeRegistries.BLOCKS.register(block);
-		ForgeRegistries.ITEMS.register(ib);
-	}
-	
-	public void registerItem(Items item) {
-		ForgeRegistries.ITEMS.register(item.getItem());		
-	}
-
-	public void registerTileEntity(TileEntities tile) {
-		ForgeRegistries.BLOCK_ENTITIES.register(tile.getType());
-	}
-	
-	public void registerContainer(Containers container) {
-		ForgeRegistries.CONTAINERS.register(container.getType());
+		Items.values();
+		Blocks.values();
+		Containers.values();
+		TileEntities.values();
 	}
 	
 	@Override

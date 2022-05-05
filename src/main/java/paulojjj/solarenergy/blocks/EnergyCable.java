@@ -3,23 +3,23 @@ package paulojjj.solarenergy.blocks;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import paulojjj.solarenergy.registry.Blocks;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import paulojjj.solarenergy.registry.Containers;
+import paulojjj.solarenergy.registry.Items;
 import paulojjj.solarenergy.tiles.EnergyCableTileEntity;
 
 public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
@@ -101,7 +101,7 @@ public class EnergyCable extends EnergyNetworkBlock<EnergyCableTileEntity> {
 	@Override
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player,
 			InteractionHand handIn, BlockHitResult hit) {
-		if(player.getMainHandItem().getItem() == Blocks.ENERGY_CABLE.getItemBlock()) {
+		if(player.getMainHandItem().getItem() == Items.ENERGY_CABLE.getItem()) {
 			return InteractionResult.PASS;
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);

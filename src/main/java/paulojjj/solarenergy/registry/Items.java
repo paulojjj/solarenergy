@@ -1,8 +1,15 @@
 package paulojjj.solarenergy.registry;
 
+import java.util.function.Supplier;
+
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import paulojjj.solarenergy.Main;
+import net.minecraftforge.registries.RegistryObject;
 import paulojjj.solarenergy.ModCreativeTab;
+import paulojjj.solarenergy.Tier;
+import paulojjj.solarenergy.blocks.BatteryItemBlock;
+import paulojjj.solarenergy.blocks.SolarGeneratorItemBlock;
+import paulojjj.solarenergy.proxy.CommonProxy;
 
 public enum Items {
 	BASIC_ENERGY_CORE("basic_energy_core"),
@@ -34,39 +41,71 @@ public enum Items {
 	INTERMEDIATE_DENSE_BATTERY_CELL("intermediate_dense_battery_cell"),
 	ADVANCED_DENSE_BATTERY_CELL("advanced_dense_battery_cell"),
 	ELITE_DENSE_BATTERY_CELL("elite_dense_battery_cell"),
-	ULTIMATE_DENSE_BATTERY_CELL("ultimate_dense_battery_cell"),
-	LEAD_INGOT("ingots/lead", ItemType.FORGE_ORE_DICT);
+	ULTIMATE_DENSE_BATTERY_CELL("ultimate_dense_battery_cell"),	
+	LEAD_INGOT("ingots/lead", ItemType.FORGE_ORE_DICT),
+	
+	BASIC_SOLAR_GENERATOR("basic_solar_generator", () -> new SolarGeneratorItemBlock(Tier.BASIC)),
+	REGULAR_SOLAR_GENERATOR("regular_solar_generator", () -> new SolarGeneratorItemBlock(Tier.REGULAR)),
+	INTERMEDIATE_SOLAR_GENERATOR("intermediate_solar_generator", () -> new SolarGeneratorItemBlock(Tier.INTERMEDIATE)),
+	ADVANCED_SOLAR_GENERATOR("advanced_solar_generator", () -> new SolarGeneratorItemBlock(Tier.ADVANCED)),
+	ELITE_SOLAR_GENERATOR("elite_solar_generator", () -> new SolarGeneratorItemBlock(Tier.ELITE)),
+	ULTIMATE_SOLAR_GENERATOR("ultimate_solar_generator", () -> new SolarGeneratorItemBlock(Tier.ULTIMATE)),
+	BASIC_BATTERY("basic_battery", () -> new BatteryItemBlock(Tier.BASIC)),
+	REGULAR_BATTERY("regular_battery", () -> new BatteryItemBlock(Tier.REGULAR)),
+	INTERMEDIATE_BATTERY("intermediate_battery", () -> new BatteryItemBlock(Tier.INTERMEDIATE)),
+	ADVANCED_BATTERY("advanced_battery", () -> new BatteryItemBlock(Tier.ADVANCED)),
+	ELITE_BATTERY("elite_battery", () -> new BatteryItemBlock(Tier.ELITE)),
+	ULTIMATE_BATTERY("ultimate_battery", () -> new BatteryItemBlock(Tier.ULTIMATE)),
+	BASIC_DENSE_BATTERY("basic_dense_battery", () -> new BatteryItemBlock(Tier.BASIC_DENSE)),
+	REGULAR_DENSE_BATTERY("regular_dense_battery", () -> new BatteryItemBlock(Tier.REGULAR_DENSE)),
+	INTERMEDIATE_DENSE_BATTERY("intermediate_dense_battery", () -> new BatteryItemBlock(Tier.INTERMEDIATE_DENSE)),
+	ADVANCED_DENSE_BATTERY("advanced_dense_battery", () -> new BatteryItemBlock(Tier.ADVANCED_DENSE)),
+	ELITE_DENSE_BATTERY("elite_dense_battery", () -> new BatteryItemBlock(Tier.ELITE_DENSE)),
+	ULTIMATE_DENSE_BATTERY("ultimate_dense_battery", () -> new BatteryItemBlock(Tier.ULTIMATE_DENSE)),
+	ENERGY_ASSEMBLER("energy_assembler", Blocks.ENERGY_ASSEMBLER),
+	ENERGY_CABLE("energy_cable", Blocks.ENERGY_CABLE);
+	
 
 	public enum ItemType {
 		NORMAL, FORGE_ORE_DICT;
 	}
 
-	private Item item;
+	private RegistryObject<Item> item;
 	private ItemType type;
 	private String registryName;
 
 	Items(String name, ItemType type) {
-		this(name, name, type);
+		this(name, name, type, null);
 	}
 	
 	Items(String name) {
-		this(name, name);
+		this(name, name, null);
 	}
 	
-	Items(String name, String registryName) {
-		this(name, registryName, ItemType.NORMAL);
+	Items(String name, Supplier<? extends Item> item) {
+		this(name, name, item);
+	}
+	
+	Items(String name, Blocks block) {
+		this(name, name, () -> new BlockItem(block.getBlock(), new Item.Properties().tab(ModCreativeTab.getInstance())));
+	}
+	
+	Items(String name, String registryName, Supplier<? extends Item> item) {
+		this(name, registryName, ItemType.NORMAL, item);
 	}
 
-	Items(String name, String registryName, ItemType type) {
-		Item item = new Item(new Item.Properties().tab(ModCreativeTab.getInstance()));
-		item.setRegistryName(Main.MODID, registryName);
-		this.item = item;
-		this.type = type;
-		this.registryName = registryName;
+	Items(String name, String registryName, ItemType type, Supplier<? extends Item> item) {
+		this.item = CommonProxy.ITEMS.register(registryName, () -> {
+			Item newItem = item == null ? new Item(new Item.Properties().tab(ModCreativeTab.getInstance())) : item.get();
+			this.type = type;
+			this.registryName = registryName;
+			
+			return newItem;
+		});
 	}
 
 	public Item getItem() {
-		return item;
+		return item.get();
 	}
 
 	public ItemType getType() {

@@ -40,7 +40,7 @@ public class Main {
 	{
 		proxy.registerHandlers();
 		
-		RecipeHandler.addEnergyAssemblerRecipe(Items.BASIC_ENERGY_CORE.getItem(), new ItemStack(Items.REGULAR_ENERGY_CORE.getItem(), 1), 100000);
+		/*RecipeHandler.addEnergyAssemblerRecipe(Items.BASIC_ENERGY_CORE.getItem(), new ItemStack(Items.REGULAR_ENERGY_CORE.getItem(), 1), 100000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.REGULAR_ENERGY_CORE.getItem(), new ItemStack(Items.INTERMEDIATE_ENERGY_CORE.getItem(), 1), 1000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.INTERMEDIATE_ENERGY_CORE.getItem(), new ItemStack(Items.ADVANCED_ENERGY_CORE.getItem(), 1), 10000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ADVANCED_ENERGY_CORE.getItem(), new ItemStack(Items.ELITE_ENERGY_CORE.getItem(), 1), 100000000);
@@ -51,7 +51,7 @@ public class Main {
 		RecipeHandler.addEnergyAssemblerRecipe(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.INTERMEDIATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.INTERMEDIATE_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ADVANCED_DENSE_ENERGY_CORE.getItem(), 1), 10000000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ADVANCED_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ELITE_DENSE_ENERGY_CORE.getItem(), 1), 100000000000000d);
-		RecipeHandler.addEnergyAssemblerRecipe(Items.ELITE_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ULTIMATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000000d);
+		RecipeHandler.addEnergyAssemblerRecipe(Items.ELITE_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.ULTIMATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000000d);*/
 		
 		PacketManager.init();
 	}

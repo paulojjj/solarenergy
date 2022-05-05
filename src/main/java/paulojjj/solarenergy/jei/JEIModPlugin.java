@@ -46,7 +46,7 @@ public class JEIModPlugin implements IModPlugin {
 	
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
-		registry.addRecipeCatalyst(new ItemStack(Blocks.ENERGY_ASSEMBLER.getItemBlock().getBlock()), ENERGY_ASSMBLER_UID);
+		registry.addRecipeCatalyst(new ItemStack(Blocks.ENERGY_ASSEMBLER.getBlock()), ENERGY_ASSMBLER_UID);
 	}
 
 	@Override

@@ -15,12 +15,13 @@ import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.ModCreativeTab;
 import paulojjj.solarenergy.Tier;
+import paulojjj.solarenergy.registry.Blocks;
 import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class SolarGeneratorItemBlock extends BlockItem {
 	
 	public SolarGeneratorItemBlock(Tier tier) {
-		super(new SolarGenerator(tier), new Item.Properties().tab(ModCreativeTab.getInstance()));
+		super(Blocks.getSolarGenerator(tier).getBlock(), new Item.Properties().tab(ModCreativeTab.getInstance()));
 	}
 	
 	@Override

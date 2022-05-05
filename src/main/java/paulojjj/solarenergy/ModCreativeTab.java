@@ -2,7 +2,7 @@ package paulojjj.solarenergy;
 
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import paulojjj.solarenergy.registry.Blocks;
+import paulojjj.solarenergy.registry.Items;
 
 public class ModCreativeTab extends CreativeModeTab {
 
@@ -21,6 +21,6 @@ public class ModCreativeTab extends CreativeModeTab {
 		
 		@Override
 		public ItemStack makeIcon() {
-			return new ItemStack(Blocks.BASIC_SOLAR_GENERATOR.getItemBlock(), 1);
+			return new ItemStack(Items.BASIC_SOLAR_GENERATOR.getItem(), 1);
 		}
 }
