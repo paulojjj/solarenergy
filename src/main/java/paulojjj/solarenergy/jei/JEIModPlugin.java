@@ -17,6 +17,7 @@ import paulojjj.solarenergy.Main;
 import paulojjj.solarenergy.recipes.EnergyAssemblerRecipe;
 import paulojjj.solarenergy.recipes.RecipeHandler;
 import paulojjj.solarenergy.registry.Blocks;
+import paulojjj.solarenergy.registry.Items;
 
 @JeiPlugin
 @OnlyIn(Dist.CLIENT)
