@@ -2,11 +2,9 @@ package paulojjj.solarenergy.registry;
 
 import java.util.function.Supplier;
 
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.RegistryObject;
 import paulojjj.solarenergy.Tier;
-import paulojjj.solarenergy.blocks.BaseBlock.RenderLayer;
 import paulojjj.solarenergy.blocks.Battery;
 import paulojjj.solarenergy.blocks.EnergyAssembler;
 import paulojjj.solarenergy.blocks.EnergyCable;
@@ -54,32 +52,6 @@ public enum Blocks {
 	
 	public Block getBlock() {
 		return block.get();
-	}
-	
-	protected RenderType getRenderType(RenderLayer renderLayer) {
-		switch(renderLayer) {
-			case CUTOUT:
-				return RenderType.cutout();
-			case CUTOUT_MIPPED:
-				return RenderType.cutoutMipped();
-			case TRANSLUCENT:
-				return RenderType.translucent();
-			case SOLID:
-			default:
-				return RenderType.solid();
-		}
-	}
-	
-	protected void setRenderLayer(Block block) {
-		/*DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> {
-			if(block instanceof BaseBlock) {
-				BaseBlock baseBlock = (BaseBlock) block;
-				if(baseBlock.getRenderLayer() != null) {
-					RenderType renderType = getRenderType(baseBlock.getRenderLayer());
-					ItemBlockRenderTypes.setRenderLayer(baseBlock, renderType);
-				}
-			}
-		});*/
 	}
 	
 	public static Blocks getSolarGenerator(Tier tier) {
