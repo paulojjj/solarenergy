@@ -6,7 +6,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -45,8 +44,8 @@ public class BatteryItemBlock extends BlockItem {
 		}
 		String strEnergy = String.format("%s: %s", I18n.get(Main.MODID + ".stored_energy"), EnergyFormatter.format(energy)); 
 		String strCapacity = String.format("%s: %s", I18n.get(Main.MODID + ".capacity"), EnergyFormatter.format(capacity)); 
-		tooltip.add(new TextComponent(strEnergy));
-		tooltip.add(new TextComponent(strCapacity));
+		tooltip.add(Component.literal(strEnergy));
+		tooltip.add(Component.literal(strCapacity));
 	}
 
 	@Override

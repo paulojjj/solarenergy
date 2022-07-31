@@ -1,6 +1,7 @@
 package paulojjj.solarenergy.jei;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -9,8 +10,8 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import paulojjj.solarenergy.Main;
@@ -40,20 +41,17 @@ public class JEIModPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registry) {
 		IModPlugin.super.registerRecipes(registry);
 		
-		Collection<EnergyAssemblerRecipe> recipes = RecipeHandler.getEnergyAssemblerRecipes().values();
-		
-		registry.addRecipes(recipes, ENERGY_ASSMBLER_UID);
+		List<EnergyAssemblerRecipe> recipes = new ArrayList<>(RecipeHandler.getEnergyAssemblerRecipes().values());
+		registry.addRecipes(RecipeTypes.ENERGY_ASSEMBLER, recipes);
 	}
 	
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
-		registry.addRecipeCatalyst(new ItemStack(Blocks.ENERGY_ASSEMBLER.getBlock()), ENERGY_ASSMBLER_UID);
+		registry.addRecipeCatalyst(new ItemStack(Blocks.ENERGY_ASSEMBLER.getBlock()), RecipeTypes.ENERGY_ASSEMBLER);
 	}
 
 	@Override
 	public ResourceLocation getPluginUid() {
 		return ID;
-	}
-	
-
+	}	
 }

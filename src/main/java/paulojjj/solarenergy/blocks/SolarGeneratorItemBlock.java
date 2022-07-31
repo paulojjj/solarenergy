@@ -9,7 +9,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import paulojjj.solarenergy.EnergyFormatter;
 import paulojjj.solarenergy.Main;
@@ -31,7 +30,7 @@ public class SolarGeneratorItemBlock extends BlockItem {
 		SolarGeneratorTileEntity te = (SolarGeneratorTileEntity)block.newBlockEntity(new BlockPos(0, 0, 0), block.defaultBlockState());
 		double production = te.getMaxProduction();
 		String str = String.format("%s: %s/t", I18n.get(Main.MODID + ".produces"), EnergyFormatter.format(production));
-		tooltip.add(new TextComponent(str));
+		tooltip.add(Component.literal(str));
 	}
 
 }

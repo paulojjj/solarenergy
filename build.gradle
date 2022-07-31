@@ -123,9 +123,10 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
   // compile against the JEI API but do not include it at runtime
-  compileOnly fg.deobf("mezz.jei:jei-${mcversion}:${jei_version}:api")
+  compileOnly fg.deobf("mezz.jei:jei-${mcversion}-common-api:${jei_version}")
+  compileOnly fg.deobf("mezz.jei:jei-${mcversion}-forge-api:${jei_version}")
   // at runtime, use the full JEI jar
-  runtimeOnly fg.deobf("mezz.jei:jei-${mcversion}:${jei_version}")
+  runtimeOnly fg.deobf("mezz.jei:jei-${mcversion}-forge:${jei_version}")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

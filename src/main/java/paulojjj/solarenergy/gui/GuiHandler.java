@@ -13,7 +13,7 @@ public class GuiHandler {
 		if(world.isClientSide) {
 			return true;
 		}
-        NetworkHooks.openGui((ServerPlayer) player, guiContainer.getContainerProvider(pos), pos);
+        NetworkHooks.openScreen((ServerPlayer) player, guiContainer.getContainerProvider(pos), pos);
 		return true;
 	}
 

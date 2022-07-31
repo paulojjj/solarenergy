@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -49,5 +50,9 @@ public abstract class BaseContainer<T extends AbstractContainerMenu> extends Abs
 		tileEntity = (BaseTileEntity)world.getBlockEntity(pos);
 		tileEntity.onContainerOpened(playerInventory.player);
 	}
-
+	
+	@Override
+	public ItemStack quickMoveStack(Player player, int slot) {
+		return this.slots.get(slot).getItem();
+	}
 }
