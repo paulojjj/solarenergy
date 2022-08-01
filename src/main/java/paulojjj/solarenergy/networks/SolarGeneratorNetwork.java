@@ -8,7 +8,7 @@ import paulojjj.solarenergy.tiles.SolarGeneratorTileEntity;
 
 public class SolarGeneratorNetwork extends BaseNetwork<SolarGeneratorTileEntity> {
 	
-	private static EnumFacing[] POSSIBLE_NEIGHBORS = new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST, EnumFacing.DOWN };
+	private static EnumFacing[] POSSIBLE_NEIGHBORS = new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST };
 	
 	public SolarGeneratorNetwork() {
 	}
