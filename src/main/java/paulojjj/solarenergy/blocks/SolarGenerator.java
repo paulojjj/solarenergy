@@ -40,4 +40,9 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 		return 1;
 	}
 	
+	@Override
+	public int getLightOpacity(IBlockState state, IBlockAccess world, BlockPos pos) {
+		return getLightOpacity(state);
+	}
+	
 }
