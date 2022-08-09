@@ -73,7 +73,7 @@ public class Config {
 	}
 	
 	private Property getLogLevelProperty() {
-		return configuration.get(DEFAULT_CATEGORY, "logLevel", "INFO");
+		return configuration.get(DEFAULT_CATEGORY, "logLevel", "WARN");
 	}
 
 	private Property getProduceWhileRainingProperty() {

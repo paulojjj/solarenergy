@@ -69,7 +69,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 	public void onLoad() {
 		super.onLoad();
 		if(!world.isRemote) {
-			Log.info("TileEntity Loaded: " + this);
+			Log.debug("TileEntity Loaded: " + this);
 			INetwork.newInstance((Class<INetwork<EnergyNetworkTileEntity>>)getNetworkClass(), this);
 
 			for(EnumFacing facing : EnumFacing.values()) {
@@ -119,7 +119,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		super.invalidate();
 		if(!world.isRemote) {
 			if(unloaded) {
-				Log.warn("Invalidating unloaded TileEntity: " + this);
+				Log.debug("Invalidating unloaded TileEntity: " + this);
 			}
 			if(!unloaded && network != null) {
 				network.onBlockRemoved(this);
@@ -167,7 +167,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 			if(neighborPos.equals(pos)) {
 				return;
 			}
-			Log.info(pos + " neighbor changed: " + neighborPos);
+			Log.debug(pos + " neighbor changed: " + neighborPos);
 			EnumFacing facing = getNeighborFacing(neighborPos);
 			IEnergyStorage storage = getNeighborStorage(facing);
 			synchronized(this) {
