@@ -45,7 +45,7 @@ public class Main {
 		RecipeHandler.addEnergyAssemblerRecipe(Items.INTERMEDIATE_ENERGY_CORE.getItem(), new ItemStack(Items.ADVANCED_ENERGY_CORE.getItem(), 1), 10000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ADVANCED_ENERGY_CORE.getItem(), new ItemStack(Items.ELITE_ENERGY_CORE.getItem(), 1), 100000000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ELITE_ENERGY_CORE.getItem(), new ItemStack(Items.ULTIMATE_ENERGY_CORE.getItem(), 1), 1000000000d);
-		RecipeHandler.addEnergyAssemblerRecipe(net.minecraft.item.Items.IRON_INGOT, new ItemStack(Items.LEAD_INGOT.getItem(), 1), 1000000);
+		RecipeHandler.addEnergyAssemblerRecipe(net.minecraft.item.Items.IRON_INGOT, new ItemStack(Items.LEAD_INGOT.getItem(), 1), 100000);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.ULTIMATE_ENERGY_CORE.getItem(), new ItemStack(Items.BASIC_DENSE_ENERGY_CORE.getItem(), 1), 10000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.BASIC_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), 1), 100000000000d);
 		RecipeHandler.addEnergyAssemblerRecipe(Items.REGULAR_DENSE_ENERGY_CORE.getItem(), new ItemStack(Items.INTERMEDIATE_DENSE_ENERGY_CORE.getItem(), 1), 1000000000000d);
