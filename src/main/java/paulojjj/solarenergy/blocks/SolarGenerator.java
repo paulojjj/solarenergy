@@ -37,5 +37,9 @@ public class SolarGenerator extends EnergyNetworkBlock<SolarGeneratorTileEntity>
 			CollisionContext context) {
 		return getShape();
 	}
-		
+	
+	@Override
+	public int getLightBlock(BlockState p_60585_, BlockGetter p_60586_, BlockPos p_60587_) {
+		return 1;
+	}
 }

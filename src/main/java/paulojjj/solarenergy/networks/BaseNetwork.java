@@ -199,7 +199,7 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 		if(tile == null || !canAdd(tile) || tiles.contains(tile)) {
 			return;
 		}
-		Log.info("Adding tile at " + tile.getBlockPos() + " to network " + this);
+		Log.debug("Adding tile at " + tile.getBlockPos() + " to network " + this);
 		tile.setNetwork(this);
 		tiles.add(tile);
 		
@@ -220,13 +220,13 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 	}
 
 	protected void merge(INetwork<T> other) {
-		Log.info("Merging network " + this + " with " + other);
+		Log.debug("Merging network " + this + " with " + other);
 		for(T tile : (Set<T>)other.getTiles()) {
 			tiles.add(tile);
 			tile.setNetwork(this);
 			storages.putAll(other.getStorages());
 		}
-		Log.info("Final network " + this);
+		Log.debug("Final network " + this);
 		other.destroy();
 	}
 	
@@ -268,7 +268,7 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 		//world.getChunkFromBlockCoords triggers chunk load
 		ChunkPos chunkPos = new ChunkPos(pos);
 		Set<T> tilesInChunk = new HashSet<>();
-		Log.info("Chunk  " + chunkPos + "unloaded");
+		Log.debug("Chunk  " + chunkPos + "unloaded");
 		tilesInChunk = getTilesInChunk(chunkPos);
 		if(tilesInChunk.size() == 0) {
 			return;
@@ -285,7 +285,7 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 	}
 
 	protected INetwork<T> split(Set<T> newNetworkTiles) {
-		Log.info("Splitting network " + this);
+		Log.debug("Splitting network " + this);
 		try {
 			Map<T, Map<Direction, IEnergyStorage>> newNetworkStorages = new HashMap<>();
 			for(T tile : newNetworkTiles) {
@@ -296,8 +296,8 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 			@SuppressWarnings("unchecked")
 			BaseNetwork<T>  newNetwork =  (BaseNetwork<T>)this.getClass().newInstance().init(newNetworkTiles, newNetworkStorages);
 			tiles.removeAll(newNetwork.getTiles());
-			Log.info("Network tiles: " + this);
-			Log.info("Network created: " + newNetwork);
+			Log.debug("Network tiles: " + this);
+			Log.debug("Network created: " + newNetwork);
 			return newNetwork;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException("Network split error", e);
@@ -312,7 +312,7 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 	}
 
 	protected Set<T> scanConnected(T initialTile) {
-		Log.info("Scanning connected tiles for " + initialTile.getBlockPos());
+		Log.debug("Scanning connected tiles for " + initialTile.getBlockPos());
 		long start = System.nanoTime();
 		Set<T> scanned = new HashSet<>();
 		Set<T> connected = new HashSet<>();
@@ -324,7 +324,7 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 
 		double nanos = System.nanoTime() - start;
 		double ms = nanos / 1000000.0;
-		Log.info(String.format("Scanning returned %d tiles in %.3fms", connected.size(), ms));
+		Log.debug(String.format("Scanning returned %d tiles in %.3fms", connected.size(), ms));
 		return connected;
 	}
 
@@ -383,7 +383,7 @@ public abstract class BaseNetwork<T extends BlockEntity & INetworkMember> implem
 		tiles.clear();
 		valid = false;
 		if(log) {
-			Log.info("Network " + this + " destroyed");
+			Log.debug("Network " + this + " destroyed");
 		}
 	}
 

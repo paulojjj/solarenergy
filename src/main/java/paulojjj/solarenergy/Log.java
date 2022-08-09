@@ -35,7 +35,7 @@ public class Log {
 		LOGGER.warn(message);
 	}
 	
-	public static final void erro(String message) {
+	public static final void error(String message) {
 		if(!canLog(Level.ERROR)) {
 			return;
 		}

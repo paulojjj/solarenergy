@@ -2,9 +2,9 @@
     "type": "minecraft:crafting_shaped",
     "pattern":
     [
-        "cbc",
-        "cac",
-        "cbc"
+        " b ",
+        "bab",
+        " b "
     ],
     "key":
     {
@@ -15,10 +15,6 @@
         "b":
         {
             "item": "minecraft:iron_ingot"
-        },
-        "c":
-        {
-        	"tag": "forge:ingots/lead"
         }
     },
     "result":

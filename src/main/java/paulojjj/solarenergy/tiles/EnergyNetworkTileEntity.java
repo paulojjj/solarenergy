@@ -79,6 +79,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		super.onLoad();
 		if(!level.isClientSide) {
 			loaded = false;
+			Log.debug("TileEntity Loaded: " + this);
 		}
 	}
 
@@ -100,7 +101,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		super.invalidateCaps();
 		if(!level.isClientSide) {
 			if(unloaded) {
-				Log.warn("Invalidating unloaded TileEntity: " + this);
+				Log.debug("Invalidating unloaded TileEntity: " + this);
 			}
 			if(!unloaded && network != null) {
 				network.onBlockRemoved(this);
@@ -148,7 +149,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 			if(neighborPos.equals(worldPosition)) {
 				return;
 			}
-			Log.info(worldPosition + " neighbor changed: " + neighborPos);
+			Log.debug(worldPosition + " neighbor changed: " + neighborPos);
 			Direction facing = getNeighborFacing(neighborPos);
 			IEnergyStorage storage = getNeighborStorage(facing);
 			synchronized(this) {
