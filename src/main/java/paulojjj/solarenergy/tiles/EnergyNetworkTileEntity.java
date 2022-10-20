@@ -185,7 +185,7 @@ public abstract class EnergyNetworkTileEntity extends EnergyStorageTileEntity im
 		}
 		if(!loaded) {
 			loaded = true;
-			Log.info("TileEntity Loaded: " + this);
+			Log.debug("TileEntity Loaded: " + this);
 			INetwork.newInstance((Class<INetwork<EnergyNetworkTileEntity>>)getNetworkClass(), this);
 			
 			for(Direction facing : Direction.values()) {
